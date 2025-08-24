@@ -1,0 +1,387 @@
+/* Styles pour les scènes interactives */
+
+.interactive-scene {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin: 3px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #e0e0e0;
+}
+
+/* Container de l'image */
+.scene-image-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.scene-background {
+  width: 100%;
+  height: 500px;
+  max-height: 500px;
+  object-fit: cover;
+  display: block;
+}
+.interactive-scene .scene-text{
+  min-height: 100px;
+}
+/* Overlay pour les hotspots */
+.hotspots-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Hotspots individuels */
+.hotspot {
+  position: absolute;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.hotspot:hover {
+  z-index: 10;
+}
+
+.hotspot-highlight {
+  width: 100%;
+  height: 100%;
+  background: rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(59, 130, 246, 0.6);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hotspot.visible .hotspot-highlight {
+  opacity: 1;
+}
+
+.hotspot.hovered .hotspot-highlight {
+  opacity: 1;
+  background: rgba(59, 130, 246, 0.4);
+  border-color: rgba(59, 130, 246, 0.8);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Tooltip des hotspots - Positionnement intelligent */
+.hotspot-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+  /* Position par défaut : au-dessus */
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+}
+
+/* Flèche par défaut (au-dessus) */
+.hotspot-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Tooltip en dessous quand il n'y a pas de place au-dessus */
+.hotspot-tooltip.position-bottom {
+  bottom: auto;
+  top: 100%;
+  margin-bottom: 0;
+  margin-top: 8px;
+}
+
+.hotspot-tooltip.position-bottom::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Tooltip à droite quand il n'y a pas de place au centre */
+.hotspot-tooltip.position-right {
+  left: 100%;
+  right: auto;
+  transform: translateY(-50%);
+  top: 50%;
+  bottom: auto;
+  margin-left: 8px;
+  margin-bottom: 0;
+}
+
+.hotspot-tooltip.position-right::after {
+  top: 50%;
+  left: -6px;
+  right: auto;
+  bottom: auto;
+  transform: translateY(-50%);
+  border-top-color: transparent;
+  border-right-color: rgba(0, 0, 0, 0.9);
+  border-left-color: transparent;
+}
+
+/* Tooltip à gauche quand il n'y a pas de place à droite */
+.hotspot-tooltip.position-left {
+  right: 100%;
+  left: auto;
+  transform: translateY(-50%);
+  top: 50%;
+  bottom: auto;
+  margin-right: 8px;
+  margin-bottom: 0;
+}
+
+.hotspot-tooltip.position-left::after {
+  top: 50%;
+  right: -6px;
+  left: auto;
+  bottom: auto;
+  transform: translateY(-50%);
+  border-top-color: transparent;
+  border-left-color: rgba(0, 0, 0, 0.9);
+  border-right-color: transparent;
+}
+
+/* Bouton pour révéler les hotspots */
+.toggle-hotspots {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: white;
+  transition: all 0.3s ease;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-hotspots:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+/* Description de la scène */
+.scene-description {
+  margin-bottom: 24px;
+}
+
+.scene-description h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  color: #f3f4f6;
+}
+
+.scene-description p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  color: #e5e7eb;
+}
+
+.additional-description {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid #10b981;
+  color: #d1fae5;
+  font-style: italic;
+}
+
+/* Hints d'interaction */
+.interaction-hints {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.hint-text {
+  margin: 0 0 12px 0;
+  color: #93c5fd;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.hotspot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hotspot-button {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  color: #93c5fd;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.hotspot-button:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.7);
+  color: #dbeafe;
+}
+
+/* Choix standards */
+.scene-choices {
+  margin-top: 20px;
+}
+
+.scene-choices h4 {
+  font-size: 1.2rem;
+  margin: 0 0 16px 0;
+  color: #f3f4f6;
+}
+
+.scene-choice {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  border: 2px solid #6b7280;
+  border-radius: 8px;
+  padding: 16px 20px;
+  color: #f3f4f6;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: fit-content;
+  margin-bottom: 12px;
+}
+
+.scene-choice:hover {
+  background: linear-gradient(135deg, #5b6574 0%, #475569 100%);
+  border-color: #9ca3af;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.scene-choice:active {
+  transform: translateY(0);
+}
+
+/* Debug info */
+.debug-info {
+  margin-top: 20px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.debug-info details {
+  cursor: pointer;
+}
+
+.debug-info summary {
+  color: #fbbf24;
+  font-weight: bold;
+}
+
+.debug-info pre {
+  margin-top: 8px;
+  color: #e5e7eb;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  overflow: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .interactive-scene {
+    margin: 2px;
+    padding: 16px;
+  }
+
+  .scene-image-container {
+    margin-bottom: 16px;
+  }
+
+  .scene-background {
+    max-height: 300px;
+  }
+
+  .toggle-hotspots {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .hotspot-list {
+    flex-direction: column;
+  }
+
+  .hotspot-button {
+    width: 100%;
+  }
+
+  .scene-choice {
+    padding: 12px 16px;
+  }
+
+  .hotspot-tooltip {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+}
+
+/* Animation d'entrée */
+.interactive-scene {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,311 @@
+/* Styles pour l'interface de boutique */
+
+.shop-interface {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 600px;
+}
+
+/* Grille des objets */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.empty-shop {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 40px;
+}
+
+/* Objet individuel */
+.shop-item {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border: 2px solid #6b7280;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.shop-item:hover {
+  border-color: #9ca3af;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.shop-item.selected {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+.shop-item.unavailable {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: #6b7280;
+}
+
+.shop-item.unavailable:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Informations de l'objet */
+.item-info {
+  margin-bottom: 12px;
+}
+
+.item-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #f3f4f6;
+}
+
+.item-description {
+  font-size: 0.9rem;
+  color: #d1d5db;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.item-stats {
+  font-size: 0.8rem;
+  color: #fbbf24;
+  margin: 4px 0;
+}
+
+.item-effect {
+  font-size: 0.8rem;
+  color: #10b981;
+  font-style: italic;
+  margin: 4px 0;
+}
+
+/* Prix et disponibilité */
+.item-pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+.stock, .quantity-owned {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.insufficient-funds, .out-of-stock {
+  font-size: 0.8rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* Détails de l'objet sélectionné */
+.item-details {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 20px;
+  position: sticky;
+  bottom: 0;
+}
+
+.details-content h3 {
+  font-size: 1.3rem;
+  margin: 0 0 12px 0;
+  color: #f3f4f6;
+}
+
+.details-content p {
+  color: #d1d5db;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+/* Sélecteur de quantité */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.quantity-selector label {
+  color: #f3f4f6;
+  font-weight: 500;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantity-controls button {
+  background: #4b5563;
+  border: 1px solid #6b7280;
+  color: #f3f4f6;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.quantity-controls button:hover:not(:disabled) {
+  background: #5b6574;
+  border-color: #9ca3af;
+}
+
+.quantity-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-value {
+  color: #f3f4f6;
+  font-weight: bold;
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Prix total */
+.total-price {
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.total-price strong {
+  color: #fbbf24;
+  font-size: 1.1rem;
+}
+
+/* Boutons d'action */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.buy-button, .sell-button {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buy-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.buy-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #14c997 0%, #0d9488 100%);
+  transform: translateY(-1px);
+}
+
+.sell-button {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.sell-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  transform: translateY(-1px);
+}
+
+.buy-button:disabled, .sell-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cancel-button {
+  background: transparent;
+  border: 1px solid #6b7280;
+  color: #9ca3af;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  border-color: #9ca3af;
+  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Scrollbar personnalisée */
+.items-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.items-grid::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.items-grid::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.5);
+  border-radius: 4px;
+}
+
+.items-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .items-grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+  
+  .shop-item {
+    padding: 12px;
+  }
+  
+  .item-details {
+    padding: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .quantity-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

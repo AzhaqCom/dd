@@ -1,0 +1,38 @@
+{
+  "homepage": "https://AzhaqCom.github.io/rpg-textuel-react/",
+  "name": "mini-dnd",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "cross-env VITE_APP_BASE_PATH=/rpg-textuel-react/ gh-pages -d dist",
+    "purge-css": "purgecss --css \"src/**/*.css\" --content \"src/**/*.{js,jsx}\" --output src/cleaned-css/",
+    "analyze-css": "purgecss --css \"src/**/*.css\" --content \"src/**/*.{js,jsx}\" --rejected"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-error-boundary": "^6.0.0",
+    "react-icons": "^5.5.0",
+    "zustand": "^5.0.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.30.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "gh-pages": "^6.3.0",
+    "globals": "^16.3.0",
+    "purgecss": "^7.0.2",
+    "vite": "^7.0.4"
+  }
+}

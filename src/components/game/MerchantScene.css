@@ -1,0 +1,279 @@
+/* Styles pour les scènes de marchand */
+
+.merchant-scene {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(97, 97, 97, 0.3);
+  color: #e0e0e0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.merchant-scene .dialogue-scene{
+  margin: 0 ;
+  padding: 20px;
+  flex: 1;
+}
+.merchant-scene.shop-mode {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  flex-direction: column;
+  padding: 50px;
+}
+
+/* Offres spéciales */
+.special-offers {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-radius: 8px;
+  border: 2px solid #10b981;
+}
+
+.special-offers h4 {
+  margin: 0 0 12px 0;
+  color: #d1fae5;
+  font-size: 1.2rem;
+}
+
+.special-offer {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.special-offer:last-child {
+  margin-bottom: 0;
+}
+
+.special-offer p {
+  margin: 0 0 8px 0;
+  color: #f0fdf4;
+}
+
+.offer-reward {
+  font-size: 0.9rem;
+  color: #bbf7d0;
+  font-weight: 500;
+}
+
+/* En-tête de la boutique */
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #4a4a4a;
+}
+
+.merchant-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.merchant-portrait {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #fbbf24;
+  object-fit: cover;
+}
+
+.merchant-info h3 {
+  margin: 0;
+  color: #f3f4f6;
+  font-size: 1.3rem;
+}
+
+.shop-type {
+  margin: 4px 0 0 0;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.player-gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Onglets de la boutique */
+.shop-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  font-weight: bold;
+}
+
+/* Contenu de la boutique */
+.shop-content {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Contrôles de la boutique */
+.shop-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #4a4a4a;
+}
+
+.back-to-dialogue, .leave-shop {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  border: 2px solid #6b7280;
+  color: #f3f4f6;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-to-dialogue:hover, .leave-shop:hover {
+  border-color: #9ca3af;
+  background: linear-gradient(135deg, #5b6574 0%, #475569 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-to-dialogue {
+  border-color: #3b82f6;
+}
+
+.back-to-dialogue:hover {
+  border-color: #60a5fa;
+}
+
+.leave-shop {
+  border-color: #ef4444;
+}
+
+.leave-shop:hover {
+  border-color: #f87171;
+}
+
+/* Debug info */
+.debug-info {
+  margin-top: 20px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.debug-info details {
+  cursor: pointer;
+}
+
+.debug-info summary {
+  color: #fbbf24;
+  font-weight: bold;
+}
+
+.debug-info div {
+  margin-top: 8px;
+  color: #e5e7eb;
+}
+
+.debug-info p {
+  margin: 4px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .merchant-scene {
+    margin: 8px;
+    padding: 16px;
+  }
+  
+  .shop-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .merchant-info {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .shop-tabs {
+    flex-direction: column;
+  }
+  
+  .shop-controls {
+    flex-direction: column;
+  }
+  
+  .back-to-dialogue, .leave-shop {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animations */
+.merchant-scene {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shop-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

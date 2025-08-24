@@ -1,0 +1,243 @@
+/* ===============================================
+   STATUS CORNER - Stats vitales toujours visibles
+   =============================================== */
+
+.status-corner {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Très élevé pour passer au-dessus des backdrops */
+  
+  background: linear-gradient(135deg, rgba(44, 24, 16, 0.95) 0%, rgba(61, 36, 22, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 69, 19, 0.6);
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  
+  font-family: 'Georgia', serif;
+  font-size: 14px;
+  color: #f0e6d3;
+  
+  transition: all 0.3s ease;
+}
+
+.status-corner:hover {
+  background: linear-gradient(135deg, rgba(44, 24, 16, 0.98) 0%, rgba(61, 36, 22, 0.98) 100%);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.status-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.status-text {
+  font-weight: 600;
+  color: #e0d0b8;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.status-day {
+  font-size: 11px;
+  color: #aaa;
+  margin-left: 4px;
+}
+
+/* ===============================================
+   MINI BARRES DE VIE/STAMINA
+   =============================================== */
+
+.mini-bar {
+  position: absolute;
+  bottom: -2px;
+  left: 22px;
+  width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.mini-bar-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.3s ease;
+}
+
+.hp-fill {
+  background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.stamina-fill {
+  background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%);
+}
+
+/* ===============================================
+   STATES CRITIQUES
+   =============================================== */
+
+.hp-status.low-hp {
+  animation: pulseWarning 2s infinite;
+}
+
+.hp-status.critical-hp {
+  animation: pulseCritical 1s infinite;
+}
+
+@keyframes pulseWarning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulseCritical {
+  0%, 100% { 
+    opacity: 1; 
+    color: #e74c3c; 
+  }
+  50% { 
+    opacity: 0.6; 
+    color: #ff6b6b; 
+  }
+}
+
+/* ===============================================
+   NOTIFICATIONS CONTEXTUELLES
+   =============================================== */
+
+.status-notifications {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  justify-content: center;
+}
+
+.status-notification {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.status-notification.level-up {
+  background: linear-gradient(90deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.2));
+  border: 1px solid rgba(46, 204, 113, 0.4);
+  color: #2ecc71;
+}
+
+.status-notification.low-health {
+  background: linear-gradient(90deg, rgba(231, 76, 60, 0.2), rgba(192, 57, 43, 0.2));
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  color: #e74c3c;
+}
+
+.notification-icon {
+  font-size: 12px;
+}
+
+.notification-text {
+  font-weight: 500;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================================
+   RESPONSIVE
+   =============================================== */
+
+@media (max-width: 768px) {
+  .status-corner {
+    top: 10px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .status-row {
+    gap: 12px;
+  }
+  
+  .status-item {
+    gap: 4px;
+  }
+  
+  .status-icon {
+    font-size: 14px;
+  }
+  
+  .status-text {
+    font-size: 12px;
+  }
+  
+  .mini-bar {
+    width: 35px;
+    left: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-corner {
+    padding: 4px 8px;
+  }
+  
+  .status-row {
+    gap: 8px;
+  }
+  
+  .status-day {
+    display: none; /* Masquer sur très petits écrans */
+  }
+  
+  .mini-bar {
+    width: 30px;
+    left: 16px;
+  }
+}
+
+/* ===============================================
+   ACCESSIBILITÉ
+   =============================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .status-corner,
+  .hp-status.low-hp,
+  .hp-status.critical-hp,
+  .status-notification {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.status-corner:focus-within {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}

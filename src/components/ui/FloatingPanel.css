@@ -1,0 +1,472 @@
+/* ===============================================
+   FLOATING PANEL SYSTEM - Style CK3 AMÉLIORÉ
+   =============================================== */
+
+.floating-panel-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none; /* Permet de cliquer à travers si pas de backdrop */
+}
+
+/* Backdrop global pour le premier panel seulement */
+.panel-backdrop-global {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  z-index: 1; /* Au-dessus du contenu mais sous les UI fixes */
+}
+
+/* Ancien backdrop individuel - gardé pour compatibilité */
+.panel-backdrop-individual {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+  z-index: -1; /* En-dessous du panel et de l'UI fixe */
+}
+
+.floating-panel {
+  position: absolute;
+  background: linear-gradient(145deg, #2c1810 0%, #3d2416 100%);
+  border: 2px solid #8b4513;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  
+  color: #f0e6d3;
+  font-family: 'Georgia', serif;
+  
+  display: flex;
+  flex-direction: column;
+  
+  animation: panelSlideIn 0.3s ease-out;
+  
+  /* Contraintes de base */
+  min-width: 280px;
+  min-height: 200px;
+  max-width: 90vw;
+  max-height: 90vh;
+  
+  /* Permettre les interactions */
+  pointer-events: auto;
+  
+  /* Transition pour les changements de focus */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* États de focus */
+.floating-panel.focused {
+  opacity: 1;
+  transform: scale(1);
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(139, 69, 19, 0.8);
+}
+
+.floating-panel.unfocused {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===============================================
+   TAILLES DE PANELS
+   =============================================== */
+
+.floating-panel--small {
+  width: 320px;
+  max-height: 400px;
+}
+
+.floating-panel--medium {
+  width: 450px;
+  max-height: 600px;
+}
+
+.floating-panel--large {
+  width: 650px;
+  max-height: 700px;
+}
+
+.floating-panel--fullscreen {
+  width: 95vw;
+  height: 95vh;
+  max-width: none;
+  max-height: none;
+}
+
+/* ===============================================
+   HEADER DU PANEL
+   =============================================== */
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.3) 0%, rgba(101, 50, 13, 0.3) 100%);
+  border-bottom: 1px solid rgba(139, 69, 19, 0.5);
+  border-radius: 10px 10px 0 0;
+  
+  cursor: grab;
+  user-select: none;
+}
+
+.panel-header:active {
+  cursor: grabbing;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-icon {
+  font-size: 18px;
+}
+
+.panel-title h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #f0e6d3;
+  font-weight: 600;
+}
+
+.panel-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.panel-close {
+  width: 28px;
+  height: 28px;
+  
+  background: rgba(231, 76, 60, 0.8);
+  border: 1px solid rgba(231, 76, 60, 0.6);
+  border-radius: 50%;
+  
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  line-height: 1;
+}
+
+.panel-close:hover {
+  background: rgba(231, 76, 60, 1);
+  border-color: rgba(231, 76, 60, 0.8);
+  transform: scale(1.1);
+}
+
+.panel-close:active {
+  transform: scale(0.9);
+}
+
+/* ===============================================
+   CONTENU DU PANEL
+   =============================================== */
+
+.panel-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Scroll personnalisé */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 69, 19, 0.6) transparent;
+}
+
+.panel-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 19, 0.6);
+  border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 69, 19, 0.8);
+}
+
+/* ===============================================
+   FOOTER DU PANEL
+   =============================================== */
+
+.panel-footer {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 10px 10px;
+}
+
+.panel-hints {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hint {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+/* ===============================================
+   TYPES DE PANELS SPÉCIFIQUES
+   =============================================== */
+
+.floating-panel--character {
+  border-color: #3498db;
+}
+
+.floating-panel--character .panel-header {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.3) 0%, rgba(41, 128, 185, 0.3) 100%);
+  border-bottom-color: rgba(52, 152, 219, 0.5);
+}
+
+.floating-panel--inventory {
+  border-color: #f39c12;
+}
+
+.floating-panel--inventory .panel-header {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.3) 0%, rgba(211, 134, 16, 0.3) 100%);
+  border-bottom-color: rgba(243, 156, 18, 0.5);
+}
+
+.floating-panel--spells {
+  border-color: #9b59b6;
+}
+
+.floating-panel--spells .panel-header {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.3) 0%, rgba(142, 68, 173, 0.3) 100%);
+  border-bottom-color: rgba(155, 89, 182, 0.5);
+}
+
+.floating-panel--companions {
+  border-color: #2ecc71;
+}
+
+.floating-panel--companions .panel-header {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.3) 0%, rgba(39, 174, 96, 0.3) 100%);
+  border-bottom-color: rgba(46, 204, 113, 0.5);
+}
+
+.floating-panel--journal {
+  border-color: #e67e22;
+}
+
+.floating-panel--journal .panel-header {
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.3) 0%, rgba(211, 115, 32, 0.3) 100%);
+  border-bottom-color: rgba(230, 126, 34, 0.5);
+}
+
+.floating-panel--rest {
+  border-color: #95a5a6;
+}
+
+.floating-panel--rest .panel-header {
+  background: linear-gradient(135deg, rgba(149, 165, 166, 0.3) 0%, rgba(127, 140, 141, 0.3) 100%);
+  border-bottom-color: rgba(149, 165, 166, 0.5);
+}
+
+/* ===============================================
+   RESPONSIVE
+   =============================================== */
+
+@media (max-width: 768px) {
+  .floating-panel {
+    min-width: 280px;
+    max-width: 95vw;
+    max-height: 90vh;
+  }
+  
+  .floating-panel--medium {
+    width: 90vw;
+  }
+  
+  .floating-panel--large {
+    width: 95vw;
+    height: 85vh;
+  }
+  
+  .panel-header {
+    padding: 10px 12px;
+  }
+  
+  .panel-title h3 {
+    font-size: 14px;
+  }
+  
+  .panel-content {
+    padding: 12px;
+  }
+  
+  .panel-close {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .hint {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-panel {
+    min-width: 260px;
+    max-width: 98vw;
+    max-height: 95vh;
+  }
+  
+  .panel-header {
+    padding: 8px 10px;
+  }
+  
+  .panel-content {
+    padding: 10px;
+  }
+  
+  .panel-footer {
+    padding: 6px 10px;
+  }
+  
+  /* Masquer les hints sur très petits écrans */
+  .panel-hints {
+    display: none;
+  }
+}
+
+/* ===============================================
+   ANIMATIONS ET TRANSITIONS
+   =============================================== */
+
+.floating-panel.closing {
+  animation: panelSlideOut 0.2s ease-in forwards;
+}
+
+@keyframes panelSlideOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+}
+
+/* Animation pour le drag */
+.floating-panel.dragging {
+  transition: none !important;
+  user-select: none;
+}
+
+/* ===============================================
+   FOCUS ET ACCESSIBILITÉ
+   =============================================== */
+
+.floating-panel:focus-within {
+  border-color: rgba(52, 152, 219, 0.8);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(52, 152, 219, 0.3);
+}
+
+.panel-close:focus-visible {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* Réduction des animations si demandé */
+@media (prefers-reduced-motion: reduce) {
+  .floating-panel,
+  .panel-close {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .panel-backdrop {
+    backdrop-filter: none;
+  }
+}
+
+/* ===============================================
+   CONTENU SPÉCIFIQUE DES PANELS
+   =============================================== */
+
+/* Styles pour le contenu des panels */
+.panel-content h4 {
+  color: #e0d0b8;
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-content p {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 10px 0;
+  color: #ccc;
+}
+
+.panel-content ul {
+  margin: 0 0 10px 16px;
+  padding: 0;
+}
+
+.panel-content li {
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  color: #ccc;
+}
+
+.panel-content button {
+  background: rgba(139, 69, 19, 0.8);
+  border: 1px solid rgba(139, 69, 19, 0.6);
+  color: #f0e6d3;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panel-content button:hover {
+  background: rgba(139, 69, 19, 1);
+  border-color: rgba(139, 69, 19, 0.8);
+  transform: translateY(-1px);
+}

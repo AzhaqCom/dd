@@ -1,0 +1,264 @@
+/**
+ * CSS RESPONSIVE ADDITIONNEL - NE MODIFIE PAS LES STYLES EXISTANTS
+ * Fichier distinct pour éviter tout conflit avec l'architecture CSS existante
+ */
+
+/* ===============================================
+   MOBILE SIDEBAR TOGGLE
+   =============================================== */
+
+.mobile-sidebar-toggle {
+  display: none; /* Masqué par défaut sur desktop */
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+  background: #2c3e50;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.mobile-sidebar-toggle:hover {
+  background: #34495e;
+  transform: scale(1.05);
+}
+
+.mobile-sidebar-toggle:active {
+  transform: scale(0.95);
+}
+
+/* ===============================================
+   RESPONSIVE BREAKPOINTS
+   =============================================== */
+
+/* Tablettes et petits écrans */
+@media (max-width: 1024px) {
+  /* Réduire légèrement la sidebar sur tablettes */
+  .right-sidebar {
+    width: 280px; /* Ajustement mineur si nécessaire */
+  }
+}
+
+/* Mobiles et petites tablettes */
+@media (max-width: 768px) {
+  /* Afficher le bouton toggle sur mobile */
+  .mobile-sidebar-toggle {
+    display: block;
+  }
+  
+  /* Masquer la sidebar par défaut sur mobile */
+  .right-sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Masquée par défaut */
+    width: 90%;
+    max-width: 350px;
+    height: 100vh;
+    background: white;
+    border-left: 2px solid #e0e0e0;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+    z-index: 999;
+  }
+  
+  /* Sidebar visible quand active */
+  .right-sidebar.mobile-visible {
+    right: 0;
+  }
+  
+  /* Overlay sombre quand sidebar mobile est ouverte */
+  .mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-sidebar-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* Ajuster le contenu principal sur mobile */
+  .main-content {
+    width: 100% !important;
+    padding: 0 15px;
+    margin-top: 60px; /* Espace pour le bouton toggle */
+  }
+  
+  /* Ajustements pour les choix de scène sur mobile */
+  .scene-choices {
+    margin-top: 20px;
+  }
+  
+  .choice-button {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 15px;
+    font-size: 16px; /* Plus grand pour le tactile */
+    touch-action: manipulation; /* Optimisation tactile */
+  }
+}
+
+/* Très petits écrans (téléphones en mode portrait) */
+@media (max-width: 480px) {
+  .mobile-sidebar-toggle {
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .right-sidebar {
+    width: 95%;
+  }
+  
+  .main-content {
+    padding: 0 10px;
+    margin-top: 50px;
+  }
+  
+  /* Réduire l'espacement sur très petits écrans */
+  .scene-content h3 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+  }
+  
+  .scene-text {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .choice-button {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+/* ===============================================
+   AMÉLIORATIONS TACTILES (MOBILE UNIQUEMENT)
+   =============================================== */
+
+@media (max-width: 768px) {
+  /* Zones de touch plus grandes */
+  .choice-button,
+  .mobile-sidebar-toggle,
+  button {
+    min-height: 44px; /* Minimum Apple/Google recommandé */
+    min-width: 44px;
+  }
+  
+  /* Améliorer la lisibilité sur mobile */
+  .scene-text p {
+    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  
+  /* Optimisations pour les formulaires/inputs sur mobile */
+  input, select, textarea {
+    font-size: 16px; /* Évite le zoom sur iOS */
+  }
+}
+
+/* ===============================================
+   CLASSES UTILITAIRES RESPONSIVE
+   =============================================== */
+
+/* Masquer sur mobile */
+.hide-on-mobile {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+/* Afficher seulement sur mobile */
+.show-on-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .show-on-mobile {
+    display: block !important;
+  }
+}
+
+/* ===============================================
+   TRANSITIONS ET ANIMATIONS LÉGÈRES
+   =============================================== */
+
+/* Animation d'entrée pour les scènes (subtile) */
+.scene-textuel-new,
+.scene-dialogue,
+.scene-interactive,
+.scene-merchant {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation pour les boutons de choix */
+.choice-button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.choice-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.choice-button:active {
+  transform: translateY(0);
+}
+
+/* ===============================================
+   ACCESSIBILITÉ DE BASE
+   =============================================== */
+
+/* Focus visible pour navigation clavier */
+.choice-button:focus-visible,
+.mobile-sidebar-toggle:focus-visible {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* Réduction du mouvement pour les utilisateurs sensibles */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-sidebar-toggle,
+  .right-sidebar,
+  .mobile-sidebar-overlay,
+  .scene-textuel-new,
+  .scene-dialogue,
+  .scene-interactive,
+  .scene-merchant,
+  .choice-button {
+    animation: none !important;
+    transition: none !important;
+  }
+}

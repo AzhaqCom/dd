@@ -1,0 +1,258 @@
+/* ===============================================
+   NOUVELLE ARCHITECTURE UI - FULL WIDTH + HOTBAR/STATUS
+   =============================================== */
+
+/* Reset et base pour la nouvelle UI */
+.game-container-fullwidth {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  
+  background: var(--color-bg-primary, #1f2937);
+}
+
+/* Contenu principal prend tout l'espace */
+.main-content-fullwidth {
+  width: 100%;
+  height: 100vh;
+  padding: 80px 110px 20px 20px; /* Espace pour StatusCorner et Hotbar */
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  background-color: var(--color-bg-primary, #1f2937);
+  color: var(--color-text-primary, #e0e0e0);
+}
+
+/* ===============================================
+   AJUSTEMENTS POUR LES SCÈNES EXISTANTES
+   =============================================== */
+
+/* Les scènes gardent leur style mais s'adaptent au full width */
+.main-content-fullwidth .scene-textuel-new,
+.main-content-fullwidth .scene-dialogue,
+.main-content-fullwidth .scene-interactive,
+.main-content-fullwidth .scene-merchant,
+.main-content-fullwidth .scene-combat {
+  max-width: 1200px; /* Limite la largeur pour la lisibilité */
+  margin: 0 auto; /* Centre le contenu */
+  height: auto;
+  min-height: calc(100vh - 120px); /* Hauteur minimum moins les paddings */
+}
+
+/* Les scènes interactives peuvent être plus larges */
+.main-content-fullwidth .scene-interactive {
+  max-width: 1400px;
+}
+
+/* Combat peut prendre toute la largeur */
+.main-content-fullwidth .scene-combat {
+  max-width: none;
+  width: 100%;
+}
+
+/* ===============================================
+   MODES SPÉCIAUX
+   =============================================== */
+
+/* Mode combat = padding réduit pour plus d'espace */
+.game-container-fullwidth.combat-mode .main-content-fullwidth {
+  padding: 60px 20px 20px 20px;
+}
+
+/* Mode exploration = padding standard */
+.game-container-fullwidth.exploration-mode .main-content-fullwidth {
+  padding: 80px 110px 20px 20px;
+}
+
+/* Mode dialogue = contenu centré plus étroit */
+.game-container-fullwidth.dialogue-mode .main-content-fullwidth .scene-dialogue {
+  max-width: 900px;
+}
+
+/* ===============================================
+   RESPONSIVE POUR LA NOUVELLE UI
+   =============================================== */
+
+@media (max-width: 1200px) {
+  .main-content-fullwidth {
+    padding: 70px 60px 20px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content-fullwidth {
+    padding: 60px 20px 20px 20px;
+  }
+  
+  .main-content-fullwidth .scene-textuel-new,
+  .main-content-fullwidth .scene-dialogue,
+  .main-content-fullwidth .scene-interactive,
+  .main-content-fullwidth .scene-merchant {
+    max-width: none;
+    margin: 0;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content-fullwidth {
+    padding: 50px 10px 20px 10px;
+  }
+  
+  .main-content-fullwidth .scene-textuel-new,
+  .main-content-fullwidth .scene-dialogue,
+  .main-content-fullwidth .scene-interactive,
+  .main-content-fullwidth .scene-merchant {
+    padding: 10px;
+  }
+}
+
+/* ===============================================
+   AMÉLIORATION DE LA SCROLLBAR GLOBALE
+   =============================================== */
+
+.main-content-fullwidth::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content-fullwidth::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.main-content-fullwidth::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 19, 0.6);
+  border-radius: 4px;
+}
+
+.main-content-fullwidth::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 69, 19, 0.8);
+}
+
+/* Scrollbar Firefox */
+.main-content-fullwidth {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 69, 19, 0.6) transparent;
+}
+
+/* ===============================================
+   CLASSES UTILITAIRES POUR TRANSITIONS
+   =============================================== */
+
+/* Transition fluide entre les modes */
+.game-container-fullwidth,
+.main-content-fullwidth {
+  transition: padding 0.3s ease, margin 0.3s ease;
+}
+
+/* Animation d'entrée pour les scènes */
+.main-content-fullwidth > * {
+  animation: contentSlideIn 0.4s ease-out;
+}
+
+@keyframes contentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Désactiver les animations si demandé */
+@media (prefers-reduced-motion: reduce) {
+  .game-container-fullwidth,
+  .main-content-fullwidth,
+  .main-content-fullwidth > * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ===============================================
+   COMPATIBILITÉ AVEC L'ANCIEN SYSTÈME
+   =============================================== */
+
+/* Classes de transition pour migrer progressivement */
+.game-container.transitioning-to-fullwidth {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.game-container.transitioning-to-fullwidth .main-content {
+  width: 100%;
+  height: 100vh;
+  padding-right: 100px; /* Espace pour la hotbar */
+}
+
+.game-container.transitioning-to-fullwidth .sidebar {
+  display: none; /* Masquer progressivement la sidebar */
+}
+
+/* ===============================================
+   FOCUS ET ACCESSIBILITÉ POUR LA NOUVELLE UI
+   =============================================== */
+
+.main-content-fullwidth:focus-within {
+  outline: none; /* Le focus sera géré par les composants internes */
+}
+
+/* Zone de focus pour navigation clavier */
+.main-content-fullwidth {
+  scroll-behavior: smooth;
+}
+
+/* ===============================================
+   OPTIMISATIONS PERFORMANCE
+   =============================================== */
+
+.game-container-fullwidth {
+  /* Optimisation GPU */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.main-content-fullwidth {
+  /* Optimisation du rendu */
+  contain: layout style paint;
+}
+
+/* Optimisation des images dans le nouveau layout */
+.main-content-fullwidth img {
+  image-rendering: optimizeQuality;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ===============================================
+   PRINT STYLES (pour debug)
+   =============================================== */
+
+@media print {
+  .game-container-fullwidth {
+    background: white;
+    color: black;
+  }
+  
+  .main-content-fullwidth {
+    padding: 20px;
+    overflow: visible;
+    height: auto;
+  }
+  
+  /* Masquer les éléments UI pour l'impression */
+  .game-hotbar,
+  .status-corner,
+  .floating-panel-overlay {
+    display: none !important;
+  }
+}

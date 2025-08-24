@@ -1,0 +1,238 @@
+/* RestScene.css - Styles pour les scènes de repos */
+
+.rest-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid #3a4a5c;
+  color: #e0e6ed;
+  min-height: 400px;
+}
+
+/* En-tête de la scène de repos */
+.rest-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #3a4a5c;
+}
+
+.rest-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.rest-info {
+  flex: 1;
+}
+
+.rest-title {
+  margin: 0;
+  color: #ffd700;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.location-text {
+  margin: 0.25rem 0 0 0;
+  color: #a0a0a0;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Contenu de la scène */
+.rest-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rest-text {
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.rest-text p {
+  margin: 0 0 0.75rem 0;
+}
+
+/* Statut du personnage */
+.character-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-label {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+}
+
+.status-value {
+  color: #e0e6ed;
+  font-weight: bold;
+}
+
+.status-value.status-low {
+  color: #ff6b6b;
+}
+
+.rest-recommendation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffa500;
+  font-weight: bold;
+}
+
+.rest-recommendation .rest-icon {
+  font-size: 1rem;
+  filter: none;
+}
+
+/* Section dés de vie */
+.hit-die-section {
+  padding: 1rem;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.hit-die-button {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a2e;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hit-die-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffed4e 0%, #fff700 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.hit-die-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Choix disponibles */
+.rest-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.choice-button {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  color: #e0e6ed;
+  border: 1px solid #3a4a5c;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.choice-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a6578 0%, #3d4758 100%);
+  border-color: #4a5568;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.choice-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Styles spéciaux pour les boutons de repos */
+.choice-button.rest-short {
+  background: linear-gradient(135deg, #4299e1 0%, #2b77cb 100%);
+  border-color: #4299e1;
+}
+
+.choice-button.rest-short:hover:not(:disabled) {
+  background: linear-gradient(135deg, #52a9f1 0%, #3b87db 100%);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+}
+
+.choice-button.rest-long {
+  background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+  border-color: #805ad5;
+}
+
+.choice-button.rest-long:hover:not(:disabled) {
+  background: linear-gradient(135deg, #906ae5 0%, #7b56d1 100%);
+  box-shadow: 0 4px 12px rgba(128, 90, 213, 0.4);
+}
+
+/* Animation de repos en cours */
+.rest-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: #a0a0a0;
+}
+
+.rest-progress-icon {
+  font-size: 2rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rest-scene {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .character-status {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .rest-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .rest-icon {
+    font-size: 2.5rem;
+  }
+}

@@ -1,0 +1,95 @@
+:root {
+  /* === PALETTE DE COULEURS PRINCIPALE === */
+  
+  /* Couleurs de base sombres */
+  --color-bg-primary: #19212d;      /* Fond principal très sombre */
+  --color-bg-secondary: #202e42;    /* Fond secondaire (panneaux) */
+  --color-bg-tertiary: #1f2937;     /* Fond tertiaire (cartes, éléments) */
+  --color-bg-quaternary: #15181d;   /* Fond quaternaire (hover states) */
+  
+  /* Couleurs de bordure */
+  --color-border-primary: #444444;   /* Bordures principales */
+  --color-border-secondary: #555555; /* Bordures secondaires */
+  --color-border-accent: #666666;    /* Bordures d'accent */
+  
+  /* Couleurs de texte */
+  --color-text-primary: #f5f5f5;     /* Texte principal (blanc cassé) */
+  --color-text-secondary: #e0d0b8;   /* Texte secondaire (beige doré) */
+  --color-text-muted: #cccccc;       /* Texte atténué */
+  --color-text-disabled: #888888;    /* Texte désactivé */
+  
+  /* === COULEURS FONCTIONNELLES === */
+  
+  /* Système de santé */
+  --color-health-full: #4caf50;      /* Vert pour PV pleins */
+  --color-health-medium: #ff9800;    /* Orange pour PV moyens */
+  --color-health-low: #f44336;       /* Rouge pour PV bas */
+  --color-health-critical: #d32f2f;  /* Rouge foncé critique */
+  
+  /* Système d'expérience */
+  --color-xp-fill: #59aedf;          /* Bleu pour barre XP */
+  --color-xp-bg: --color-bg-tertiary; /* Fond barre XP */
+  
+  /* États de combat */
+  --color-combat-player: #2196f3;    /* Bleu pour joueur */
+  --color-combat-companion: #9c27b0; /* Violet pour compagnon */
+  --color-combat-enemy: #f44336;     /* Rouge pour ennemi */
+  --color-combat-neutral: #607d8b;   /* Gris pour neutre */
+  
+  /* États interactifs */
+  --color-success: #4caf50;          /* Vert succès */
+  --color-warning: #ff9800;          /* Orange avertissement */
+  --color-error: #f44336;            /* Rouge erreur */
+  --color-info: #2196f3;             /* Bleu information */
+  
+  /* Ciblage et mouvement */
+  --color-target-valid: #4caf50;     /* Vert pour cibles valides */
+  --color-target-invalid: #f44336;   /* Rouge pour cibles invalides */
+  --color-movement-valid: #8bc34a;   /* Vert clair pour mouvement */
+  --color-aoe-center: #ffcc02;       /* Jaune pour centre AoE */
+  --color-aoe-area: #fff3e0;         /* Beige pour zone AoE */
+  
+  /* === COULEURS D'ACCENT === */
+  
+  /* Magie et sorts */
+  --color-magic-primary: #9c27b0;    /* Violet pour magie */
+  --color-magic-secondary: #673ab7;  /* Violet foncé */
+  --color-spell-cantrip: #4fc3f7;    /* Bleu clair pour cantrips */
+  --color-spell-level: --color-magic-primary; /* Violet pour sorts à niveau */
+  
+  /* Équipement */
+  --color-weapon: #795548;           /* Marron pour armes */
+  --color-armor: #607d8b;            /* Gris bleu pour armures */
+  --color-consumable: #4caf50;       /* Vert pour consommables */
+  --color-treasure: #ffc107;         /* Or pour trésors */
+  
+  /* === OPACITÉS ET TRANSPARENCES === */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.8;
+  --opacity-active: 0.9;
+  --opacity-overlay: 0.7;
+  
+  /* === OMBRES === */
+  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-large: 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 10px rgba(76, 175, 80, 0.6);
+  
+  /* === TRANSITIONS === */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* === ESPACEMENTS === */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* === RAYONS DE BORDURE === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
