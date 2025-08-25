@@ -3,6 +3,7 @@ import rhingannImage from '../assets/rhingann.png'
 import kaelImage from '../assets/kael.png'
 import finnImage from '../assets/finn.png'
 import zaraImage from '../assets/zara.png'
+import { createEntityWithId } from '../services/EntityUtils.js'
 
 export const companions = {
     "tyrion": {
@@ -383,4 +384,18 @@ export const companions = {
         }
     }
 
+};
+
+/**
+ * Crée un compagnon avec ID universel
+ * @param {string} companionKey - Clé du compagnon ("tyrion", "rhingann", etc.)
+ * @returns {Object} Compagnon avec ID unique
+ */
+export const createCompanionWithId = (companionKey) => {
+    const template = companions[companionKey];
+    if (!template) {
+        throw new Error(`Compagnon '${companionKey}' introuvable`);
+    }
+    
+    return createEntityWithId('companion', companionKey, template);
 };

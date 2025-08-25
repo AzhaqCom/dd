@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter, Button } from '../../ui'
 import { ActionButton } from '../../ui/ActionButton'
 import { weapons } from '../../../data/weapons'
 import { spells } from '../../../data/spells'
+import { useCombatStore } from '../../../stores/combatStore'
 
 /**
  * Panneau d'actions de combat pour le joueur
@@ -15,8 +16,12 @@ export const CombatActionPanel = ({
   onClearTargets, // Nouveau prop pour vider les cibles
   onPassTurn,
   canMove = true,
-  onMoveToggle
+  onMoveToggle,
+  isMovementMode = false // Nouveau : mode mouvement intégré
 }) => {
+  // État du tour multi-actions
+  const playerTurnState = useCombatStore(state => state.playerTurnState)
+  const endPlayerTurn = useCombatStore(state => state.endPlayerTurn)
   // Actions d'attaque disponibles - depuis l'équipement moderne ET le système legacy
   const getEquippedWeapons = () => {
     const equippedWeapons = []
@@ -171,6 +176,16 @@ export const CombatActionPanel = ({
       <CardHeader>
         <h3>🎯 Actions de {playerCharacter.name}</h3>
         <div className="combat-action-panel__status">
+          {/* Indicateurs d'état du tour */}
+          <div className="player-turn-status">
+            <span className={`action-status ${playerTurnState.actionsUsed.action ? 'used' : 'available'}`}>
+              ⚔️ Action {playerTurnState.actionsUsed.action ? '✅' : '◯'}
+            </span>
+            <span className={`action-status ${playerTurnState.actionsUsed.movement ? 'used' : 'available'}`}>
+              🏃 Mouvement {playerTurnState.actionsUsed.movement ? '✅' : '◯'} ({playerTurnState.remainingMovement} cases)
+            </span>
+          </div>
+          
           {selectedAction && (
             <span className="selected-action">
               {selectedAction.name} sélectionné
@@ -188,28 +203,46 @@ export const CombatActionPanel = ({
 
 
         {/* Actions de mouvement */}
-        {canMove && (
-          <div className="combat-action-section">
-            <h4>Mouvement</h4>
+        <div className="combat-action-section">
+          <h4>Mouvement {playerTurnState.actionsUsed.movement ? '(Utilisé)' : ''}</h4>
+          {canMove && !playerTurnState.actionsUsed.movement ? (
             <ActionButton
-              variant="ghost"
+              variant={isMovementMode ? "primary" : "ghost"}
               onClick={onMoveToggle}
               disabled={!!selectedAction}
             >
               <div className="action-button__content">
                 <span className="action-button__icon">🏃</span>
-                <span className="action-button__name">Se déplacer</span>
+                <span className="action-button__name">
+                  {isMovementMode ? "Annuler mouvement" : "Se déplacer"}
+                </span>
               </div>
             </ActionButton>
-          </div>
-        )}
+          ) : (
+            <div className="action-disabled">
+              {playerTurnState.actionsUsed.movement 
+                ? `Mouvement utilisé (${6 - playerTurnState.remainingMovement} cases)`
+                : "Mouvement non disponible"
+              }
+            </div>
+          )}
+          
+          {isMovementMode && (
+            <div className="movement-instructions">
+              <p>💡 Cliquez sur une case pour vous déplacer (max {playerTurnState.remainingMovement} cases)</p>
+            </div>
+          )}
+        </div>
 
         {/* Actions d'attaque */}
         {attackActions.length > 0 && (
           <div className="combat-action-section">
-            <h4>Attaques</h4>
+            <h4>Attaques {playerTurnState.actionsUsed.action ? '(Utilisée)' : ''}</h4>
             <div className="combat-actions-grid">
-              {attackActions.map(renderActionButton)}
+              {attackActions.map(action => renderActionButton({
+                ...action,
+                disabled: playerTurnState.actionsUsed.action
+              }))}
             </div>
           </div>
         )}
@@ -217,9 +250,12 @@ export const CombatActionPanel = ({
         {/* Actions de sort */}
         {spellActions.length > 0 && (
           <div className="combat-action-section">
-            <h4>Sorts</h4>
+            <h4>Sorts {playerTurnState.actionsUsed.action ? '(Utilisée)' : ''}</h4>
             <div className="combat-actions-grid">
-              {spellActions.map(renderActionButton)}
+              {spellActions.map(action => renderActionButton({
+                ...action,
+                disabled: playerTurnState.actionsUsed.action
+              }))}
             </div>
           </div>
         )}
@@ -254,12 +290,24 @@ export const CombatActionPanel = ({
             </Button>
           )}
 
-          <Button
-            variant="secondary"
-            onClick={onPassTurn}
-          >
-            Passer le tour
-          </Button>
+          {/* Nouveau système : Terminer le tour quand prêt */}
+          {playerTurnState.canEndTurn ? (
+            <Button
+              variant="primary"
+              onClick={endPlayerTurn}
+              className="end-turn-button"
+            >
+              Terminer le tour
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              onClick={endPlayerTurn}
+              title="Vous pouvez passer le tour même sans avoir fait d'actions"
+            >
+              Passer le tour
+            </Button>
+          )}
         </div>
       </CardFooter>
     </Card>

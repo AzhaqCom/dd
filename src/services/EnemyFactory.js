@@ -4,6 +4,7 @@
  */
 
 import { enemyTemplates } from '../data/enemies';
+import { generateEntityId } from './EntityUtils.js'
 
 export class EnemyFactory {
   /**
@@ -41,9 +42,11 @@ export class EnemyFactory {
   static createEnemyFromTemplate(template, encounter, encounterIndex, index) {
     return {
       ...template,
-      id: `${encounter.type}_${encounterIndex}_${index}`,
-      name: encounter.count > 1 ? `${template.name} ${index + 1}` : template.name,
+      id: generateEntityId('enemy', encounter.type, index),
       type: 'enemy',
+      templateKey: encounter.type,
+      instance: index,
+      name: encounter.count > 1 ? `${template.name} ${index + 1}` : template.name,
       currentHP: template.currentHP ?? template.maxHP ?? 10,
       maxHP: template.maxHP ?? 10,
       ac: template.ac ?? 10,

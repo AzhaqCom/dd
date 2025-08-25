@@ -381,8 +381,8 @@ function App() {
                             onCombatStateChange={setCombatActive}
                             onCombatEnd={() => {
                                 handleCombatVictory();
-                                if (scene.metadata.nextScene) {
-                                    setCurrentScene(scene.metadata.nextScene);
+                                if (scene.onVictory?.next) {
+                                    setCurrentScene(scene.onVictory.next);
                                 }
                             }}
                             onReplayCombat={() => {

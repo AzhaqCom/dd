@@ -48,7 +48,7 @@ export const rollDice = (diceString) => {
 }
 
 /**
- * Calculates distance between two grid positions (Manhattan distance)
+ * Calculates distance between two grid positions (D&D distance - includes diagonals)
  * @param {Object} pos1 - First position {x, y}
  * @param {Object} pos2 - Second position {x, y}
  * @returns {number} The distance in grid squares
@@ -57,7 +57,8 @@ export const calculateDistance = (pos1, pos2) => {
   if (!pos1 || !pos2 || pos1.x === undefined || pos2.x === undefined) {
     return Infinity // Distance infinie si positions invalides
   }
-  return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y)
+  // Distance D&D : diagonales comptent comme 1 case (distance de Chebyshev)
+  return Math.max(Math.abs(pos1.x - pos2.x), Math.abs(pos1.y - pos2.y))
 }
 
 

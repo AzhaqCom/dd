@@ -35,6 +35,17 @@ export const useCombatStore = create(
       victory: false,
       totalXpGained: 0,
 
+      // === SYSTÈME D'ACTIONS MULTIPLES JOUEUR ===
+      playerTurnState: {
+        actionsUsed: {
+          movement: false,
+          action: false,
+          bonusAction: false
+        },
+        remainingMovement: 6, // cases par défaut
+        canEndTurn: false
+      },
+
       // === NOUVEAU SYSTÈME SIMPLE ===
 
       /**
@@ -84,7 +95,7 @@ export const useCombatStore = create(
               if (damage > 0) {
                 console.log(`🩸 Application des ${damage} dégâts au compagnon ${targetId}`);
                 get().dealDamageToCompanionById(companion.id, damage);
-                get().addCombatMessageToGameStore(`💔 ${targetId} subit ${damage} dégâts !`, 'damage');
+                get().addCombatMessageToGameStore(`${targetId} subit ${damage} dégâts !`, 'damage');
               } else {
                 const healing = Math.abs(damage);
                 const currentHP = companion.currentHP;
@@ -95,9 +106,9 @@ export const useCombatStore = create(
                 
                 if (actualHealing > 0) {
                   get().healCompanionById(companion.id, actualHealing);
-                  get().addCombatMessageToGameStore(`💚 ${targetId} récupère ${actualHealing} HP !`, 'healing');
+                  get().addCombatMessageToGameStore(`${targetId} récupère ${actualHealing} HP !`, 'healing');
                 } else {
-                  get().addCombatMessageToGameStore(`💚 ${targetId} est déjà en pleine forme.`, 'info');
+                  get().addCombatMessageToGameStore(`${targetId} est déjà en pleine forme.`, 'info');
                 }
               }
             } else {
@@ -105,11 +116,11 @@ export const useCombatStore = create(
               if (damage > 0) {
                 console.log(`🩸 Application des ${damage} dégâts à l'ennemi ${targetId}`);
                 get().dealDamageToEnemy(targetId, damage);
-                get().addCombatMessageToGameStore(`🗡️ ${targetId} subit ${damage} dégâts !`, 'damage');
+                get().addCombatMessageToGameStore(`${targetId} subit ${damage} dégâts !`, 'damage');
               } else {
                 // Soins sur ennemi (rare mais possible)
                 get().dealDamageToEnemy(targetId, damage);
-                get().addCombatMessageToGameStore(`💚 ${targetId} récupère ${Math.abs(damage)} HP.`, 'healing');
+                get().addCombatMessageToGameStore(`${targetId} récupère ${Math.abs(damage)} HP.`, 'healing');
               }
             }
           }
@@ -331,7 +342,16 @@ export const useCombatStore = create(
         aoeCenter: null,
         defeated: false,
         victory: false,
-        totalXpGained: 0
+        totalXpGained: 0,
+        playerTurnState: {
+          actionsUsed: {
+            movement: false,
+            action: false,
+            bonusAction: false
+          },
+          remainingMovement: 6,
+          canEndTurn: false
+        }
       }),
       startCombat: () => set({ combatPhase: 'turn' }),
 
@@ -550,7 +570,13 @@ export const useCombatStore = create(
 
         opportunityAttacks.forEach((oa, index) => {
           console.log(`⚔️ AO ${index + 1}: ${oa.attacker.name} attaque ${oa.target.name || oa.targetId}`)
-          const attackResult = CombatEngine.processOpportunityAttack(oa.attacker, oa.target, oa.attack)
+          
+          // Récupérer le playerCharacter pour les noms corrects
+          const playerTurn = get().turnOrder.find(t => t.type === 'player')
+          const playerCharacter = playerTurn ? { name: playerTurn.name } : null
+          
+          const attackResult = CombatEngine.processOpportunityAttack(oa.attacker, oa.target, oa.attack, playerCharacter)
+          console.log(oa.target)
           console.log(attackResult.message)
           const messageType = attackResult.hit ? 'opportunity-hit' : 'opportunity-miss'
           get().addCombatMessageToGameStore(attackResult.message, messageType)
@@ -844,6 +870,66 @@ export const useCombatStore = create(
           console.log(`✅ Debuff appliqué sur ${target.name}`);
           get().incrementCombatKey();
         });
+      },
+
+      // === ACTIONS POUR SYSTÈME MULTI-ACTIONS JOUEUR ===
+
+      /**
+       * Réinitialise l'état du tour joueur (appelé au début de chaque tour)
+       */
+      resetPlayerTurnState: () => set((state) => {
+        const playerCharacter = state.turnOrder.find(t => t.type === 'player')
+        const movement = playerCharacter?.movement || 6
+        
+        return {
+          playerTurnState: {
+            actionsUsed: {
+              movement: false,
+              action: false,
+              bonusAction: false
+            },
+            remainingMovement: movement,
+            canEndTurn: false
+          }
+        }
+      }),
+
+      /**
+       * Marque une action comme utilisée
+       */
+      usePlayerAction: (actionType) => set((state) => {
+        const newActionsUsed = { ...state.playerTurnState.actionsUsed }
+        newActionsUsed[actionType] = true
+        
+        // Vérifier si on peut terminer le tour (au moins une action faite)
+        const hasUsedAnyAction = newActionsUsed.action || newActionsUsed.movement || newActionsUsed.bonusAction
+        
+        return {
+          playerTurnState: {
+            ...state.playerTurnState,
+            actionsUsed: newActionsUsed,
+            canEndTurn: hasUsedAnyAction
+          }
+        }
+      }),
+
+      /**
+       * Met à jour le mouvement restant
+       */
+      updatePlayerMovement: (usedMovement) => set((state) => ({
+        playerTurnState: {
+          ...state.playerTurnState,
+          remainingMovement: Math.max(0, state.playerTurnState.remainingMovement - usedMovement)
+        }
+      })),
+
+      /**
+       * Force la fin du tour du joueur
+       */
+      endPlayerTurn: () => {
+        const { nextTurn, resetPlayerTurnState } = get()
+        resetPlayerTurnState()
+        nextTurn()
       }
     }),
     { name: 'combat-store' }

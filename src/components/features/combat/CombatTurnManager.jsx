@@ -5,7 +5,7 @@ import { useCharacterStore } from '../../../stores/characterStore'
 import { CombatService } from '../../../services/CombatService'
 import { CombatEngine } from '../../../services/combatEngine'
 import { calculateDistance } from '../../../utils/calculations'
-import { getEntityPositionKey, getManhattanDistance, formatMovementMessage } from '../../../utils/combatUtils'
+import { getEntityPositionKey, getDnDDistance, formatMovementMessage } from '../../../utils/combatUtils'
 
 /**
  * Gestionnaire automatique des tours de combat - Version refactorisée
@@ -74,7 +74,7 @@ export const CombatTurnManager = ({
       // Appliquer le mouvement (gérer les différents types)
       updateEnemyPosition(positionKey, optimalPosition)
       
-      const distance = getManhattanDistance(currentPos, optimalPosition)
+      const distance = getDnDDistance(currentPos, optimalPosition)
       addCombatMessage(formatMovementMessage(entity.name, distance))
       
    

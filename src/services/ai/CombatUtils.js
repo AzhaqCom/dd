@@ -1,4 +1,5 @@
 import { calculateDistance } from '../../utils/calculations'
+import { getEntityPositionKey } from '../EntityUtils.js'
 
 /**
  * Utilitaires de combat pour calculs de distance et positions
@@ -15,26 +16,17 @@ class CombatUtils {
   static getDistanceToTarget(action, entity, gameState) {
     if (!action.target) return 999
     
-    // Essayer plusieurs clés possibles pour l'entité
-    const entityKeys = [entity.id, entity.name, entity.id?.split('_')[0], entity.name?.toLowerCase()].filter(Boolean)
-    const targetKeys = [action.target.id, action.target.name, action.target.id?.split('_')[0], action.target.name?.toLowerCase()].filter(Boolean)
+    const entityPos = this.getCurrentPosition(entity, gameState)
+    const targetPos = this.getCurrentPosition(action.target, gameState)
     
-    let entityPos = null
-    let targetPos = null
-    
-    for (const key of entityKeys) {
-      entityPos = gameState.combatPositions?.[key]
-      if (entityPos) break
+    if (!entityPos || !targetPos) {
+      console.log(`⚠️ DEBUG: Position manquante - Entity:`, entityPos, `Target:`, targetPos)
+      return 999
     }
     
-    for (const key of targetKeys) {
-      targetPos = gameState.combatPositions?.[key]
-      if (targetPos) break
-    }
-    
-    if (!entityPos || !targetPos) return 999
-    
-    return calculateDistance(entityPos, targetPos)
+    const distance = calculateDistance(entityPos, targetPos)
+    console.log(`📏 DEBUG: Distance ${entity.name} → ${action.target.name}: ${distance} (de ${entityPos.x},${entityPos.y} vers ${targetPos.x},${targetPos.y})`)
+    return distance
   }
 
   /**
@@ -51,17 +43,18 @@ class CombatUtils {
   }
 
   /**
-   * Utilitaire distance générique entre deux positions
+   * Utilitaire distance générique entre deux positions (D&D - diagonales = 1 case)
    * @param {Object} pos1 - Première position {x, y}
    * @param {Object} pos2 - Deuxième position {x, y}
-   * @returns {number} Distance Manhattan (Infinity si positions invalides)
+   * @returns {number} Distance D&D (Infinity si positions invalides)
    */
   static getDistance(pos1, pos2) {
     if (!pos1 || !pos2 || pos1.x === undefined || pos2.x === undefined) {
       console.warn(`⚠️ DEBUG: getDistance avec positions invalides:`, { pos1, pos2 });
       return Infinity; // Distance infinie si positions invalides
     }
-    return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y)
+    // Distance D&D : diagonales comptent comme 1 case
+    return Math.max(Math.abs(pos1.x - pos2.x), Math.abs(pos1.y - pos2.y))
   }
 
   /**
@@ -71,31 +64,22 @@ class CombatUtils {
    * @returns {Object|null} Position {x, y} ou null si non trouvée
    */
   static getCurrentPosition(entity, gameState) {
-    const key = entity.id || entity.name
+    // Utiliser le système de clés uniforme
+    const positionKey = getEntityPositionKey(entity)
+    let position = gameState.combatPositions[positionKey]
     
-    // Recherche intelligente de position avec plusieurs stratégies
-    let position = gameState.combatPositions[key]
-    
-    if (!position) {
-      // Stratégie 1: Chercher par nom exact
+    // Fallback pour compatibilité avec ancien système
+    if (!position && entity.name !== positionKey) {
       position = gameState.combatPositions[entity.name]
-      
-      if (!position && entity.id) {
-        // Stratégie 2: Chercher par id
-        position = gameState.combatPositions[entity.id]
-      }
-      
-      if (!position) {
-        // Stratégie 3: Chercher par pattern (gobelin_0_1 -> "Gobelin 1", etc.)
-        const possibleKeys = Object.keys(gameState.combatPositions)
-        const matchingKey = possibleKeys.find(k => 
-          k.toLowerCase().includes(entity.name.toLowerCase()) ||
-          entity.name.toLowerCase().includes(k.toLowerCase())
-        )
-        if (matchingKey) {
-          position = gameState.combatPositions[matchingKey]
-        }
-      }
+    }
+    
+    if (!position && entity.id && entity.id !== positionKey) {
+      position = gameState.combatPositions[entity.id]
+    }
+    
+    // Fallback spécial pour le joueur
+    if (!position && (entity.type === 'player' || !entity.type)) {
+      position = gameState.combatPositions?.['player']
     }
     
     return position

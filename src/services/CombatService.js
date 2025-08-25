@@ -439,7 +439,7 @@ export class CombatService {
           })
         } else {
           results.messages.push({
-            text: `⚔️ ${attacker.name} touche ${target.name} et inflige ${damage} dégâts`, 
+            text: `${attacker.name} touche ${target.name} et inflige ${damage} dégâts`, 
             type: 'hit'
           })
         }
@@ -463,7 +463,7 @@ export class CombatService {
     // Gestion spéciale pour les sorts de zone
     if (spell.isAreaEffect && targets.length > 1) {
       results.messages.push({
-        text: `🔮💥 ${caster.name} lance ${spell.name} (zone d'effet sur ${targets.length} cibles)`, 
+        text: ` ${caster.name} lance ${spell.name} (zone d'effet sur ${targets.length} cibles)`, 
         type: 'spell'
       })
       
@@ -525,7 +525,7 @@ export class CombatService {
     } else {
       // Gestion normale pour sorts à cible unique ou multiple sans AoE
       results.messages.push({
-        text: `🔮 ${caster.name} lance ${spell.name}`, 
+        text: ` ${caster.name} lance ${spell.name}`, 
         type: 'spell'
       })
       
@@ -548,14 +548,14 @@ export class CombatService {
             }
             
             results.messages.push({
-              text: `⚔️ ${spell.name} touche ${target.name} et inflige ${damage} dégâts`, 
+              text: `${spell.name} touche ${target.name} et inflige ${damage} dégâts`, 
               type: criticalHit ? 'critical' : 'hit'
             })
             
             results.damage.push({ targetId: target.id || target.name, damage })
           } else {
             results.messages.push({
-              text: `❌ ${spell.name} manque ${target.name} (${totalAttack} vs CA ${target.ac})`, 
+              text: ` ${spell.name} manque ${target.name} (${totalAttack} vs CA ${target.ac})`, 
               type: 'miss'
             })
           }
@@ -690,7 +690,7 @@ export class CombatService {
         )
       } else {
         addCombatMessage(
-          `⚔️ ${attacker.name} utilise ${attack.name} et inflige ${damage} dégâts à ${target.name}`, 
+          `${attacker.name} utilise ${attack.name} et inflige ${damage} dégâts à ${target.name}`, 
           attacker.type === 'enemy' ? 'enemy-hit' : 'companion-hit'
         )
       }
@@ -817,12 +817,12 @@ export class CombatService {
       let damage = CombatEngine.calculateDamage(attack).damage
       if (criticalHit) damage *= 2
       
-      const attackTypeIcon = attack.type === 'ranged' ? '🏹' : '⚔️'
+      const attackType = attack.type === 'ranged' ? 'ranged-hit' : 'hit'
       const criticalText = criticalHit ? ' (CRITIQUE!)' : ''
       
       results.messages.push({
-        text: `${attackTypeIcon} ${companion.name} utilise ${attack.name} sur ${target.name} (${damage} dégâts)${criticalText}`, 
-        type: criticalHit ? 'critical' : 'success'
+        text: `${companion.name} utilise ${attack.name} sur ${target.name} (${damage} dégâts)${criticalText}`, 
+        type: criticalHit ? 'critical' : attackType
       })
       
       results.damage.push({

@@ -1,5 +1,17 @@
 import React, { useEffect, useRef } from 'react'
 import { Card, CardHeader, CardBody } from '../../ui'
+import { 
+  SwordIcon, 
+  BowIcon, 
+  HeartIcon, 
+  MissIcon, 
+  VictoryIcon, 
+  SkullIcon, 
+  DiceIcon, 
+  MagicIcon,
+  CombatIcon,
+  MoveIcon
+} from '../../ui/Icons'
 
 /**
  * Journal des messages de combat
@@ -25,19 +37,30 @@ export const CombatLog = ({
 
   const getMessageIcon = (type) => {
     switch (type) {
-      case 'combat-start': return '⚔️'
-      case 'initiative': return '🎲'
-      case 'turn-start': return '▶️'
-      case 'hit': return '💥'
-      case 'critical': return '💀'
-      case 'miss': return '❌'
-      case 'spell': return '🔮'
-      case 'victory': return '🎉'
-      case 'defeat': return '💀'
-      case 'enemy-hit': return '🗡️'
-      case 'heal': return '💚'
-      case 'error': return '⚠️'
-      default: return '📝'
+      case 'combat-start': return <CombatIcon className="combat-log__type-icon" />
+      case 'initiative': return <DiceIcon className="combat-log__type-icon" />
+      case 'turn-start': return <DiceIcon className="combat-log__type-icon" />
+      case 'hit': return <SwordIcon className="combat-log__type-icon" />
+      case 'critical': return <VictoryIcon className="combat-log__type-icon" />
+      case 'miss': return <MissIcon className="combat-log__type-icon" />
+      case 'spell': return <MagicIcon className="combat-log__type-icon" />
+      case 'victory': return <VictoryIcon className="combat-log__type-icon" />
+      case 'defeat': return <SkullIcon className="combat-log__type-icon" />
+      case 'enemy-hit': return <SwordIcon className="combat-log__type-icon" />
+      case 'companion-hit': return <CombatIcon className="combat-log__type-icon" />
+      case 'ranged-hit': return <BowIcon className="combat-log__type-icon" />
+      case 'heal': return <HeartIcon className="combat-log__type-icon" />
+      case 'error': return <MissIcon className="combat-log__type-icon" />
+      case 'info': return <DiceIcon className="combat-log__type-icon" />
+      case 'combat': return <SwordIcon className="combat-log__type-icon" />
+      case 'movement': return <MoveIcon className="combat-log__type-icon" />
+      case 'action': return <CombatIcon className="combat-log__type-icon" />
+      case 'warning': return <MissIcon className="combat-log__type-icon" />
+      case 'damage': return <SwordIcon className="combat-log__type-icon" />
+      case 'healing': return <HeartIcon className="combat-log__type-icon" />
+      case 'buff': return <MagicIcon className="combat-log__type-icon" />
+      case 'default': return <CombatIcon className="combat-log__type-icon" />
+      default: return <CombatIcon className="combat-log__type-icon" />
     }
   }
 
@@ -76,7 +99,7 @@ export const CombatLog = ({
   return (
     <Card className={`combat-log ${className}`}>
       <CardHeader>
-        <h4>📜 Journal de Combat</h4>
+        <h4><CombatIcon className="combat-log__header-icon" /> Journal de Combat</h4>
         {messages.length > 0 && (
           <span className="combat-log__counter">
             {displayedMessages.length} message{displayedMessages.length > 1 ? 's' : ''}

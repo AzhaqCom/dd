@@ -70,7 +70,7 @@ class TurnPlan {
     const descriptions = this.phases.map(phase => {
       switch (phase.type) {
         case 'move':
-          return `Bouge vers ${phase.to.x},${phase.to.y} (${phase.reason})`
+          return `Bouge vers ${phase.to.x},${phase.to.y}`
         case 'attack':
           return `Attaque ${phase.target.name} avec ${phase.attack.name}`
         case 'spell':

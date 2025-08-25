@@ -14,7 +14,14 @@ import {
   GiSpellBook, 
   GiDuration,
   GiKnapsack,
-  GiBladeDrag 
+  GiBladeDrag,
+  GiBrain,
+  GiCrossedSwords,
+  GiBowArrow,
+  GiWalkingBoot,
+  GiPositionMarker,
+  GiRecycle,
+  GiFireDash
 } from "react-icons/gi";
 import { MdOutlineAutoAwesome } from "react-icons/md";
 
@@ -38,44 +45,52 @@ export const ExpIcon = createIcon(MdOutlineAutoAwesome, 'exp-icon');
 export const SpellIcon = createIcon(GiSpellBook, 'spell-icon');
 export const BurningBlobsIcon = createIcon(GiBurningBlobs, 'burning-blobs-icon');
 export const DurationIcon = createIcon(GiDuration, 'duration-icon');
-
-// Icon type mapping for dynamic icon selection
-export const ICON_TYPES = {
-  PLAYER_DAMAGE: 'player-damage',
-  ENEMY_DAMAGE: 'enemy-damage',
-  VICTORY: 'victory',
-  HEAL: 'heal',
-  MISS: 'miss',
-  DEFEAT: 'defeat',
-  INITIATIVE: 'initiative',
-  BAG: 'bag',
-  UPGRADE: 'upgrade',
-  LEVEL_UP: 'levelup',
-  EXPERIENCE: 'experience',
-  SPELL: 'spell',
-  BURNING_BLOBS: 'burning-blobs',
-  DURATION: 'duration'
-};
+export const BrainIcon = createIcon(GiBrain, 'brain-icon');
+export const CombatIcon = createIcon(GiCrossedSwords, 'combat-icon');
+export const BowIcon = createIcon(GiBowArrow, 'bow-icon');
+export const MoveIcon = createIcon(GiWalkingBoot, 'move-icon');
+export const PositionIcon = createIcon(GiPositionMarker, 'position-icon');
+export const RefreshIcon = createIcon(GiRecycle, 'refresh-icon');
+export const FireDashIcon = createIcon(GiFireDash, 'dash-icon');
 
 // Dynamic icon selector
 export const getIconForType = (type) => {
   const iconMap = {
-    [ICON_TYPES.PLAYER_DAMAGE]: MagicIcon,
-    [ICON_TYPES.ENEMY_DAMAGE]: SwordIcon,
-    [ICON_TYPES.VICTORY]: VictoryIcon,
-    [ICON_TYPES.HEAL]: HeartIcon,
-    [ICON_TYPES.MISS]: MissIcon,
-    [ICON_TYPES.DEFEAT]: SkullIcon,
-    [ICON_TYPES.INITIATIVE]: DiceIcon,
-    [ICON_TYPES.BAG]: BagIcon,
-    [ICON_TYPES.UPGRADE]: UpgradeIcon,
-    [ICON_TYPES.LEVEL_UP]: LevelUpIcon,
-    [ICON_TYPES.EXPERIENCE]: ExpIcon,
-    [ICON_TYPES.SPELL]: SpellIcon,
-    [ICON_TYPES.BURNING_BLOBS]: BurningBlobsIcon,
-    [ICON_TYPES.DURATION]: DurationIcon
+    'player-damage': MagicIcon,
+    'enemy-damage': SwordIcon,
+    'victory': VictoryIcon,
+    'heal': HeartIcon,
+    'miss': MissIcon,
+    'defeat': SkullIcon,
+    'initiative': DiceIcon,
+    'bag': BagIcon,
+    'upgrade': UpgradeIcon,
+    'levelup': LevelUpIcon,
+    'experience': ExpIcon,
+    'spell': SpellIcon,
+    'burning-blobs': BurningBlobsIcon,
+    'duration': DurationIcon,
+    'brain': BrainIcon,
+    'combat': SwordIcon,
+    'bow': BowIcon,
+    'dash':FireDashIcon,
+    'position': PositionIcon,
+    'refresh': RefreshIcon,
+    'target': MissIcon,
+    'warning': MissIcon,
+    'success': VictoryIcon,
+    'error': SkullIcon,
+    'debug': DiceIcon,
+    'action': CombatIcon,
+    'movement': MoveIcon,
+    'damage': SwordIcon,
+    'healing': HeartIcon,
+    'buff': MagicIcon,
+    'info': DiceIcon,
+    'combat-start': CombatIcon,
   };
 
   const IconComponent = iconMap[type];
   return IconComponent ? <IconComponent /> : null;
 };
+

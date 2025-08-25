@@ -5,8 +5,8 @@
 // Types de base pour les scènes
 export const SCENE_TYPES = {
   TEXT: 'text',
-  DIALOGUE: 'dialogue', 
-  INTERACTIVE: 'interactive',     
+  DIALOGUE: 'dialogue',
+  INTERACTIVE: 'interactive',
   MERCHANT: 'merchant',
   COMBAT: 'combat',
   REST_LONG: 'rest_long',
@@ -18,7 +18,7 @@ export const SCENE_TYPES = {
 export const ACTION_TYPES = {
   SCENE_TRANSITION: 'scene_transition',
   COMBAT: 'combat',
-  SHORT_REST: 'shortRest', 
+  SHORT_REST: 'shortRest',
   LONG_REST: 'longRest',
   ITEM_GAIN: 'item',
   ALLY_JOIN: 'ally',
@@ -36,7 +36,7 @@ export const UnifiedSceneSchema = {
   // === IDENTIFICATION ===
   id: 'string',                    // Identifiant unique (requis)
   type: 'SCENE_TYPES',             // Type de la scène (requis)
-  
+
   // === CONTENU ===
   content: {
     text: 'string',                // Texte principal (requis)
@@ -50,20 +50,20 @@ export const UnifiedSceneSchema = {
       // key: condition_name, value: text_variant (pour textes dynamiques)
     }
   },
-  
+
   // === NAVIGATION ===
   choices: [
     {
       text: 'string',              // Texte du choix (requis)
       next: 'string',              // ID de la scène suivante (requis)
       condition: 'string',         // Condition pour afficher le choix (optionnel)
-                                   // Ex: "false", "character.level >= 3", "gameFlags.hasKey === true"
+      // Ex: "false", "character.level >= 3", "gameFlags.hasKey === true"
       consequences: {              // Effets du choix (optionnel)
         // === PROGRESSION PERSONNAGE ===
         experience: 'number',      // XP à ajouter
         items: 'array',            // Items à ajouter à l'inventaire
         companions: 'array',       // Compagnons à recruter
-        
+
         // === ÉTAT NARRATIF ===
         flags: 'object',           // Flags de jeu à modifier
         reputation: 'number',      // Changement de réputation
@@ -76,7 +76,7 @@ export const UnifiedSceneSchema = {
       }
     }
   ],
-  
+
   // === CONDITIONS ===
   conditions: {
     show_if: 'string',             // Condition pour afficher la scène
@@ -84,16 +84,16 @@ export const UnifiedSceneSchema = {
       // key: variation_name, value: condition_string
     }
   },
-  
+
   // === PROPRIÉTÉS SPÉCIFIQUES PAR TYPE ===
-  
+
   // Pour MERCHANT uniquement
   shop: {
     currency: 'string',
     inventory: 'array',
     reputation_discount: 'object'
   },
-  
+
   // Pour INTERACTIVE uniquement  
   hotspots: [
     {
@@ -104,7 +104,7 @@ export const UnifiedSceneSchema = {
       action: { type: 'string', next: 'string', message: 'string' }
     }
   ],
-  
+
   // Pour COMBAT uniquement
   enemies: 'array',
   enemyPositions: 'array',
@@ -113,10 +113,12 @@ export const UnifiedSceneSchema = {
     text: 'string',                // Texte du bouton de victoire (optionnel)
     consequences: 'object'         // Conséquences de la victoire (optionnel)
   },
-  
+  playerPositions: 'object',
+  companionPoistions: 'object',
+
   // Pour REST_* uniquement
   restType: 'string',              // 'short', 'long', ou 'choice'
-  
+
   // === MÉTADONNÉES (optionnelles) ===
   metadata: {
     chapter: 'string',             // Chapitre narratif
@@ -154,21 +156,21 @@ export const GameFlagsSchema = {
   tyrionMet: false,
   manuscriptRead: false,
   bridgeSecretFound: false,
-  
+
   // Variables numériques
   reputation: 0,
   gold: 0,
-  
+
   // Listes
   companions: [],
   completedQuests: [],
   visitedLocations: [],
-  
+
   // Relations avec PNJ
   npcRelations: {
     // npcId: reputation_value (-100 à 100)
   },
-  
+
   // Historique des choix importants
   majorChoices: []
 };
@@ -181,19 +183,19 @@ export const ConditionTypes = {
   FLAG: 'gameFlags.{flagName}',
   REPUTATION: 'gameFlags.reputation >= {value}',
   NPC_RELATION: 'gameFlags.npcRelations.{npcId} >= {value}',
-  
+
   // Stats de personnage
   LEVEL: 'character.level >= {value}',
   CLASS: 'character.class === "{className}"',
   STAT: 'character.stats.{statName} >= {value}',
-  
+
   // Inventaire
   HAS_ITEM: 'character.inventory.includes("{itemId}")',
   HAS_GOLD: 'character.gold >= {amount}',
-  
+
   // Compagnons
   HAS_COMPANION: 'gameFlags.companions.includes("{companionId}")',
-  
+
   // Combinaisons logiques
   AND: '{condition1} && {condition2}',
   OR: '{condition1} || {condition2}',
@@ -206,22 +208,22 @@ export const ConditionTypes = {
 export const SceneValidators = {
   isValidSceneType: (type) => Object.values(SCENE_TYPES).includes(type),
   isValidActionType: (type) => Object.values(ACTION_TYPES).includes(type),
-  
+
   validateScene: (scene) => {
     const errors = [];
-    
+
     if (!scene.metadata?.type) {
       errors.push('Scene must have a type');
     }
-    
+
     if (!scene.content?.text) {
       errors.push('Scene must have text content');
     }
-    
+
     if (!scene.choices || !Array.isArray(scene.choices)) {
       errors.push('Scene must have choices array');
     }
-    
+
     return {
       isValid: errors.length === 0,
       errors
@@ -234,7 +236,7 @@ export default {
   ACTION_TYPES,
   UnifiedSceneSchema,
   InteractiveSceneSchema,
-  DialogueSceneSchema, 
+  DialogueSceneSchema,
   MerchantSceneSchema,
   GameFlagsSchema,
   ConditionTypes,

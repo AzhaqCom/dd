@@ -21,13 +21,13 @@ export const getEntityPositionKey = (entity) => {
 };
 
 /**
- * Calcule la distance Manhattan entre deux positions
+ * Calcule la distance D&D entre deux positions (diagonales = 1 case)
  * @param {Object} pos1 - Position 1 {x, y}
  * @param {Object} pos2 - Position 2 {x, y}
  * @returns {number} Distance en cases
  */
-export const getManhattanDistance = (pos1, pos2) => {
-  return Math.abs(pos2.x - pos1.x) + Math.abs(pos2.y - pos1.y);
+export const getDnDDistance = (pos1, pos2) => {
+  return Math.max(Math.abs(pos2.x - pos1.x), Math.abs(pos2.y - pos1.y));
 };
 
 /**
@@ -64,7 +64,7 @@ export const formatMovementMessage = (entityName, distance) => {
 
 export default {
   getEntityPositionKey,
-  getManhattanDistance,
+  getDnDDistance,
   canEntityAct,
   formatMovementMessage
 };

@@ -7,6 +7,7 @@ import { ActionRepository } from './ActionRepository'
 import { TargetSelector } from './TargetSelector'
 import { TacticalEvaluator } from './TacticalEvaluator'
 import { MovementPlanner } from './MovementPlanner'
+import { getEntityPositionKey } from '../EntityUtils.js'
 
 /**
  * Planificateur d'actions principal - Orchestrateur de l'IA tactique
@@ -87,23 +88,19 @@ class ActionPlanner {
   static getActionsForPriorityType(priorityType, entity, gameState) {
     const actions = []
 
-    // Essayer plusieurs clés possibles pour trouver la position
-    const possibleKeys = [
-      entity.id,
-      entity.name,
-      entity.id?.split('_')[0], // Enlever le suffixe _0_0
-      entity.name?.toLowerCase()
-    ].filter(Boolean)
+    // Utiliser le système de clés uniforme
+    const positionKey = getEntityPositionKey(entity)
+    let entityPos = gameState.combatPositions?.[positionKey]
+    let usedKey = positionKey
 
-    let entityPos = null
-    let usedKey = null
-
-    for (const key of possibleKeys) {
-      entityPos = gameState.combatPositions?.[key]
-      if (entityPos) {
-        usedKey = key
-        break
-      }
+    // Fallback pour compatibilité
+    if (!entityPos && entity.name !== positionKey) {
+      entityPos = gameState.combatPositions?.[entity.name]
+      usedKey = entity.name
+    }
+    if (!entityPos && entity.id && entity.id !== positionKey) {
+      entityPos = gameState.combatPositions?.[entity.id]
+      usedKey = entity.id
     }
 
     if (!entityPos) {
@@ -115,7 +112,7 @@ class ActionPlanner {
 
       if (entityPos && gameState.combatPositions) {
         // Sauvegarder la position générée pour éviter la régénération
-        const fallbackKey = entity.id || entity.name
+        const fallbackKey = getEntityPositionKey(entity)
         gameState.combatPositions[fallbackKey] = entityPos
         console.log(`✅ Position fallback générée pour ${entity.name}:`, entityPos)
       } else {
@@ -200,9 +197,15 @@ class ActionPlanner {
       case 'melee_attack':
         const meleeAttacks = ActionRepository.getMeleeAttacks(entity)
         const meleeTargets = TargetSelector.findTargetsInMeleeRange(entity, gameState)
+        
+        const allTargets = TargetSelector.findTargets(entity, gameState)
+        console.log(`⚔️ DEBUG: ${entity.name} depuis simulé - Attaques:`, meleeAttacks.length, `Toutes cibles:`, allTargets.length, `Cibles mélée:`, meleeTargets.length)
+        console.log(`⚔️ DEBUG: Toutes cibles trouvées:`, allTargets.map(t => t.name))
+        if (allTargets.length > 0 && meleeTargets.length === 0) console.log(`❌ DEBUG: Cibles existent mais aucune en mélée !`)
 
         meleeAttacks.forEach(attack => {
           meleeTargets.forEach(target => {
+            console.log(`✅ DEBUG: Action créée - ${attack.name} sur ${target.name}`)
             actions.push({
               ...attack,
               type: 'melee', // Ajout explicite du type
@@ -443,7 +446,7 @@ class ActionPlanner {
           return null
         }
         // Sauvegarder la position générée
-        const entityKey = entity.id || entity.name
+        const entityKey = getEntityPositionKey(entity)
         gameState.combatPositions[entityKey] = currentPos
         console.log(`✅ DEBUG: Position fallback générée:`, currentPos)
       }
@@ -496,40 +499,99 @@ class ActionPlanner {
 
     const movement = entity.movement || entity.speed || 6
 
-    // Rechercher meilleures positions dans la portée de mouvement
-    const bestPosition = MovementPlanner.findBestTacticalPosition(entity, currentPos, movement, gameState, {
-      TacticalEvaluator
-    })
-    if (!bestPosition) {
-      console.log(`❌ DEBUG: Aucune position tactique trouvée pour mouvement`)
-      return null
+    // Analyser les attaques disponibles pour déterminer la meilleure stratégie
+    const meleeAttacks = (entity.attacks || []).filter(attack => 
+      attack.type === 'melee' && (attack.range || 1) <= 1
+    )
+    const rangedAttacks = (entity.attacks || []).filter(attack => 
+      attack.type === 'ranged' && (attack.range || 6) > 1
+    )
+
+    // Calculer le meilleur poids de chaque type d'attaque
+    const bestMeleeWeight = meleeAttacks.reduce((max, attack) => 
+      Math.max(max, attack.aiWeight || 50), 0
+    )
+    const bestRangedWeight = rangedAttacks.reduce((max, attack) => 
+      Math.max(max, attack.aiWeight || 50), 0
+    )
+
+    console.log(`🎯 DEBUG: ${entity.name} - Mêlée max: ${bestMeleeWeight}, Distance max: ${bestRangedWeight}`)
+
+    // Évaluer les deux stratégies et choisir la meilleure
+    let bestMeleePosition = null
+    let bestRangedPosition = null
+
+    if (meleeAttacks.length > 0) {
+      bestMeleePosition = MovementPlanner.findBestMeleePosition(entity, currentPos, movement, gameState, {
+        TargetSelector
+      })
     }
 
-    const bestAction = this.getBestActionAtPosition(entity, bestPosition.position, gameState)
-    if (!bestAction) {
-      console.log(`❌ DEBUG: Aucune action possible depuis la meilleure position trouvée`)
+    if (rangedAttacks.length > 0) {
+      bestRangedPosition = MovementPlanner.findBestRangedPosition(entity, currentPos, movement, gameState, {
+        TargetSelector
+      })
+    }
+
+    // Choisir la meilleure option basée sur les scores
+    let bestOption = null
+    let planType = ""
+
+    if (bestMeleePosition && bestRangedPosition) {
+      if (bestMeleePosition.score >= bestRangedPosition.score) {
+        bestOption = bestMeleePosition
+        planType = "mêlée"
+      } else {
+        bestOption = bestRangedPosition
+        planType = "distance"
+      }
+      console.log(`🎯 DEBUG: Choix entre mêlée (${bestMeleePosition.score}) et distance (${bestRangedPosition.score}) → ${planType}`)
+    } else if (bestMeleePosition) {
+      bestOption = bestMeleePosition
+      planType = "mêlée"
+      console.log(`🎯 DEBUG: Seule option mêlée disponible (score: ${bestMeleePosition.score})`)
+    } else if (bestRangedPosition) {
+      bestOption = bestRangedPosition
+      planType = "distance"
+      console.log(`🎯 DEBUG: Seule option distance disponible (score: ${bestRangedPosition.score})`)
+    }
+
+    if (!bestOption) {
+      console.log(`❌ DEBUG: Aucune position d'attaque accessible pour ${entity.name}`)
       return null
     }
 
     const plan = new TurnPlan()
     plan.totalMovement = movement
-    plan.reasoning = "Repositionnement tactique puis attaque"
+    plan.reasoning = `Repositionnement ${planType} puis attaque`
 
-    // Phase mouvement
-    plan.addPhase('move', {
-      from: currentPos,
-      to: bestPosition.position,
-      distance: bestPosition.distance,
-      reason: bestPosition.reason,
-      tacticalScore: bestPosition.score * 0.3 // 30% du score pour mouvement
+    // Phase mouvement (seulement si nécessaire)
+    if (bestOption.distance > 0) {
+      plan.addPhase('move', {
+        from: currentPos,
+        to: bestOption.position,
+        distance: bestOption.distance,
+        reason: bestOption.reason,
+        maxMovement: movement, // Mouvement standard de l'entité
+        tacticalScore: Math.min(25, bestOption.score * 0.3) // 30% du score pour mouvement, max 25
+      })
+    }
+
+    // Phase attaque avec l'attaque spécifique choisie
+    const attackAction = {
+      type: bestOption.attack.type,
+      attack: bestOption.attack,
+      target: bestOption.target,
+      priorityScore: bestOption.attack.aiWeight || 50,
+      description: `${bestOption.attack.name} sur ${bestOption.target.name}`
+    }
+
+    plan.addPhase(bestOption.attack.type === 'ranged' ? 'ranged' : 'attack', {
+      ...attackAction,
+      tacticalScore: bestOption.attack.aiWeight || 50
     })
 
-    // Phase attaque
-    plan.addPhase('attack', {
-      ...bestAction,
-      tacticalScore: bestAction.priorityScore || 50
-    })
-
+    console.log(`✅ DEBUG: Plan ${planType} créé - ${attackAction.description} (score total attaque: ${bestOption.attack.aiWeight})`)
     return plan
   }
 
@@ -569,6 +631,7 @@ class ActionPlanner {
       to: escapePosition.position,
       distance: escapePosition.distance,
       reason: "repli_tactique",
+      maxMovement: movement, // Mouvement standard de l'entité
       tacticalScore: escapePosition.score * 0.4 // 40% pour mouvement d'évasion
     })
 
@@ -588,21 +651,23 @@ class ActionPlanner {
     // Double mouvement = Action Dash
     const totalMovement = movement * 2
 
-    if (entity.role === 'brute' || entity.role === 'skirmisher') {
-      // Brute : Charge vers ennemi
-      // Skirmisher : Repli complet
-      const bestPosition = MovementPlanner.findBestTacticalPosition(entity, currentPos, totalMovement, gameState, {
-        TacticalEvaluator
+    if (entity.role === 'brute') {
+      // Brute : Charge agressive pour être en mêlée au prochain tour
+      const bestPosition = MovementPlanner.findBestMeleePosition(entity, currentPos, totalMovement, gameState, {
+        TargetSelector
       })
-      if (!bestPosition) return null
+      if (!bestPosition) {
+        console.log(`❌ DEBUG: Aucune position de mêlée accessible pour charge de ${entity.name}`)
+        return null
+      }
 
       const plan = new TurnPlan()
       plan.totalMovement = totalMovement
-      plan.reasoning = entity.role === 'brute' ? "Charge agressive" : "Repli tactique"
+      plan.reasoning = "Charge agressive vers mêlée"
 
       plan.addPhase('dash', {
-        description: "Action Dash pour double mouvement",
-        tacticalScore: 30
+        description: "Action Dash pour charge agressive",
+        tacticalScore: 35 // Score plus élevé pour brute
       })
 
       plan.addPhase('move', {
@@ -610,7 +675,39 @@ class ActionPlanner {
         to: bestPosition.position,
         distance: bestPosition.distance,
         reason: bestPosition.reason,
-        tacticalScore: bestPosition.score * 0.5
+        maxMovement: totalMovement, // Mouvement doublé par Dash !
+        tacticalScore: Math.min(50, bestPosition.score * 0.6) // Plus de score pour charge
+      })
+
+      return plan
+    }
+    
+    if (entity.role === 'skirmisher') {
+      // Skirmisher : Repli d'urgence seulement (score bas pour décourager)
+      const escapePosition = MovementPlanner.findBestEscapePosition(entity, currentPos, totalMovement, gameState, {
+        TacticalEvaluator, TargetSelector
+      })
+      if (!escapePosition) {
+        console.log(`❌ DEBUG: Aucune position de repli accessible pour ${entity.name}`)
+        return null
+      }
+
+      const plan = new TurnPlan()
+      plan.totalMovement = totalMovement
+      plan.reasoning = "Repli d'urgence"
+
+      plan.addPhase('dash', {
+        description: "Action Dash pour repli",
+        tacticalScore: 15 // Score très bas pour décourager
+      })
+
+      plan.addPhase('move', {
+        from: currentPos,
+        to: escapePosition.position,
+        distance: escapePosition.distance,
+        reason: escapePosition.reason || "repli_urgence",
+        maxMovement: totalMovement,
+        tacticalScore: Math.min(20, escapePosition.score * 0.3) // Score très bas
       })
 
       return plan
@@ -628,15 +725,21 @@ class ActionPlanner {
    */
   static getBestActionAtPosition(entity, position, gameState) {
     console.log(`🎯 DEBUG: getBestActionAtPosition pour ${entity.name} à position`, position)
+    
+    // Utiliser le système de clés uniforme
+    const positionKey = getEntityPositionKey(entity)
+    console.log(`🎯 DEBUG: Clé unifiée:`, positionKey)
 
     // Simuler entity à cette position pour calculer actions
     const tempEntity = { ...entity }
     const tempGameState = { ...gameState }
     tempGameState.combatPositions = { ...gameState.combatPositions }
-    tempGameState.combatPositions[entity.id || entity.name] = position
+    tempGameState.combatPositions[positionKey] = position
 
     // Utiliser getBestAction qui existe
-    return this.getBestAction(tempEntity, tempGameState)
+    const result = this.getBestAction(tempEntity, tempGameState)
+    console.log(`🎯 DEBUG: Action trouvée:`, result ? 'OUI' : 'NON')
+    return result
   }
 
   /**

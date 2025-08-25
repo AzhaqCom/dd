@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react'
+import React, { useEffect, useCallback, useRef, useState } from 'react'
 import { useCombatStore } from '../../../stores/combatStore'
 import { useGameStore } from '../../../stores/gameStore'
 import { CombatService } from '../../../services/CombatService'
@@ -22,6 +22,9 @@ export const CombatPanel = ({
 }) => {
   // Ref pour éviter les double initialisations
   const initializingRef = useRef(false)
+  
+  // État local pour le mode mouvement intégré
+  const [isMovementMode, setIsMovementMode] = useState(false)
 
   // Stores
   const {
@@ -45,7 +48,13 @@ export const CombatPanel = ({
     setPlayerAction: selectAction,
     setActionTargets,
     resetCombat,
-    moveCharacter
+    moveCharacter,
+    
+    // Nouvelles actions pour multi-actions
+    resetPlayerTurnState,
+    usePlayerAction,
+    endPlayerTurn,
+    playerTurnState
   } = useCombatStore()
 
   // Game store pour les messages
@@ -91,11 +100,24 @@ export const CombatPanel = ({
       })
     }
 
-    // Nettoyer et passer au tour suivant
+    // === NOUVEAU SYSTÈME MULTI-ACTIONS ===
+    // Marquer l'action comme utilisée
+    usePlayerAction('action')
+    
+    // Nettoyer la sélection
     clearTargets()
     selectAction(null)
-    nextTurn()
-  }, [playerCharacter, enemies, positions, addCombatMessage, clearTargets, selectAction, nextTurn])
+
+    // Vérifier fin de tour automatique (si mouvement aussi utilisé)
+    // Note: On doit checker l'état après la mise à jour
+    setTimeout(() => {
+      const currentState = useCombatStore.getState()
+      if (currentState.playerTurnState.actionsUsed.action && currentState.playerTurnState.actionsUsed.movement) {
+        // Auto-fin de tour si les deux actions principales sont faites
+        endPlayerTurn()
+      }
+    }, 100) // Petit délai pour que l'état se mette à jour
+  }, [playerCharacter, enemies, positions, addCombatMessage, clearTargets, selectAction, usePlayerAction, endPlayerTurn])
 
   // Initialisation du combat
   useEffect(() => {
@@ -121,7 +143,7 @@ export const CombatPanel = ({
       addCombatMessage('Un combat commence !', 'combat-start');
       turnOrder.forEach(element => {
         const message = `${element.name} a obtenu ${element.initiative} en initiative !`;
-        addCombatMessage(message, 'combat-start');
+        addCombatMessage(message, 'initiative');
       });
     }
   }, [phase]);
@@ -146,8 +168,9 @@ export const CombatPanel = ({
       }
       
       if (currentTurn.type === 'player') {
-        // Tour du joueur : passer à player-turn pour afficher l'interface
+        // Tour du joueur : réinitialiser l'état et afficher l'interface
         console.log('🎮 Player turn starting')
+        resetPlayerTurnState()
         setPhase('player-turn')
       } else if (currentTurn.type === 'enemy') {
         // Tour d'ennemi : passer à executing-turn pour déclencher l'IA
@@ -196,6 +219,34 @@ export const CombatPanel = ({
     nextTurn()
   }
 
+  // Nouvelle fonction : Gérer le toggle du mode mouvement
+  const handleMovementToggle = useCallback(() => {
+    setIsMovementMode(!isMovementMode)
+  }, [isMovementMode])
+
+  // Nouvelle fonction : Gérer le mouvement du joueur
+  const handlePlayerMovement = useCallback((characterId, newPosition) => {
+    if (characterId !== 'player') return
+    
+    // Utiliser la fonction existante du store
+    moveCharacter(characterId, newPosition)
+    
+    // Marquer le mouvement comme utilisé
+    usePlayerAction('movement')
+    
+    // Sortir du mode mouvement
+    setIsMovementMode(false)
+    
+    // Vérifier fin de tour automatique si action aussi utilisée
+    setTimeout(() => {
+      const currentState = useCombatStore.getState()
+      if (currentState.playerTurnState.actionsUsed.action && currentState.playerTurnState.actionsUsed.movement) {
+        // Auto-fin de tour si les deux actions principales sont faites
+        endPlayerTurn()
+      }
+    }, 100) // Délai pour que l'état se mette à jour
+  }, [moveCharacter, usePlayerAction, endPlayerTurn])
+
   // Rendu conditionnel selon la phase
   const renderPhaseContent = () => {
     switch (phase) {
@@ -232,23 +283,12 @@ export const CombatPanel = ({
             onClearTargets={() => setActionTargets([])} // Réinitialiser les cibles
             onExecuteAction={handleExecuteAction}
             onPassTurn={handlePassTurn}
-            canMove={!positions.playerHasMoved}
-            onMoveToggle={() => setPhase('player-movement')}
+            canMove={!playerTurnState.actionsUsed.movement}
+            onMoveToggle={handleMovementToggle}
+            isMovementMode={isMovementMode}
           />
         )
 
-      case 'player-movement':
-        return (
-          <Card>
-            <div className="combat-phase-content">
-              <h3>Phase de mouvement</h3>
-              <p>Cliquez sur une case pour vous déplacer (maximum 6 cases)</p>
-              <Button onClick={() => setPhase('player-turn')}>
-                Terminer le mouvement
-              </Button>
-            </div>
-          </Card>
-        )
 
       case 'victory':
         return (
@@ -348,9 +388,8 @@ export const CombatPanel = ({
             currentTurn={currentTurn}
             phase={phase}
             onTargetSelect={handleTargetSelect}
-            onMoveCharacter={(characterId, newPosition) => {
-              moveCharacter(characterId, newPosition)
-            }}
+            onMoveCharacter={handlePlayerMovement}
+            isMovementMode={isMovementMode}
           />
         </div>
 

@@ -4,6 +4,7 @@
  * All orchestration logic is handled by CombatService
  */
 
+
 import { rollDice, rollD20WithModifier, calculateDistance, getModifier, rollDie } from '../utils/calculations'
 import { isValidGridPosition } from '../utils/validation'
 import { GRID_WIDTH, GRID_HEIGHT, ENTITY_TYPES } from '../utils/constants'
@@ -237,7 +238,7 @@ export class CombatEngine {
    * @param {Object} attack - The attack being used (usually melee)
    * @returns {Object} Attack result with damage and hit status
    */
-  static processOpportunityAttack(attacker, target, attack) {
+  static processOpportunityAttack(attacker, target, attack, playerCharacter = null) {
     // Calculer le bonus d'attaque
     const attackBonus = this.calculateAttackBonus(attacker, attack)
     
@@ -247,9 +248,15 @@ export class CombatEngine {
     
     const hit = this.doesAttackHit(attackRoll, targetAC)
     
+    // Récupérer le nom correct de la cible
+    let targetName = target.name || target.id
+    if ((target.id === 'player' || target.type === 'player' || target.name === 'Joueur') && playerCharacter?.name) {
+      targetName = playerCharacter.name
+    }
+    
     let result = {
       attacker: attacker.name,
-      target: target.name || target.id,
+      target: targetName,
       attackRoll,
       targetAC,
       hit,
@@ -260,9 +267,9 @@ export class CombatEngine {
     if (hit) {
       const damageResult = this.calculateDamage(attack)
       result.damage = damageResult.damage
-      result.message = `⚔️ ${attacker.name} profite d'une ouverture et frappe ${target.name || target.id} ! (${attackRoll} vs CA ${targetAC}) → ${damageResult.damage} ${damageResult.message}`
+      result.message = `${attacker.name} profite d'une ouverture et frappe ${targetName} ! (${attackRoll} vs CA ${targetAC}) → ${damageResult.message}`
     } else {
-      result.message = `🛡️ ${attacker.name} tente une attaque d'opportunité sur ${target.name || target.id} mais rate sa cible (${attackRoll} vs CA ${targetAC})`
+      result.message = `${attacker.name} tente une attaque d'opportunité sur ${targetName} mais rate sa cible (${attackRoll} vs CA ${targetAC})`
     }
     
     return result
@@ -876,12 +883,12 @@ export class CombatEngine {
       
       if (criticalHit) {
         damage *= 2; // Double dégâts en critique
-        message = `💥 CRITIQUE ! ${attacker.name} utilise ${attackData.name} sur ${target.name} (${totalAttackRoll} vs CA ${targetAC}) → ${damage} dégâts !`;
+        message = `CRITIQUE ! ${attacker.name} utilise ${attackData.name} sur ${target.name} (${totalAttackRoll} vs CA ${targetAC}) → ${damage} dégâts !`;
       } else {
-        message = `⚔️ ${attacker.name} utilise ${attackData.name} sur ${target.name} (${totalAttackRoll} vs CA ${targetAC}) → ${damage} dégâts`;
+        message = `${attacker.name} utilise ${attackData.name} sur ${target.name} (${totalAttackRoll} vs CA ${targetAC}) → ${damage} dégâts`;
       }
     } else {
-      message = `💨 ${attacker.name} manque ${target.name} avec ${attackData.name} (${totalAttackRoll} vs CA ${targetAC})`;
+      message = `${attacker.name} manque ${target.name} avec ${attackData.name} (${totalAttackRoll} vs CA ${targetAC})`;
     }
     
     return {

@@ -352,8 +352,8 @@ export const prologueScenes = {
       { type: 'gobelin', count: 1 }
     ],
     enemyPositions: [
-      { x: 2, y: 1 },
-      { x: 4, y: 2 },
+      { x: 0, y: 1 },
+      { x: 0, y: 0 },
       // { x: 1, y: 4 }
     ],
     choices: [
@@ -361,7 +361,8 @@ export const prologueScenes = {
         text: 'Se défendre contre les ombres',
       },
     ],
-    playerPosition: { x: 6, y: 3 },
+    playerPosition: { x: 6, y: 5 },
+    companionPositions:{ rhingann: { x: 7, y: 5 } },
     onVictory: {
       text: 'Continuer après le combat',
       next: 'prologue_kael_apparition',

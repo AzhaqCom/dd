@@ -186,6 +186,8 @@ export const characterTemplates = {
     }
 };
 
+import { createEntityWithId } from '../services/EntityUtils.js'
+
 // Fonction utilitaire pour créer un personnage à partir d'un template
 export const createCharacterFromTemplate = (templateKey) => {
     const template = characterTemplates[templateKey];
@@ -193,8 +195,11 @@ export const createCharacterFromTemplate = (templateKey) => {
         throw new Error(`Template de personnage '${templateKey}' introuvable`);
     }
     
+    // Créer le personnage avec ID universel
+    const character = createEntityWithId('player', templateKey, template)
+    
     return {
-        ...template,
+        ...character,
         // Générer un ID unique pour l'inventaire
         inventory: template.inventory.map(item => ({
             ...item,

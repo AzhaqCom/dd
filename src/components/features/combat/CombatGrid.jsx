@@ -13,7 +13,8 @@ export const CombatGrid = ({
   currentTurn,
   phase,
   onTargetSelect,
-  onMoveCharacter
+  onMoveCharacter,
+  isMovementMode = false // Nouveau : mode mouvement intégré
 }) => {
 
   const GRID_WIDTH = 8
@@ -63,14 +64,16 @@ export const CombatGrid = ({
     return "#f44336" // rouge
   }
 
-  // Calculer la distance Manhattan entre deux points
+  // Calculer la distance Manhattan entre deux points (coût de mouvement pour le joueur)
+  // Note: Pour mouvement on utilise Manhattan, pour attaques on utilise Chebyshev
   const getManhattanDistance = (x1, y1, x2, y2) => {
     return Math.abs(x1 - x2) + Math.abs(y1 - y2)
   }
 
   // Vérifier si une case est dans la portée de mouvement
   const isValidMovementTarget = (x, y) => {
-    if (phase !== 'player-movement') return false
+    // Nouveau système : vérifier le mode mouvement intégré
+    if (phase !== 'player-turn' || !isMovementMode) return false
 
     const playerPos = positions.player
     const playerStartPos = positions.playerStartPos || playerPos // Position de début de tour
@@ -167,7 +170,8 @@ export const CombatGrid = ({
 
   // Gérer les clics sur les cases
   const handleCellClick = (x, y) => {
-    if (phase === 'player-movement') {
+    // Nouveau système : mouvement intégré
+    if (phase === 'player-turn' && isMovementMode) {
       if (isValidMovementTarget(x, y)) {
         onMoveCharacter?.('player', { x, y })
       }

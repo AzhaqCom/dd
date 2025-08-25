@@ -7,6 +7,7 @@ import { ActionPlanner } from './ai/ActionPlanner';
 import { CombatEngine } from './combatEngine';
 import { SpellServiceUnified } from './SpellServiceUnified';
 
+
 export class CombatAI {
   
   /**
@@ -303,7 +304,8 @@ export class CombatAI {
             await this.executeMovementPhase(entity, phase, gameState, callbacks);
             break;
           case 'attack':
-          case 'ranged':  // FIX: Ajouter support pour type 'ranged'
+          case 'melee':   // Support pour attaques de mélée
+          case 'ranged':  // Support pour attaques à distance
           case 'spell':
           case 'support':
             await this.executeActionPhase(entity, phase, gameState, callbacks);
@@ -337,11 +339,13 @@ export class CombatAI {
    * Exécute une phase de mouvement
    */
   static async executeMovementPhase(entity, phase, gameState, callbacks) {
-    const { from, to, reason } = phase;
+    const { from, to, reason, maxMovement: phaseMaxMovement } = phase;
     
     // Vérification validité du mouvement
     const distance = Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
-    const maxMovement = entity.movement || 6;
+    const maxMovement = phaseMaxMovement || entity.movement || 6;
+    
+    console.log(`🚶 DEBUG: ${entity.name} mouvement - Distance: ${distance}, Max autorisé: ${maxMovement} (phase: ${phaseMaxMovement}, entité: ${entity.movement})`);
     
     if (distance > maxMovement) {
       console.warn(`⚠️ Mouvement trop long pour ${entity.name}: ${distance} > ${maxMovement}`);
@@ -350,7 +354,7 @@ export class CombatAI {
     }
     
     // Animation du déplacement
-    callbacks.onMessage(`${entity.name} se déplace vers ${to.x},${to.y} (${reason})`, 'movement');
+    callbacks.onMessage(`${entity.name} se déplace vers ${to.x},${to.y} `, 'movement');
     
     // Mise à jour de la position - Recherche intelligente de clé
     let entityKey = entity.id || entity.name;
@@ -402,7 +406,7 @@ export class CombatAI {
    * Exécute une phase Dash (double mouvement)
    */
   static async executeDashPhase(entity, phase, gameState, callbacks) {
-    callbacks.onMessage(`${entity.name} utilise l'action Dash (mouvement doublé)`, 'action');
+    callbacks.onMessage(`${entity.name} utilise l'action Dash `, 'dash');
     console.log(`🏃 ${entity.name} utilise Dash - mouvement doublé`);
     
     await this.delay(300);
