@@ -1,28 +1,39 @@
-🔍 Validation du sort "Armure du Mage": {spell: {…}, caster: {…}, potentialTargets: Array(0), context: {…}}
-SpellEngine.js:174   🎯 Sort pouvant cibler "self", ajout du lanceur comme cible
-SpellEngine.js:179 
-🎯 Vérification de Elarion:
-SpellEngine.js:212     📏 Pas de positions → accepté (hors combat)
-SpellEngine.js:183   📏 Portée OK: true
-SpellEngine.js:257     🎭 targetType requis: "self"
-SpellEngine.js:258     🎭 caster.type: "player", target.type: "player"
-SpellEngine.js:269     🎭 Self: true
-SpellEngine.js:188   🎭 Type OK: true
-SpellEngine.js:192   ✅ Elarion ajouté aux cibles valides
-SpellEngine.js:197 
-📊 Résultat: 1/1 cibles valides
-SpellServiceUnified.js:134 Cibles valides pour Armure du Mage: ['Elarion']
-SpellServiceUnified.js:54 🔍 DEBUG: validTargets après filtrage: 1 ['Elarion']
-SpellServiceUnified.js:65 🎯 DEBUG: Lancement du sort Armure du Mage sur 1 cibles
-SpellServiceUnified.js:69 🎯 DEBUG: Résultat castSpell: true {success: true, caster: {…}, spell: {…}, targets: Array(1), messages: Array(1), …}
-SpellServiceUnified.js:76 🔄 DEBUG: Traitement résultats sort, contexte: exploration
-SpellServiceUnified.js:77 🔄 DEBUG: castResult.effects: [{…}]
-SpellServiceUnified.js:205 🌍 DEBUG: Traitement effets exploration, 1 effets
-SpellServiceUnified.js:209 🌍 DEBUG: Traitement effet exploration: {type: 'buff', targetId: 'Elarion', targetName: 'Elarion', buffType: {…}, duration: 28800, …}
-SpellServiceUnified.js:215 🌍 DEBUG: Application buff exploration sur Elarion
-characterStore.js:280 ✨ DEBUG: Application buff sur joueur: {type: 'buff', targetId: 'Elarion', targetName: 'Elarion', buffType: {…}, duration: 28800, …}
-characterStore.js:290 ✨ DEBUG: buffConfig: {acBonus: 3, duration: 28800} duration: 28800
-characterStore.js:297 ✨ DEBUG: Effet mage_armor appliqué sur joueur, activeEffects: 1
-characterStore.js:306 ✨ DEBUG: Mise à jour state avec activeEffects: 1
-SpellServiceUnified.js:80 ✅ DEBUG: Sort terminé avec succès
-🛡️ DEBUG: CA calculée - Total: 10, activeEffects: 0
+👹 Enemy turn starting: Ombre
+CombatTurnManager.jsx:281 🔴 SimpleTurn: Ombre
+combatStore.js:47 🎯 CombatStore: Tour unifié pour Ombre (enemy)
+CombatAI.js:21 🎯 CombatAI UNIFIÉ: Tour de Ombre (enemy) - IA: ActionPlanner + Sorts: SpellServiceUnified
+CombatAI.js:32 🧠 DEBUG: Début planification tactique pour Ombre
+CombatAI.js:33 🧠 DEBUG: Entity data: {name: 'Ombre', role: 'brute', movement: 6, currentHP: 16, maxHP: 16, …}
+CombatAI.js:41 🧠 DEBUG: GameState positions: {player: {…}, rhingann: {…}, Ombre: {…}, Gobelin: {…}, playerStartPos: {…}, …}
+ActionPlanner.js:355 🎯 DEBUG: Début planCompleteTurn pour Ombre
+ActionPlanner.js:360 🎯 DEBUG: Évaluation plan 1 - Attaque sur place
+ActionPlanner.js:431 🎯 DEBUG: evaluateAttackInPlace pour Ombre
+ActionPlanner.js:435 🎯 DEBUG: Position actuelle: {x: 2, y: 1}
+ActionPlanner.js:630 🎯 DEBUG: getBestActionAtPosition pour Ombre à position {x: 2, y: 1}
+ActionPlanner.js:452 🎯 DEBUG: Meilleure action: null
+ActionPlanner.js:455 ❌ DEBUG: Aucune action disponible depuis position actuelle
+ActionPlanner.js:366 ❌ DEBUG: Plan 1 rejeté
+ActionPlanner.js:370 🎯 DEBUG: Évaluation plan 2 - Bouger puis attaquer
+ActionPlanner.js:487 🎯 DEBUG: evaluateMoveThenAttack pour Ombre
+ActionPlanner.js:490 🎯 DEBUG: Position actuelle pour mouvement: {x: 2, y: 1}
+MovementPlanner.js:56 🗺️ DEBUG: 39 positions libres trouvées pour Ombre
+ActionPlanner.js:630 🎯 DEBUG: getBestActionAtPosition pour Ombre à position {x: 4, y: 5}
+ActionPlanner.js:510 ❌ DEBUG: Aucune action possible depuis la meilleure position trouvée
+ActionPlanner.js:376 ❌ DEBUG: Plan 2 rejeté
+ActionPlanner.js:380 🎯 DEBUG: Évaluation plan 3 - Hit-and-run
+ActionPlanner.js:630 🎯 DEBUG: getBestActionAtPosition pour Ombre à position {x: 2, y: 1}
+ActionPlanner.js:386 ❌ DEBUG: Plan 3 rejeté
+ActionPlanner.js:390 🎯 DEBUG: Évaluation plan 4 - Double mouvement
+MovementPlanner.js:56 🗺️ DEBUG: 43 positions libres trouvées pour Ombre
+ActionPlanner.js:394 ✅ DEBUG: Plan 4 ajouté
+ActionPlanner.js:399 🎯 DEBUG: 1 plans disponibles
+ActionPlanner.js:404 🎯 DEBUG: Plan 1 score: 34
+ActionPlanner.js:411 🧠 Ombre planifie: Plan: Action Dash pour double mouvement → Bouge vers 5,5 (position_tactique) [Score: 34]
+CombatAI.js:46 🧠 DEBUG: Plan créé: TurnPlan {phases: Array(2), totalScore: 34, movementUsed: 7, totalMovement: 12, reasoning: 'Charge agressive'}
+CombatAI.js:70 🎯 Plan tactique: Plan: Action Dash pour double mouvement → Bouge vers 5,5 (position_tactique) [Score: 34]
+CombatAI.js:294 🎮 Exécution du plan tactique de Ombre: Plan: Action Dash pour double mouvement → Bouge vers 5,5 (position_tactique) [Score: 34]
+CombatAI.js:299 📋 Phase 1/2: dash
+CombatAI.js:406 🏃 Ombre utilise Dash - mouvement doublé
+CombatAI.js:299 📋 Phase 2/2: move
+CombatAI.js:347 ⚠️ Mouvement trop long pour Ombre: 7 > 6
+✅ Plan tactique de Ombre terminé
