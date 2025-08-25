@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useRef } from 'react'
 import { useCombatStore } from '../../../stores/combatStore'
 import { useGameStore } from '../../../stores/gameStore'
 import { CombatService } from '../../../services/CombatService'
@@ -20,6 +20,9 @@ export const CombatPanel = ({
   combatKey,
   victoryButtonText = "Continuer l'aventure" // Texte personnalisable du bouton de victoire
 }) => {
+  // Ref pour éviter les double initialisations
+  const initializingRef = useRef(false)
+
   // Stores
   const {
     // État du combat
@@ -98,14 +101,16 @@ export const CombatPanel = ({
   useEffect(() => {
     if (!encounterData || !encounterData.enemies?.length) return
 
-    // Reset pour nouveau combat
+    // Reset pour nouveau combat (rejouer)
     if (combatKey !== undefined) {
       resetCombat()
+      initializingRef.current = false // Reset du flag
+      return // Ne pas initialiser après reset, App.jsx s'en charge
     }
 
-    // Initialiser le combat avec les compagnons actifs
-    if (!isInitialized) {
-      // Initialiser avec tous les compagnons actifs
+    // Initialiser le combat pour la première fois seulement
+    if (!isInitialized && !initializingRef.current) {
+      initializingRef.current = true
       initializeCombat(encounterData, playerCharacter, activeCompanions)
     }
   }, [encounterData, combatKey, isInitialized, playerCharacter, activeCompanions, initializeCombat, resetCombat])

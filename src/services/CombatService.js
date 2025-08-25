@@ -2,7 +2,7 @@ import { EnemyFactory } from './EnemyFactory'
 import { spells } from '../data/spells'
 import { getModifier } from '../utils/calculations'
 import { CombatEngine } from './combatEngine'
-import { EntityAI_Hybrid } from './EntityAI_Hybrid'
+import { ActionPlanner } from './ai/ActionPlanner'
 import { SpellServiceUnified } from './SpellServiceUnified'
 import { CombatEffects } from './combatEffects'
 
@@ -31,7 +31,7 @@ export class CombatService {
 
     try {
       // 1. Décision de l'IA : Que faire ?
-      const bestAction = EntityAI_Hybrid.getBestAction(entity, gameState);
+      const bestAction = ActionPlanner.getBestAction(entity, gameState);
 
       if (!bestAction) {
         results.messages.push({
@@ -738,8 +738,8 @@ export class CombatService {
 
     try {
       // 1. Obtenir la meilleure action via l'IA unifiée
-      console.log(`⚔️ Appel EntityAI_Hybrid.getBestAction...`)
-      const bestAction = EntityAI_Hybrid.getBestAction(companion, gameState)
+      console.log(`⚔️ Appel ActionPlanner.getBestAction...`)
+      const bestAction = ActionPlanner.getBestAction(companion, gameState)
       console.log(`⚔️ Action choisie:`, bestAction)
       
       if (!bestAction) {

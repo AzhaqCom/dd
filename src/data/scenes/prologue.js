@@ -348,7 +348,8 @@ export const prologueScenes = {
       ambush: false
     },
     enemies: [
-      { type: 'gobelin', count: 2 }
+      { type: 'ombre', count: 1 },
+      { type: 'gobelin', count: 1 }
     ],
     enemyPositions: [
       { x: 2, y: 1 },

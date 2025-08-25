@@ -3,9 +3,9 @@
  * 
  */
 
-import { EntityAI_Hybrid } from './EntityAI_Hybrid.js';
-import { CombatEngine } from './combatEngine.js';
-import { SpellServiceUnified } from './SpellServiceUnified.js';
+import { ActionPlanner } from './ai/ActionPlanner';
+import { CombatEngine } from './combatEngine';
+import { SpellServiceUnified } from './SpellServiceUnified';
 
 export class CombatAI {
   
@@ -18,7 +18,7 @@ export class CombatAI {
    * @param {Function} onNextTurn - Callback pour passer au suivant
    */
   static executeEntityTurn(entity, gameState, onMessage, onDamage, onNextTurn) {
-    console.log(`🎯 CombatAI UNIFIÉ: Tour de ${entity.name} (${entity.type}) - IA: EntityAI_Hybrid + Sorts: SpellServiceUnified`);
+    console.log(`🎯 CombatAI UNIFIÉ: Tour de ${entity.name} (${entity.type}) - IA: ActionPlanner + Sorts: SpellServiceUnified`);
 
     try {
       // 1. Vérifier que l'entité est vivante
@@ -42,7 +42,7 @@ export class CombatAI {
       
       let turnPlan;
       try {
-        turnPlan = EntityAI_Hybrid.planCompleteTurn(entity, gameState);
+        turnPlan = ActionPlanner.planCompleteTurn(entity, gameState);
         console.log(`🧠 DEBUG: Plan créé:`, turnPlan);
       } catch (planError) {
         console.error(`❌ DEBUG: Erreur dans planCompleteTurn:`, planError);
@@ -52,7 +52,7 @@ export class CombatAI {
       if (!turnPlan || turnPlan.phases.length === 0) {
         // Fallback vers ancien système si pas de plan
         console.log(`⚠️ Pas de plan tactique, fallback vers action simple`);
-        const action = EntityAI_Hybrid.getBestAction(entity, gameState);
+        const action = ActionPlanner.getBestAction(entity, gameState);
         
         if (!action) {
           onMessage(`${entity.name} ne trouve rien à faire et passe son tour.`, 'info');
@@ -85,7 +85,7 @@ export class CombatAI {
 
   /**
    * EXÉCUTEUR D'ACTION UNIFIÉ
-   * Prend une action décidée par EntityAI_Hybrid et l'exécute
+   * Prend une action décidée par ActionPlanner et l'exécute
    */
   static executeAction(entity, action, gameState) {
     console.log(`⚡ CombatAI: Exécution de l'action "${action.type}" pour ${entity.name}`);
@@ -117,7 +117,7 @@ export class CombatAI {
    * ATTAQUE - Utilise CombatEngine.resolveAttack (qui existe et fonctionne)
    */
   static executeAttack(entity, action, gameState) {
-    const attack = action.attack || action; // EntityAI_Hybrid peut structurer différemment
+    const attack = action.attack || action; // ActionPlanner peut structurer différemment
     const target = action.target;
     
     if (!target) {

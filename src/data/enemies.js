@@ -5,24 +5,23 @@ export const enemyTemplates = {
         currentHP: 16,
         ac: 12,
         xp: 100,
-        role: "skirmisher", // Ombres = escarmoucheurs furtifs
+        role: "brute", // Ombres = escarmoucheurs furtifs
         challengeRating: "1/2",
+        movement: 6,
         // Système d'IA hybride - Escarmoucheur furtif
-        aiPriority: ["debuff_attack", "hit_and_run", "melee_attack"],
+        aiPriority: ["melee_attack", "ranged_attack",],
         aiModifiers: {
-            "debuff_attack": {
-                weakTargetBonus: +60,     // Cible les affaiblis
-                isolatedTargetBonus: +40, // Préfère les isolés
-                lowHPBonus: +50          // Achève les blessés
-            },
-            "hit_and_run": {
-                isolatedTargetBonus: +50,
-                multipleEnemiesBonus: +30,
-                lowHPBonus: +40
-            },
             "melee_attack": {
-                desperateBonus: +30      // Attaque désespérée
-            }
+                isolatedTargetBonus: +40,
+                lowHPBonus: +30,
+                multipleEnemiesBonus: +20
+            },
+            "ranged_attack": {
+                distanceBonus: +25,
+                coverBonus: +35,
+                meleeDisadvantageBonus: +50
+            },
+
         },
         stats: {
             force: 6,
@@ -37,7 +36,7 @@ export const enemyTemplates = {
                 name: "absorption de force",
                 type: "melee",
                 attackBonus: 4,
-                range: 3,
+                range: 1,
                 targets: 1,
                 damageDice: "2d6",
                 damageBonus: 2,
@@ -68,6 +67,7 @@ export const enemyTemplates = {
         currentHP: 33,
         ac: 12,
         xp: 450,
+        movement: 6,
         role: "brute", // Ombres = escarmoucheurs furtifs
         challengeRating: "2",
         // Système d'IA hybride - Brute agressive
@@ -129,14 +129,15 @@ export const enemyTemplates = {
         maxHP: 7,
         currentHP: 7,
         ac: 15,
-        xp: 50,
+        xp: 50, 
+        movement: 6,
         challengeRating: "1/4",
         // Système d'IA hybride : aiPriority + données tactiques
         role: "skirmisher",
-        aiPriority: ["hit_and_run", "ranged_attack", "melee_attack"],
+        aiPriority: ["melee_attack", "ranged_attack"],
         // Modificateurs intelligents pour affiner les décisions
         aiModifiers: {
-            "hit_and_run": {
+            "melee_attack": {
                 isolatedTargetBonus: +40,
                 lowHPBonus: +30,
                 multipleEnemiesBonus: +20
@@ -145,10 +146,6 @@ export const enemyTemplates = {
                 distanceBonus: +25,
                 coverBonus: +35,
                 meleeDisadvantageBonus: +50
-            },
-            "melee_attack": {
-                corneredBonus: +40,
-                flankedTargetBonus: +30
             }
         },
         stats: {
@@ -205,6 +202,7 @@ export const enemyTemplates = {
         currentHP: 27,
         ac: 11,
         xp: 50,
+        movement: 6,
         challengeRating: "1/4",
         role: "skirmisher",
         // Système d'IA hybride - Escarmoucheur élémentaire
@@ -537,6 +535,7 @@ export const enemyTemplates = {
         ac: 12,
         xp: 450,
         level: 3,
+        movement: 6,
         challengeRating: "2",
         role: "caster", // Rôle IA
         type: "enemy",
@@ -567,28 +566,28 @@ export const enemyTemplates = {
             ability: "intelligence",
             type: "prepared",
             ritual: false,
-            
+
             // === EMPLACEMENTS DE SORTS ===
             spellSlots: {
                 1: { max: 4, used: 0, available: 4 },  // Mage niveau 3
                 2: { max: 2, used: 0, available: 2 }
             },
-            
+
             // === SORTS CONNUS/PRÉPARÉS ===
-            cantrips: [ "Rayon de givre"],
+            cantrips: ["Rayon de givre"],
             knownSpells: [],
             preparedSpells: ["Trait de Feu", "Bouclier", "Toile d'araignée", "Boule de Feu"],
-            
+
             // === MÉTADONNÉES OPTIONNELLES ===
             spellcastingClass: null,
             startLevel: 1,
             maxKnown: null,
             maxPrepared: 6, // INT 16 (3) + niveau 3 = 6
-            
+
             // === RESTRICTIONS ===
             schoolRestrictions: [],
             ritualCasting: false,
-            
+
             // === SORTS INNÉS ===
             innateSpells: {}
         },
