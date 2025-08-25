@@ -52,7 +52,7 @@ class MovementPlanner {
         }
       }
     }
-    console.log(candidates)
+    
     console.log(`🗺️ DEBUG: ${candidates.length} positions libres trouvées pour ${entity.name}`)
     return candidates.sort((a, b) => b.score - a.score)[0] || null
   }
