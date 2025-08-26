@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTimeStore } from '../../stores/timeStore';
+import { TimeService } from '../../services/TimeService';
 import './GameHotbar.css';
 
 /**
@@ -7,7 +9,6 @@ import './GameHotbar.css';
  */
 const GameHotbar = ({ 
   character, 
-  gameTime,
   onPanelOpen, 
   onRestAction,
   gameFlags = {},
@@ -15,6 +16,16 @@ const GameHotbar = ({
   companions = [],
   spellSlots = {},
 }) => {
+  // ✅ NOUVEAU: Connexion au système temporel avec sélecteurs optimisés
+  const day = useTimeStore(state => state.currentTime.day);
+  const hour = useTimeStore(state => state.currentTime.hour);
+  const minute = useTimeStore(state => state.currentTime.minute);
+  const phase = useTimeStore(state => state.currentTime.phase);
+  
+  const formattedTime = useMemo(() => {
+    return TimeService.formatTime({ day, hour, minute, phase });
+  }, [day, hour, minute, phase]);
+  
   const [hoveredButton, setHoveredButton] = useState(null);
 
   if (!character) return null;
@@ -103,7 +114,7 @@ const GameHotbar = ({
       id: 'rest',
       icon: '💤',
       label: 'Repos',
-      quickStat: gameTime ? (gameTime.hour < 6 ? 'Nuit' : gameTime.hour < 18 ? 'Jour' : 'Soir') : '',
+      quickStat: formattedTime ? formattedTime.period : '',
       hotkey: 'R',
       notification: notifications.rest,
       action: () => onRestAction ? onRestAction() : onPanelOpen('rest')

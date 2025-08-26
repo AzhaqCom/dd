@@ -256,9 +256,9 @@ export const prologueScenes = {
           name: 'Épée Renforcée',
           description: 'Une lame bien équilibrée, forgée avec soin',
           price: 200,
-          stock:1,
+          stock: 1,
           type: 'weapon',
-          damage:{ dice: '1d8', bonus: 2 }
+          damage: { dice: '1d8', bonus: 2 }
         },
         {
           id: 'armure_cuir_cloute',
@@ -362,7 +362,7 @@ export const prologueScenes = {
       },
     ],
     playerPosition: { x: 6, y: 5 },
-    companionPositions:{ rhingann: { x: 7, y: 5 } },
+    companionPositions: { rhingann: { x: 7, y: 5 } },
     onVictory: {
       text: 'Continuer après le combat',
       next: 'prologue_kael_apparition',
@@ -539,6 +539,16 @@ export const prologueScenes = {
   prologue_alliance_strategie: {
     id: 'prologue_alliance_strategie',
     type: SCENE_TYPES.REST_LONG,
+    narrative: true,               // ✅ NOUVEAU : Flag narratif
+
+    // ✅ Même avec repos narratif, on peut définir le contexte
+    metadata: {
+      chapter: 'prologue',
+      location: 'Camp temporaire',
+      environment: 'camp',
+      safety: 3,                   // Moyennement sûr
+      character: 'Kael'
+    },
     content: {
       title: 'Planification Stratégique',
       text: `Kael vous emmène vers un ancien campement qu'il a établi en bordure du village. Autour d'un feu de camp, vous étalez des cartes de la région et discutez de stratégie."Nous avons plusieurs pistes à explorer", explique Kael en pointant différents lieux sur la carte. "Le sanctuaire familial est notre priorité, mais il faut aussi considérer les autres manifestations dans la région."Cette planification minutieuse vous permet de récupérer vos forces et d'acquérir de nouvelles perspectives tactiques.`,

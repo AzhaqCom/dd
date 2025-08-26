@@ -90,10 +90,23 @@ export const CharacterSheet = ({
   // Calculer la CA totale avec les effets de buff
   const totalAC = useMemo(() => {
     console.log(`🛡️ DEBUG: Recalcul CA - character:`, character?.name, `activeEffects:`, activeEffectsCount);
-    const calculatedAC = CombatEffects.calculateTotalAC(character);
-    console.log(`🛡️ DEBUG: CA calculée - Total: ${calculatedAC}`);
+    
+    // 🧪 DEBUG: Test des deux méthodes
+    const oldAC = CombatEffects.calculateTotalAC(character);
+    const newAC = CombatEffects.calculateTotalACPure(character);
+    
+    console.log(`🛡️ DEBUG: Ancienne méthode (calculateTotalAC): ${oldAC}`);
+    console.log(`🛡️ DEBUG: Nouvelle méthode (calculateTotalACPure): ${newAC}`);
+    console.log(`🛡️ DEBUG: character.ac dans l'objet:`, character?.ac);
+    
+    if (character?.activeEffects?.[0]) {
+      const effect = character.activeEffects[0];
+      console.log(`🛡️ DEBUG: Premier effet:`, effect.type);
+      console.log(`🛡️ DEBUG: Properties:`, effect.properties);
+    }
+    
     console.log(character)
-    return calculatedAC;
+    return newAC; // Utiliser la nouvelle méthode pure
   }, [character, activeEffectsCount]);
 
   const containerClass = [

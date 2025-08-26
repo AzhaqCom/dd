@@ -93,6 +93,7 @@ export const spells = {
         school: "Invocation",
         castingTime: "1 action",
         range: "18 mètres",
+        duration: "1 heure",
         description: "Vous invoquez une masse de toiles d'araignée épaisses et collantes à un point de votre choix situé à portée. Les toiles remplissent un cube de 6 mètres d'arête à partir de ce point. Les créatures dans la zone sont entravées.",
         damage: null,
         areaOfEffect: { shape: "cube", size: 20 }, // 20 feet cube
@@ -100,11 +101,20 @@ export const spells = {
         isAreaEffect: true,
         saveType: "dexterite",
         saveDC: null,
-        effect: "restrained",
-        duration: "1 heure",
         requiresAttackRoll: false,
         targetType: "enemy",
         castableOutOfCombat: true,
+        // ✅ STRUCTURE UNIFIÉE POUR EFFET D'ENTRAVE
+        effect: {
+            type: "restrained",
+            duration: 3600,              // 1 heure en secondes
+            properties: {
+                speedReduction: 0,       // Vitesse réduite à 0
+                disadvantageAttacks: true,
+                disadvantageDexSaves: true
+            },
+            description: "Entravé pendant 1 heure (vitesse = 0, désavantage attaques/Dex)"
+        },
         class: ["Magicien", "Sorcier"]
     },
     "Armure du Mage": {
@@ -113,14 +123,21 @@ export const spells = {
         school: "Abjuration",
         castingTime: "1 action",
         range: "Touch",
+        duration: "8 heures",
         description: "Vous touchez une créature consentante et non-vêtue d'une armure. Sa Classe d'Armure devient 13 + son modificateur de Dextérité.",
         requiresAttackRoll: false,
         castableOutOfCombat: true,
         targetType: "self", // Sort qu'on lance sur soi-même principalement
         validTargets: ["self", "ally"],
-        buff: {
-            acBonus: 3, // +3 CA de base (13 - 10)
-            duration: 28800 // 8 heures
+        // ✅ NOUVELLE STRUCTURE UNIFIÉE
+        effect: {
+            type: "mage_armor",           // Type exact dans CombatEffects.EFFECT_TYPES
+            duration: 28800,             // 8 heures en secondes
+            properties: {
+                setAC: 13,               // CA = 13 + Mod. Dex
+                usesDexMod: true
+            },
+            description: "CA = 13 + Mod. Dex pendant 8 heures"
         },
         class: ["Magicien"]
     },
@@ -149,15 +166,20 @@ export const spells = {
         range: "9 mètres",
         duration: "Concentration, jusqu'à 1 minute",
         description: "Vous bénissez jusqu'à trois créatures de votre choix à portée. Chaque fois qu'une cible effectue un jet d'attaque ou de sauvegarde avant la fin du sort, elle peut lancer 1d4 et ajouter le résultat au jet.",
-        buff: {
-            attackBonus: "1d4",
-            saveBonus: "1d4",
-            duration: 600 // 10 rounds
-        },
         targetType: "ally",
         maxTargets: 3,
         requiresAttackRoll: false,
         castableOutOfCombat: true,
+        // ✅ STRUCTURE UNIFIÉE POUR BÉNÉDICTION
+        effect: {
+            type: "blessed",
+            duration: 600,               // 10 minutes en secondes
+            properties: {
+                attackBonus: "1d4",     // +1d4 aux jets d'attaque
+                saveBonus: "1d4"        // +1d4 aux jets de sauvegarde
+            },
+            description: "+1d4 aux attaques et sauvegardes pendant 1 minute"
+        },
         class: ["clerc", "paladin"]
     },
 
@@ -169,14 +191,20 @@ export const spells = {
         range: "9 mètres",
         duration: "1 minute",
         description: "Vous protégez une créature à portée contre les attaques. Jusqu'à la fin du sort, toute créature qui cible la créature protégée avec une attaque ou un sort offensif doit d'abord effectuer un jet de sauvegarde de Sagesse.",
-        buff: {
-            protection: "sanctuary",
-            saveDC: "spell",
-            duration: 600 // 10 rounds
-        },
         targetType: "ally",
         requiresAttackRoll: false,
         castableOutOfCombat: true,
+        // ✅ STRUCTURE UNIFIÉE POUR SANCTUAIRE
+        effect: {
+            type: "sanctuary",
+            duration: 600,               // 10 minutes en secondes
+            properties: {
+                protectionType: "attack_spell", // Protection contre attaques et sorts
+                saveDC: "spell",                // DC basé sur le lanceur
+                saveAbility: "wisdom"           // Jet de sagesse requis
+            },
+            description: "Protection contre attaques (Jet Sag. DD sort) pendant 1 minute"
+        },
         class: ["clerc"]
     },
 
@@ -188,16 +216,21 @@ export const spells = {
         range: "9 mètres",
         duration: "8 heures",
         description: "Votre sort renforce vos alliés avec endurance et résolution. Choisissez jusqu'à trois créatures à portée. Le maximum de points de vie de chaque cible augmente de 5 pour la durée du sort.",
-        buff: {
-            maxHPBonus: 5,
-            duration: 28800 // 8 heures en secondes  
-        },
         maxTargets: 3,
         targetType: "ally",
         requiresAttackRoll: false,
         castableOutOfCombat: true,
+        // ✅ STRUCTURE UNIFIÉE POUR AIDE
+        effect: {
+            type: "aid",
+            duration: 28800,             // 8 heures en secondes
+            properties: {
+                maxHPBonus: 5,           // +5 PV maximum
+                currentHPBonus: 5        // +5 PV actuels aussi (règle D&D)
+            },
+            description: "+5 PV maximum et actuels pendant 8 heures"
+        },
         class: ["clerc", "paladin"]
-
     },
 
     // === SORTS OFFENSIFS POUR COMPAGNON DPS ===
@@ -210,13 +243,19 @@ export const spells = {
         range: "Personnel",
         duration: "1 round",
         description: "Une barrière invisible de force magique apparaît et vous protège. Jusqu'au début de votre prochain tour, vous avez un bonus de +5 à la CA.",
-        buff: {
-            acBonus: 5,
-            duration: 1 // 1 round
-        },
         targetType: "self",
         requiresAttackRoll: false,
         castableOutOfCombat: false,
+        // ✅ STRUCTURE UNIFIÉE POUR BOUCLIER
+        effect: {
+            type: "shield",
+            duration: 6,                 // 1 round = 6 secondes
+            properties: {
+                acBonus: 5,              // +5 CA
+                isReaction: true         // Sort de réaction
+            },
+            description: "+5 CA jusqu'au début du prochain tour"
+        },
         class: ["ensorceleur", "Magicien"]
     }
 };

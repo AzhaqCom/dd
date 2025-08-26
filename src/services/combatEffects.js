@@ -415,4 +415,263 @@ export class CombatEffects {
     
     return total + (parseInt(bonus) || 0)
   }
+
+  // =============================================
+  // 🧪 NOUVELLES MÉTHODES PURES (Refactorisation)
+  // =============================================
+
+  /**
+   * Applique un effet à un personnage de manière immutable
+   * 
+   * @param {Object} character - Le personnage original (non modifié)
+   * @param {Object} effectData - Données complètes de l'effet
+   * @param {string} effectData.type - Type d'effet (doit exister dans EFFECT_TYPES)
+   * @param {number} effectData.duration - Durée en secondes
+   * @param {string} effectData.source - Source de l'effet (nom du sort/objet)
+   * @param {Object} [effectData.properties] - Propriétés spécifiques à l'effet
+   * @param {number} [effectData.intensity=1] - Intensité de l'effet
+   * 
+   * @returns {Object} Nouvelle instance du personnage avec l'effet appliqué
+   * @throws {Error} Si le type d'effet n'existe pas dans EFFECT_TYPES
+   * 
+   * @example
+   * const newCharacter = CombatEffects.applyEffectPure(player, {
+   *   type: "mage_armor",
+   *   duration: 28800,
+   *   source: "Mage Armor",
+   *   properties: { setAC: 13, usesDexMod: true }
+   * });
+   */
+  static applyEffectPure(character, effectData) {
+    // Validation stricte du type d'effet
+    if (!this.EFFECT_TYPES[effectData.type]) {
+      throw new Error(`Type d'effet inconnu: ${effectData.type}. Types disponibles: ${Object.keys(this.EFFECT_TYPES).join(', ')}`);
+    }
+
+    if (!character) {
+      throw new Error('applyEffectPure: Le paramètre character est requis');
+    }
+
+    // 1. Copie profonde pour garantir l'immutabilité
+    const newCharacter = this._deepClone(character);
+    
+    // 2. Création de l'effet avec toutes les propriétés
+    const effect = {
+      id: this.generateEffectId(),
+      type: effectData.type,
+      source: effectData.source || 'unknown',
+      duration: effectData.duration,
+      intensity: effectData.intensity || 1,
+      startTime: new Date().getTime(),
+      properties: effectData.properties || {},
+      // Fusion avec les définitions du type
+      ...this.EFFECT_TYPES[effectData.type]
+    };
+    
+    // 3. Application sur la copie
+    if (!newCharacter.activeEffects) {
+      newCharacter.activeEffects = [];
+    }
+    
+    // Logique de remplacement/cumul selon le type
+    this._addOrReplaceEffect(newCharacter.activeEffects, effect);
+    
+    // 4. Recalcul immédiat des stats dérivées
+    newCharacter.ac = this.calculateTotalACPure(newCharacter);
+    
+    return newCharacter;
+  }
+
+  /**
+   * Calcule la CA totale d'un personnage sans modification
+   * 
+   * @param {Object} character - Le personnage
+   * @param {number} [character.baseAC=10] - CA de base
+   * @param {Object} [character.stats] - Statistiques avec dexterity
+   * @param {Array} [character.activeEffects] - Effets actifs
+   * 
+   * @returns {number} CA totale calculée (minimum 1)
+   * 
+   * @example
+   * const totalAC = CombatEffects.calculateTotalACPure(character);
+   * // Retourne par exemple: 15 (Mage Armor 13 + Dex +2)
+   */
+  static calculateTotalACPure(character) {
+    if (!character) {
+      console.warn('calculateTotalACPure: character est null ou undefined');
+      return 10;
+    }
+    
+    const baseAC = character.baseAC || 10;
+    const dexMod = this._getModifier(character.stats?.dexterite || 10);
+    let totalAC = baseAC + dexMod;
+    
+    // Application des effets avec priorité
+    if (character.activeEffects && character.activeEffects.length > 0) {
+      const { setAC, bonusAC } = this._calculateACModifiersPure(character.activeEffects, dexMod);
+      
+      if (setAC !== null) {
+        totalAC = setAC;
+      }
+      totalAC += bonusAC;
+    }
+    
+    return Math.max(1, totalAC);
+  }
+
+  // =============================================
+  // 🔧 MÉTHODES UTILITAIRES PRIVÉES
+  // =============================================
+
+  /**
+   * Effectue une copie profonde d'un objet (utilitaire interne)
+   * @private
+   */
+  static _deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+    
+    if (obj instanceof Date) {
+      return new Date(obj.getTime());
+    }
+    
+    if (obj instanceof Array) {
+      return obj.map(item => this._deepClone(item));
+    }
+    
+    if (typeof obj === 'object') {
+      const clonedObj = {};
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          clonedObj[key] = this._deepClone(obj[key]);
+        }
+      }
+      return clonedObj;
+    }
+    
+    return obj;
+  }
+
+  /**
+   * Ajoute ou remplace un effet dans la liste
+   * @private
+   */
+  static _addOrReplaceEffect(activeEffects, newEffect) {
+    // Vérifier si l'effet existe déjà (même type)
+    const existingIndex = activeEffects.findIndex(e => e.type === newEffect.type);
+    
+    if (existingIndex !== -1) {
+      // Remplacer par la plus longue durée
+      if (newEffect.duration > activeEffects[existingIndex].duration) {
+        activeEffects[existingIndex] = newEffect;
+      }
+    } else {
+      // Nouvel effet
+      activeEffects.push(newEffect);
+    }
+  }
+
+  /**
+   * Calcule les modificateurs d'CA dus aux effets (version pure)
+   * @private
+   */
+  static _calculateACModifiersPure(activeEffects, dexMod) {
+    let setAC = null;
+    let bonusAC = 0;
+    
+    console.log('🔧 DEBUG _calculateACModifiersPure: dexMod =', dexMod);
+    console.log('🔧 DEBUG _calculateACModifiersPure: activeEffects =', activeEffects);
+    
+    for (const effect of activeEffects) {
+      const effectDef = this.EFFECT_TYPES[effect.type];
+      console.log(`🔧 DEBUG effet ${effect.type}:`, effect);
+      console.log(`🔧 DEBUG effectDef:`, effectDef);
+      
+      if (!effectDef) continue;
+      
+      // Effets qui définissent une CA fixe (priorité)
+      if (effectDef.setAC || effect.properties?.setAC) {
+        const acBase = effect.properties?.setAC || effectDef.setAC;
+        const usesDexMod = effect.properties?.usesDexMod;
+        
+        console.log(`🔧 DEBUG acBase: ${acBase}, usesDexMod: ${usesDexMod}, dexMod: ${dexMod}`);
+        
+        setAC = usesDexMod ? acBase + dexMod : acBase;
+        
+        console.log(`🔧 DEBUG setAC calculé: ${setAC}`);
+      }
+      
+      // Bonus d'CA qui se cumulent
+      if (effectDef.acBonus || effect.properties?.acBonus) {
+        bonusAC += effect.properties?.acBonus || effectDef.acBonus;
+      }
+    }
+    
+    console.log('🔧 DEBUG résultat final:', { setAC, bonusAC });
+    return { setAC, bonusAC };
+  }
+
+  /**
+   * Calcule le modificateur d'une caractéristique (version utilitaire)
+   * @private
+   */
+  static _getModifier(abilityScore) {
+    return Math.floor((abilityScore - 10) / 2);
+  }
+
+  // =============================================
+  // 🚫 MÉTHODES DÉPRÉCIÉES (À supprimer après migration)
+  // =============================================
+
+  /**
+   * @deprecated Utiliser applyEffectPure à la place
+   * Cette méthode modifie l'objet en place, ce qui viole l'immutabilité
+   */
+  static applyEffect(target, effectType, duration = 1, source = null, intensity = 1) {
+    console.warn('applyEffect est déprécié. Utiliser applyEffectPure pour éviter les mutations.');
+    return this._originalApplyEffect(target, effectType, duration, source, intensity);
+  }
+
+  /**
+   * Méthode originale sauvegardée pour compatibilité temporaire
+   * @private
+   */
+  static _originalApplyEffect(target, effectType, duration = 1, source = null, intensity = 1) {
+    if (!CombatEffects.EFFECT_TYPES[effectType]) {
+      console.warn(`Effet inconnu: ${effectType}`)
+      return null
+    }
+
+    const effect = {
+      id: CombatEffects.generateEffectId(),
+      type: effectType,
+      source: source,
+      duration: duration,
+      intensity: intensity,
+      turnsRemaining: duration,
+      startTurn: Date.now(),
+      ...CombatEffects.EFFECT_TYPES[effectType]
+    }
+
+    // Initialiser les effets si nécessaire
+    if (!target.activeEffects) {
+      target.activeEffects = []
+    }
+
+    // Vérifier si l'effet existe déjà (stack ou remplace)
+    const existingIndex = target.activeEffects.findIndex(e => e.type === effectType)
+    
+    if (existingIndex !== -1) {
+      // Remplacer par la plus longue durée
+      if (duration > target.activeEffects[existingIndex].turnsRemaining) {
+        target.activeEffects[existingIndex] = effect
+      }
+    } else {
+      // Nouvel effet
+      target.activeEffects.push(effect)
+    }
+
+    return effect
+  }
 }

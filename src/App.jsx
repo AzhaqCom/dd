@@ -497,17 +497,15 @@ function App() {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <div className={`game-container-fullwidth ${currentScene?.type === SCENE_TYPES.COMBAT ? 'combat-mode' : ''}`}>
-                    {/* Status Corner - Stats vitales toujours visibles */}
+                    {/* ✅ NOUVEAU: Status Corner - Stats vitales avec système temporel intégré */}
                     <StatusCorner 
                         character={playerCharacter}
-                        gameTime={null} // TODO: Ajouter gameTime quand implémenté
                         gameFlags={{}} // TODO: Ajouter gameFlags
                     />
 
-                    {/* Hotbar - Actions rapides */}
+                    {/* ✅ NOUVEAU: Hotbar - Actions rapides avec système temporel intégré */}
                     <GameHotbar
                         character={playerCharacter}
-                        gameTime={null} // TODO: Ajouter gameTime quand implémenté
                         onPanelOpen={openFloatingPanel}
                         onRestAction={handleRestAction}
                         gameFlags={{}} // TODO: Ajouter gameFlags

@@ -256,25 +256,37 @@ export const useCharacterStore = create(
 
         // === GESTION DES SORTS ===
 
+        /**
+         * Lance un sort avec le système unifié (combat/exploration)
+         * @param {Object|string} spell - Le sort à lancer
+         * @param {Object} options - Options de lancement
+         * @returns {Object} Résultat du lancement
+         */
         castSpellPlayer: (spell, options = {}) => {
           const state = get();
-          if (!state.playerCharacter) return state;
-
-          const spellService = new SpellServiceUnified({
-            characterStore: get()
-          });
-          // Ajouter le contexte exploration pour les sorts hors combat
-          const spellOptions = { ...options, context: 'exploration' };
-          // Pour sorts self/buff : Le système ajoutera automatiquement le joueur comme cible si validTargets contient "self"
-          const result = spellService.castSpell(state.playerCharacter, spell, [], spellOptions);
-
-          if (result.success) {
-            set({
-              playerCharacter: result.caster
-            });
+          if (!state.playerCharacter) {
+            return { success: false, messages: ['Aucun personnage joueur'] };
           }
 
-          return result;
+          // ✅ NOUVEAU: Injection de la méthode d'application d'effet
+          const spellService = new SpellServiceUnified({
+            applyEffect: get().applyEffectToPlayer,  // Injection de dépendance
+            combatStore: null,  // Non utilisé en exploration
+            gameStore: null     // Pour les effets environnementaux si nécessaire
+          });
+
+          const spellOptions = { 
+            ...options, 
+            context: options.context || 'exploration'
+          };
+
+          // Délégation complète au service unifié
+          return spellService.castSpell(
+            state.playerCharacter, 
+            spell, 
+            [], 
+            spellOptions
+          );
         },
 
         // Appliquer un effet de buff sur le joueur (pour exploration)
@@ -307,6 +319,68 @@ export const useCharacterStore = create(
               selectedCharacter: updatedCharacter,
             };
           });
+        },
+
+        // =============================================
+        // 🧪 NOUVELLE MÉTHODE UNIFIÉE (Refactorisation)
+        // =============================================
+
+        /**
+         * Point d'entrée unique pour tous les effets
+         * Remplace applyBuffToPlayer avec une approche immutable
+         * @param {Object} effectData - Objet d'effet complet préparé par les services
+         * @param {string} effectData.type - Type d'effet (doit exister dans CombatEffects.EFFECT_TYPES)
+         * @param {number} effectData.duration - Durée en secondes
+         * @param {string} effectData.source - Source de l'effet
+         * @param {Object} [effectData.properties] - Propriétés spécifiques à l'effet
+         */
+        applyEffectToPlayer: (effectData) => {
+          set((state) => {
+            if (!state.playerCharacter) {
+              console.error('applyEffectToPlayer: Aucun personnage joueur');
+              return state;
+            }
+            
+            try {
+              // Délégation complète à la fonction pure
+              const updatedCharacter = CombatEffects.applyEffectPure(
+                state.playerCharacter,
+                effectData
+              );
+              
+              return {
+                ...state,
+                playerCharacter: updatedCharacter,
+                selectedCharacter: updatedCharacter
+              };
+            } catch (error) {
+              console.error('Erreur lors de l\'application de l\'effet:', error);
+              return state; // Pas de changement en cas d'erreur
+            }
+          });
+        },
+
+        // =============================================
+        // 🚫 MÉTHODE DÉPRÉCIÉE (À supprimer après migration)
+        // =============================================
+
+        /**
+         * @deprecated Utiliser applyEffectToPlayer à la place
+         * Cette méthode utilise l'ancienne approche avec mutations
+         */
+        applyBuffToPlayer: (effect) => {
+          console.warn('applyBuffToPlayer est déprécié. Utiliser applyEffectToPlayer avec la nouvelle structure.');
+          
+          // Conversion vers le nouveau format pour compatibilité temporaire
+          const effectData = {
+            type: effect.type || 'blessed', // Fallback pour les anciens "buff"
+            duration: effect.duration || 3600,
+            source: effect.source || 'unknown',
+            properties: effect.properties || {}
+          };
+          
+          // Déléguer à la nouvelle méthode
+          get().applyEffectToPlayer(effectData);
         },
 
         consumeSpellSlot: (spellLevel, targetCharacter = 'player') => set((state) => {

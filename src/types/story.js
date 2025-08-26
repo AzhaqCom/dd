@@ -124,7 +124,16 @@ export const UnifiedSceneSchema = {
     chapter: 'string',             // Chapitre narratif
     location: 'string',            // Lieu de la scène
     tags: 'array',                 // Tags pour organisation
-    character: 'string'            // PNJ principal (pour dialogues)
+    character: 'string',           // PNJ principal (pour dialogues)
+    
+    // === SYSTÈME DE REPOS CONTEXTUEL ===
+    safety: 'number',              // Niveau de sécurité (0-5)
+    restAvailability: {            // Disponibilité des repos
+      short: 'boolean',            // Repos court autorisé
+      long: 'boolean',             // Repos long autorisé
+      restrictions: 'array'        // Restrictions spéciales
+    },
+    environment: 'string'          // Type d'environnement ('village', 'wilderness', 'dungeon', etc.)
   }
 };
 

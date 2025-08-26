@@ -13,10 +13,22 @@ import { spells } from '../data/spells.js';
  */
 export class SpellServiceUnified {
 
-  constructor(gameStores = {}) {
-    this.characterStore = gameStores.characterStore;
-    this.combatStore = gameStores.combatStore;
-    this.gameStore = gameStores.gameStore;
+  /**
+   * Constructeur avec injection de dépendances
+   * @param {Object} dependencies - Dépendances injectées
+   * @param {Function} [dependencies.applyEffect] - Méthode pour appliquer les effets
+   * @param {Object} [dependencies.characterStore] - Store des personnages (legacy)
+   * @param {Object} [dependencies.combatStore] - Store de combat
+   * @param {Object} [dependencies.gameStore] - Store du jeu
+   */
+  constructor(dependencies = {}) {
+    // ✅ NOUVELLE ARCHITECTURE: Injection de dépendances
+    this.applyEffect = dependencies.applyEffect;
+    
+    // Legacy support pour compatibilité
+    this.characterStore = dependencies.characterStore;
+    this.combatStore = dependencies.combatStore;
+    this.gameStore = dependencies.gameStore;
   }
 
   /**
@@ -198,38 +210,64 @@ export class SpellServiceUnified {
   }
 
   /**
-   * Traite les résultats de sorts en exploration
+   * Traite les résultats de sorts en exploration - VERSION REFACTORISÉE
    * @param {Object} castResult - Résultat du sort
    */
-
   processExplorationSpellResults(castResult) {
-    // Traiter les buffs
     for (const effect of castResult.effects) {
-      // Cette partie est cruciale. On ne passe plus l'effet au hasard.
-      // On passe l'effet à une méthode spécifique qui gère les modifications de stats.
-      if (this.characterStore) {
-        this.characterStore.applyBuffToPlayer(effect);
+      // ✅ NOUVEAU: Application unifiée des effets via injection de dépendance
+      if (this._isStatisticalEffect(effect.type)) {
+        // Effets qui modifient les stats du personnage
+        if (this.applyEffect) {
+          this.applyEffect(effect);
+        } else {
+          console.warn('SpellServiceUnified: Aucune méthode applyEffect injectée pour:', effect.type);
+        }
+      } else {
+        // Effets environnementaux séparés
+        this._applyEnvironmentalEffect(effect);
       }
     }
+  }
 
-    // Traiter les autres effets
-    for (const effect of castResult.effects) {
-      switch (effect.type) {
-        case 'light':
-          this.gameStore?.setEnvironmentFlag?.('lighting', 30);
-          break;
+  /**
+   * Détermine si un effet modifie les statistiques du personnage
+   * @param {string} effectType - Type de l'effet
+   * @returns {boolean} Vrai si c'est un effet statistique
+   * @private
+   */
+  _isStatisticalEffect(effectType) {
+    const statisticalEffects = [
+      'mage_armor', 'blessed', 'shield', 'aid', 'sanctuary',
+      'restrained', 'poisoned', 'stunned', 'paralyzed', 
+      'frightened', 'charmed', 'haste'
+    ];
+    return statisticalEffects.includes(effectType);
+  }
 
-        case 'detect_magic':
-          this.gameStore?.setEnvironmentFlag?.('showMagicAuras', true);
-          break;
+  /**
+   * Gestion séparée des effets environnementaux - NOUVELLE MÉTHODE
+   * @param {Object} effect - L'effet à appliquer
+   * @private
+   */
+  _applyEnvironmentalEffect(effect) {
+    switch (effect.type) {
+      case 'light':
+        this.gameStore?.setEnvironmentFlag?.('lighting', effect.duration || 30);
+        break;
 
-        case 'comprehend_languages':
-          this.gameStore?.setEnvironmentFlag?.('translateText', true);
-          break;
-        default:
-          // Gérer les autres effets non-statistiques ici
-          break;
-      }
+      case 'detect_magic':
+        this.gameStore?.setEnvironmentFlag?.('showMagicAuras', true);
+        break;
+
+      case 'comprehend_languages':
+        this.gameStore?.setEnvironmentFlag?.('translateText', true);
+        break;
+
+      default:
+        // Log pour les effets non reconnus (debug)
+        console.debug('SpellServiceUnified: Effet environnemental non géré:', effect.type);
+        break;
     }
   }
 

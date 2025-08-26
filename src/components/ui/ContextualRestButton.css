@@ -1,0 +1,167 @@
+/* Styles pour le bouton de repos contextuel */
+.contextual-rest-button {
+  position: relative;
+  display: inline-block;
+}
+
+.rest-button-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rest-button-main.safe {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+}
+
+.rest-button-main.dangerous {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.rest-button-disabled {
+  background: #6b7280;
+  color: #d1d5db;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rest-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 320px;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 1000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.rest-location-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #374151;
+  font-size: 0.875rem;
+}
+
+.rest-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rest-option {
+  background: rgba(55, 65, 81, 0.7);
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.rest-option:hover:not(.disabled) {
+  background: rgba(75, 85, 99, 0.8);
+  border-color: #6b7280;
+}
+
+.rest-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(55, 65, 81, 0.3);
+}
+
+.rest-option-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.rest-option-effects {
+  font-size: 0.875rem;
+  color: #d1d5db;
+  margin-bottom: 4px;
+}
+
+.rest-option-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.rest-warnings {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #374151;
+}
+
+.rest-warning {
+  font-size: 0.75rem;
+  color: #f59e0b;
+  margin-bottom: 4px;
+}
+
+.rest-menu-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.rest-menu-close:hover {
+  color: #f3f4f6;
+}
+
+.safety-indicator {
+  margin-left: auto;
+}
+
+.restriction-tag {
+  display: inline-block;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+
+.rest-option-disabled-reason {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 4px;
+}
+
+/* Adaptations pour les thèmes nuit/jour */
+.time-status.night-time {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #cbd5e1;
+}
+
+.time-status.day-time {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: white;
+}

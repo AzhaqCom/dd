@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTimeStore } from '../../stores/timeStore';
+import { TimeService } from '../../services/TimeService';
 import './StatusCorner.css';
 
 /**
@@ -7,20 +9,41 @@ import './StatusCorner.css';
  */
 const StatusCorner = ({ 
   character, 
-  gameTime, 
   gameFlags = {} 
 }) => {
+  // ✅ NOUVEAU: Connexion au système temporel avec sélecteurs optimisés
+  const day = useTimeStore(state => state.currentTime.day);
+  const hour = useTimeStore(state => state.currentTime.hour);
+  const minute = useTimeStore(state => state.currentTime.minute);
+  const phase = useTimeStore(state => state.currentTime.phase);
+  
+  const formattedTime = useMemo(() => {
+    return TimeService.formatTime({ day, hour, minute, phase });
+  }, [day, hour, minute, phase]);
+  
+  const isNight = useMemo(() => {
+    return TimeService.isNightHour(hour);
+  }, [hour]);
+  
+  const currentPhase = useMemo(() => {
+    return phase || TimeService.calculatePhase(hour);
+  }, [phase, hour]);
+  
   if (!character) return null;
 
   const hpPercentage = (character.currentHP / character.maxHP) * 100;
   const isLowHP = hpPercentage <= 25;
   const isCriticalHP = hpPercentage <= 10;
   
-  // Formatage du temps
-  const formatTime = (time) => {
-    const hour = time.hour.toString().padStart(2, '0');
-    const period = time.hour < 12 ? 'Matin' : time.hour < 18 ? 'Jour' : 'Soir';
-    return `${hour}:00 ${period}`;
+  // ✅ NOUVEAU: Utilisation du TimeService pour le formatage
+  const getTimeIcon = (phase) => {
+    const icons = {
+      morning: '🌅',
+      day: '☀️', 
+      evening: '🌅',
+      night: '🌙'
+    };
+    return icons[phase] || '🕐';
   };
 
   // Déterminer l'icône météo (pour plus tard)
@@ -75,19 +98,18 @@ const StatusCorner = ({
           <span className="status-text">{character.gold || 0}</span>
         </div>
 
-        {/* Temps */}
-        {gameTime && (
-          <div className="status-item time-status">
-            <span className="status-icon">🕐</span>
-            <span className="status-text">{formatTime(gameTime)}</span>
-            <span className="status-day">Jour {gameTime.day}</span>
-          </div>
-        )}
+        {/* ✅ NOUVEAU: Temps avec système temporel intégré */}
+        <div className={`status-item time-status ${isNight ? 'night-time' : 'day-time'}`}>
+          <span className="status-icon">{getTimeIcon(currentPhase)}</span>
+          <span className="status-text">{formattedTime.time}</span>
+          <span className="status-period">{formattedTime.period}</span>
+          <span className="status-day">{formattedTime.day}</span>
+        </div>
 
-        {/* Météo (si disponible) */}
-        {gameTime?.weather && (
+        {/* Météo (placeholder pour futur système météo) */}
+        {formattedTime?.weather && (
           <div className="status-item weather-status">
-            <span className="status-icon">{getWeatherIcon(gameTime.weather)}</span>
+            <span className="status-icon">{getWeatherIcon(formattedTime.weather)}</span>
           </div>
         )}
       </div>

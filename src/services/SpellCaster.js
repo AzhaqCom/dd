@@ -235,13 +235,24 @@ export class SpellCaster {
       });
 
     } else if (spell.buff) {
-      // Sort de renforcement
+      // Sort de renforcement (ancien format)
       this.processBuffSpell(spell, targets, castingLevel, results);
 
       // Message pour les buffs
       targets.forEach(target => {
         results.messages.push(
           `${this.entity.name} lance ${spell.name} sur ${target.name}`
+        );
+      });
+
+    } else if (spell.effect) {
+      // ✅ NOUVEAU: Gestion de la structure unifiée spell.effect
+      this.processEffectSpell(spell, targets, castingLevel, results);
+
+      // Message pour les effets
+      targets.forEach(target => {
+        results.messages.push(
+          `${this.entity.name} lance ${spell.name} sur ${target.name || 'soi-même'}`
         );
       });
     }
@@ -311,6 +322,34 @@ export class SpellCaster {
         duration: spell.buff?.duration || spell.duration || 600, // Durée du buff ou 10 rounds par défaut
         source: this.entity.name
       });
+    });
+  }
+
+  /**
+   * ✅ NOUVEAU: Traite un sort avec la structure effect unifiée
+   * @param {Object} spell - Le sort avec propriété effect
+   * @param {Array} targets - Les cibles du sort
+   * @param {number} castingLevel - Niveau de lancement
+   * @param {Object} results - Objet de résultats à modifier
+   */
+  processEffectSpell(spell, targets, castingLevel, results) {
+    // Gestion des sorts sans cibles explicites (sorts "self" comme Mage Armor)
+    if (!targets || targets.length === 0) {
+      if (spell.validTargets?.includes('self') || spell.targetType === 'self') {
+        targets = [this.entity]; // Le lanceur lui-même
+      }
+    }
+
+    targets.forEach(target => {
+      // Créer l'effet avec la structure complète
+      const effect = {
+        ...spell.effect, // Copier toute la structure effect du sort
+        targetId: target.id || target.name,
+        targetName: target.name,
+        source: this.entity.name
+      };
+
+      results.effects.push(effect);
     });
   }
 
