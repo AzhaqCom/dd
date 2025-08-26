@@ -53,7 +53,7 @@ export const useMerchantHandlers = () => {
 
       // Retirer les items (logique à implémenter dans characterStore)
       if (sellResult.effects.removeItems) {
-        console.log('Items to remove:', sellResult.effects.removeItems);
+    
       }
 
       addCombatMessage(sellResult.message, 'success');

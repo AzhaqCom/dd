@@ -151,34 +151,34 @@ export const CombatPanel = ({
   // Gestion automatique des transitions de phase selon le type de tour
   useEffect(() => {
     if (phase === 'turn' && currentTurn) {
-      console.log('🎯 Phase transition - Current turn:', currentTurn)
+     
       
       // Vérification de fin de combat AVANT de continuer
       const allEnemiesDead = enemies.every(e => e.currentHP <= 0)
       const playerDead = !playerCharacter || playerCharacter.currentHP <= 0
       
       if (allEnemiesDead) {
-        console.log('🏆 All enemies dead - Victory!')
+      
         setPhase('victory')
         return
       } else if (playerDead) {
-        console.log('💀 Player dead - Defeat!')
+       
         setPhase('defeat')
         return
       }
       
       if (currentTurn.type === 'player') {
         // Tour du joueur : réinitialiser l'état et afficher l'interface
-        console.log('🎮 Player turn starting')
+     
         resetPlayerTurnState()
         setPhase('player-turn')
       } else if (currentTurn.type === 'enemy') {
         // Tour d'ennemi : passer à executing-turn pour déclencher l'IA
-        console.log('👹 Enemy turn starting:', currentTurn.name)
+     
         setPhase('executing-turn')
       } else if (currentTurn.type === 'companion') {
         // Tour de compagnon : passer à executing-turn pour déclencher l'IA
-        console.log('🤝 Companion turn starting:', currentTurn.name)
+    
         setPhase('executing-turn')
       }
     }

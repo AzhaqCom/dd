@@ -46,7 +46,7 @@ export const useGameHandlers = () => {
           id: itemId
         };
         addItemToInventory(itemToAdd);
-        console.log(`Objet obtenu : ${itemData.name}`, 'item');
+    
         addCombatMessage(`Objet obtenu : ${itemData.name}`, 'item');
       } else {
         console.error(`❌ Item non trouvé dans items.js ou weapons.js : ${itemId}`);

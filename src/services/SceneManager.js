@@ -57,7 +57,7 @@ export class SceneManager {
     try {
       // Charger les scènes du prologue
       if (prologueScenes[sceneId]) {
-        console.log(`Scène "${sceneId}" chargée depuis le nouveau système (prologue)`);
+       
         const scene = prologueScenes[sceneId];
         this.loadedScenes.set(sceneId, scene);
         return scene;
@@ -65,7 +65,7 @@ export class SceneManager {
 
       // Charger les scènes de test
       if (acte1Scenes[sceneId]) {
-        console.log(`Scène "${sceneId}" chargée depuis le nouveau système (test)`);
+   
         const scene = acte1Scenes[sceneId];
         this.loadedScenes.set(sceneId, scene);
         return scene;

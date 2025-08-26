@@ -278,7 +278,7 @@ export const CombatTurnManager = ({
    * NOUVEAU: Utilise le système unifié avec EntityAI_Hybrid
    */
   const handleEnemyTurn = useCallback((enemy) => {
-    console.log(`🔴 SimpleTurn: ${enemy.name}`)
+   
     
     // Vérifier que l'ennemi est vivant
     const enemyCharacter = enemies.find(e => e.name === enemy.name)

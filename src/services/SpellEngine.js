@@ -164,37 +164,30 @@ export class SpellEngine {
   static validateSpellTargets(spell, caster, potentialTargets, context = {}) {
     const validTargets = [];
 
-    console.log(`🔍 Validation du sort "${spell.name}":`, {
-      spell: { name: spell.name, range: spell.range, targetType: spell.targetType },
-      caster: { name: caster.name, type: caster.type },
-      potentialTargets: potentialTargets.map(t => ({ name: t.name, type: t.type })),
-      context: { hasPositions: !!context.positions }
-    });
+
     if (spell.validTargets?.includes("self") && potentialTargets.length === 0) {
-      console.log(`  🎯 Sort pouvant cibler "self", ajout du lanceur comme cible`);
+    
       potentialTargets = [caster];
     }
 
     potentialTargets.forEach(target => {
-      console.log(`\n🎯 Vérification de ${target.name}:`);
+ 
 
       // Vérifier la portée
       const inRange = this.isTargetInRange(spell, caster, target, context);
-      console.log(`  📏 Portée OK: ${inRange}`);
+   
 
       if (inRange) {
         // Vérifier le type de cible
         const validType = this.isValidTargetType(spell, caster, target);
-        console.log(`  🎭 Type OK: ${validType}`);
-
+     
         if (validType) {
           validTargets.push(target);
-          console.log(`  ✅ ${target.name} ajouté aux cibles valides`);
+     
         }
       }
     });
 
-    console.log(`\n📊 Résultat: ${validTargets.length}/${potentialTargets.length} cibles valides`);
     return validTargets;
   }
 
@@ -209,17 +202,17 @@ export class SpellEngine {
   static isTargetInRange(spell, caster, target, context = {}) {
     // Si pas d'informations de position, accepter (hors combat)
     if (!context.positions) {
-      console.log(`    📏 Pas de positions → accepté (hors combat)`);
+     
       return true;
     }
 
     const range = spell.range || '9 mètres';
-    console.log(`    📏 Portée du sort: "${range}"`);
+
 
     // Sorts personnels
     if (range === 'Personnel' || range === 'Self') {
       const isPersonal = target.id === caster.id || target.name === caster.name;
-      console.log(`    📏 Sort personnel: ${isPersonal}`);
+   
       return isPersonal;
     }
 
@@ -227,7 +220,7 @@ export class SpellEngine {
     if (range === 'Contact' || range === 'Touch') {
       const distance = this.calculateDistance(caster, target, context);
       const inTouchRange = distance <= 1.5;
-      console.log(`    📏 Contact (${distance.toFixed(1)}m ≤ 1.5m): ${inTouchRange}`);
+  
       return inTouchRange;
     }
 
@@ -237,11 +230,11 @@ export class SpellEngine {
       const rangeMeters = parseInt(rangeMatch[1]);
       const distance = this.calculateDistance(caster, target, context);
       const inRange = distance <= rangeMeters;
-      console.log(`    📏 Distance: ${distance.toFixed(1)}m ≤ ${rangeMeters}m: ${inRange}`);
+      
       return inRange;
     }
 
-    console.log(`    📏 Impossible de parser la portée, accepté par défaut`);
+   
     return true; // Par défaut, accepter si impossible de déterminer
   }
 
@@ -254,11 +247,11 @@ export class SpellEngine {
    */
   static isValidTargetType(spell, caster, target) {
     const targetType = spell.targetType;
-    console.log(`    🎭 targetType requis: "${targetType}"`);
-    console.log(`    🎭 caster.type: "${caster.type}", target.type: "${target.type}"`);
+
+
 
     if (!targetType) {
-      console.log(`    🎭 Pas de restriction → accepté`);
+
       return true; // Pas de restriction
     }
 
@@ -266,25 +259,25 @@ export class SpellEngine {
     switch (targetType) {
       case 'self':
         result = target.id === caster.id || target.name === caster.name;
-        console.log(`    🎭 Self: ${result}`);
+
         return result;
 
       case 'ally':
         result = this.isAlly(caster, target);
-        console.log(`    🎭 Ally: ${result}`);
+
         return result;
 
       case 'enemy':
         result = this.isEnemy(caster, target);
-        console.log(`    🎭 Enemy: ${result}`);
+
         return result;
 
       case 'creature':
-        console.log(`    🎭 Creature: true`);
+
         return true; // Toute créature
 
       default:
-        console.log(`    🎭 Type inconnu → accepté`);
+
         return true;
     }
   }
@@ -332,24 +325,20 @@ export class SpellEngine {
    */
   static calculateDistance(entity1, entity2, context) {
     if (!context.positions) {
-      console.log(`      📐 Pas de positions dans le contexte`);
+
       return 0;
     }
 
-    console.log(`      📐 Recherche positions pour:`, {
-      entity1Keys: [entity1.id, entity1.name],
-      entity2Keys: [entity2.id, entity2.name],
-      availableKeys: Object.keys(context.positions)
-    });
-    console.log(`      📐 Clés disponibles:`, Object.keys(context.positions));
+   
+
 
     const pos1 = context.positions[entity1.id] || context.positions[entity1.name] || context.positions['player'];
     const pos2 = context.positions[entity2.id] || context.positions[entity2.name] || context.positions['player'];
 
-    console.log(`      📐 Positions trouvées:`, { pos1, pos2 });
+
 
     if (!pos1 || !pos2) {
-      console.log(`      📐 Position manquante → distance infinie`);
+
       return Infinity;
     }
 
@@ -358,7 +347,7 @@ export class SpellEngine {
     const gridDistance = Math.sqrt(dx * dx + dy * dy);
     const meters = gridDistance * 1.5;
 
-    console.log(`      📐 Distance calculée: ${gridDistance} cases = ${meters.toFixed(1)}m`);
+
     return meters;
   }
 

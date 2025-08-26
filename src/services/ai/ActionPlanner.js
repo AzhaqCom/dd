@@ -114,7 +114,7 @@ class ActionPlanner {
         // Sauvegarder la position générée pour éviter la régénération
         const fallbackKey = getEntityPositionKey(entity)
         gameState.combatPositions[fallbackKey] = entityPos
-        console.log(`✅ Position fallback générée pour ${entity.name}:`, entityPos)
+
       } else {
         // Si même le fallback échoue, utiliser les actions à distance uniquement
         console.warn(`❌ Impossible de générer une position pour ${entity.name}. Actions limitées.`)
@@ -142,9 +142,9 @@ class ActionPlanner {
         const allAllies = TargetSelector.getAllies(entity, gameState)
         const woundedAllies = TargetSelector.findWoundedAllies(entity, gameState)
 
-        console.log(`🏥 ${entity.name} évalue heal:`)
-        console.log(`  👥 Tous alliés:`, allAllies.map(a => `${a.name} (${a.currentHP}/${a.maxHP})`))
-        console.log(`  🩹 Alliés blessés:`, woundedAllies.map(a => `${a.name} (${a.currentHP}/${a.maxHP})`))
+
+
+
 
         woundedAllies.forEach(ally => {
           // ✅ AMÉLIORATION: Sélection intelligente des sorts selon la cible
@@ -199,13 +199,10 @@ class ActionPlanner {
         const meleeTargets = TargetSelector.findTargetsInMeleeRange(entity, gameState)
         
         const allTargets = TargetSelector.findTargets(entity, gameState)
-        console.log(`⚔️ DEBUG: ${entity.name} depuis simulé - Attaques:`, meleeAttacks.length, `Toutes cibles:`, allTargets.length, `Cibles mélée:`, meleeTargets.length)
-        console.log(`⚔️ DEBUG: Toutes cibles trouvées:`, allTargets.map(t => t.name))
-        if (allTargets.length > 0 && meleeTargets.length === 0) console.log(`❌ DEBUG: Cibles existent mais aucune en mélée !`)
 
         meleeAttacks.forEach(attack => {
           meleeTargets.forEach(target => {
-            console.log(`✅ DEBUG: Action créée - ${attack.name} sur ${target.name}`)
+
             actions.push({
               ...attack,
               type: 'melee', // Ajout explicite du type
@@ -355,67 +352,67 @@ class ActionPlanner {
    * @returns {TurnPlan|null} Plan optimal ou null
    */
   static planCompleteTurn(entity, gameState) {
-    console.log(`🎯 DEBUG: Début planCompleteTurn pour ${entity.name}`)
+
     const possiblePlans = []
 
     try {
       // === PLAN 1: ATTAQUER DEPUIS POSITION ACTUELLE ===
-      console.log(`🎯 DEBUG: Évaluation plan 1 - Attaque sur place`)
+
       const attackInPlace = this.evaluateAttackInPlace(entity, gameState)
       if (attackInPlace) {
         possiblePlans.push(attackInPlace)
-        console.log(`✅ DEBUG: Plan 1 ajouté`)
+
       } else {
-        console.log(`❌ DEBUG: Plan 1 rejeté`)
+
       }
 
       // === PLAN 2: BOUGER PUIS ATTAQUER ===
-      console.log(`🎯 DEBUG: Évaluation plan 2 - Bouger puis attaquer`)
+
       const moveThenAttack = this.evaluateMoveThenAttack(entity, gameState)
       if (moveThenAttack) {
         possiblePlans.push(moveThenAttack)
-        console.log(`✅ DEBUG: Plan 2 ajouté`)
+
       } else {
-        console.log(`❌ DEBUG: Plan 2 rejeté`)
+
       }
 
       // === PLAN 3: ATTAQUER PUIS SE REPOSITIONNER ===
-      console.log(`🎯 DEBUG: Évaluation plan 3 - Hit-and-run`)
+
       const attackThenMove = this.evaluateAttackThenMove(entity, gameState)
       if (attackThenMove) {
         possiblePlans.push(attackThenMove)
-        console.log(`✅ DEBUG: Plan 3 ajouté`)
+
       } else {
-        console.log(`❌ DEBUG: Plan 3 rejeté`)
+
       }
 
       // === PLAN 4: DOUBLE MOUVEMENT (CHARGE/REPLI) ===
-      console.log(`🎯 DEBUG: Évaluation plan 4 - Double mouvement`)
+
       const doubleMovement = this.evaluateDoubleMovement(entity, gameState)
       if (doubleMovement) {
         possiblePlans.push(doubleMovement)
-        console.log(`✅ DEBUG: Plan 4 ajouté`)
+
       } else {
-        console.log(`❌ DEBUG: Plan 4 rejeté`)
+
       }
 
-      console.log(`🎯 DEBUG: ${possiblePlans.length} plans disponibles`)
+
 
       // Trier par score et retourner le meilleur
       possiblePlans.forEach((plan, index) => {
         const score = plan.calculateTotalScore()
-        console.log(`🎯 DEBUG: Plan ${index + 1} score: ${score}`)
+
       })
 
       possiblePlans.sort((a, b) => b.totalScore - a.totalScore)
 
       const bestPlan = possiblePlans[0]
       if (bestPlan && bestPlan.isValid()) {
-        console.log(`🧠 ${entity.name} planifie: ${bestPlan.describe()}`)
+
         return bestPlan
       }
 
-      console.log(`⚠️ DEBUG: Aucun plan valide trouvé pour ${entity.name}`)
+
       return null
 
     } catch (error) {
@@ -431,31 +428,31 @@ class ActionPlanner {
    * @returns {TurnPlan|null} Plan d'attaque sur place ou null
    */
   static evaluateAttackInPlace(entity, gameState) {
-    console.log(`🎯 DEBUG: evaluateAttackInPlace pour ${entity.name}`)
+
 
     try {
       let currentPos = CombatUtils.getCurrentPosition(entity, gameState)
-      console.log(`🎯 DEBUG: Position actuelle:`, currentPos)
+
 
       if (!currentPos) {
-        console.log(`⚠️ DEBUG: Pas de position trouvée pour ${entity.name}, génération position de fallback`)
+
         // Générer position fallback comme dans l'ancien système
         currentPos = MovementPlanner.generateFallbackPosition(entity, gameState)
         if (!currentPos) {
-          console.log(`❌ DEBUG: Impossible de générer position fallback pour ${entity.name}`)
+
           return null
         }
         // Sauvegarder la position générée
         const entityKey = getEntityPositionKey(entity)
         gameState.combatPositions[entityKey] = currentPos
-        console.log(`✅ DEBUG: Position fallback générée:`, currentPos)
+
       }
 
       const bestAction = this.getBestActionAtPosition(entity, currentPos, gameState)
-      console.log(`🎯 DEBUG: Meilleure action:`, bestAction)
+
 
       if (!bestAction) {
-        console.log(`❌ DEBUG: Aucune action disponible depuis position actuelle`)
+
         return null
       }
 
@@ -464,14 +461,14 @@ class ActionPlanner {
       const entityMovement = entity.movement || entity.speed || 6
       plan.totalMovement = entityMovement
       plan.reasoning = "Attaque depuis position actuelle"
-      console.log(`🎯 DEBUG: Movement pour ${entity.name}: ${entityMovement}`)
+
 
       plan.addPhase('attack', {
         ...bestAction,
         tacticalScore: bestAction.priorityScore || 50
       })
 
-      console.log(`✅ DEBUG: Plan attaque sur place créé`)
+
       return plan
 
     } catch (error) {
@@ -487,13 +484,13 @@ class ActionPlanner {
    * @returns {TurnPlan|null} Plan mouvement + attaque ou null
    */
   static evaluateMoveThenAttack(entity, gameState) {
-    console.log(`🎯 DEBUG: evaluateMoveThenAttack pour ${entity.name}`)
+
 
     const currentPos = CombatUtils.getCurrentPosition(entity, gameState)
-    console.log(`🎯 DEBUG: Position actuelle pour mouvement:`, currentPos)
+
 
     if (!currentPos) {
-      console.log(`❌ DEBUG: Pas de position pour evaluateMoveThenAttack`)
+
       return null
     }
 
@@ -515,7 +512,7 @@ class ActionPlanner {
       Math.max(max, attack.aiWeight || 50), 0
     )
 
-    console.log(`🎯 DEBUG: ${entity.name} - Mêlée max: ${bestMeleeWeight}, Distance max: ${bestRangedWeight}`)
+
 
     // Évaluer les deux stratégies et choisir la meilleure
     let bestMeleePosition = null
@@ -545,19 +542,19 @@ class ActionPlanner {
         bestOption = bestRangedPosition
         planType = "distance"
       }
-      console.log(`🎯 DEBUG: Choix entre mêlée (${bestMeleePosition.score}) et distance (${bestRangedPosition.score}) → ${planType}`)
+
     } else if (bestMeleePosition) {
       bestOption = bestMeleePosition
       planType = "mêlée"
-      console.log(`🎯 DEBUG: Seule option mêlée disponible (score: ${bestMeleePosition.score})`)
+
     } else if (bestRangedPosition) {
       bestOption = bestRangedPosition
       planType = "distance"
-      console.log(`🎯 DEBUG: Seule option distance disponible (score: ${bestRangedPosition.score})`)
+
     }
 
     if (!bestOption) {
-      console.log(`❌ DEBUG: Aucune position d'attaque accessible pour ${entity.name}`)
+
       return null
     }
 
@@ -591,7 +588,7 @@ class ActionPlanner {
       tacticalScore: bestOption.attack.aiWeight || 50
     })
 
-    console.log(`✅ DEBUG: Plan ${planType} créé - ${attackAction.description} (score total attaque: ${bestOption.attack.aiWeight})`)
+
     return plan
   }
 
@@ -657,7 +654,7 @@ class ActionPlanner {
         TargetSelector
       })
       if (!bestPosition) {
-        console.log(`❌ DEBUG: Aucune position de mêlée accessible pour charge de ${entity.name}`)
+
         return null
       }
 
@@ -688,7 +685,7 @@ class ActionPlanner {
         TacticalEvaluator, TargetSelector
       })
       if (!escapePosition) {
-        console.log(`❌ DEBUG: Aucune position de repli accessible pour ${entity.name}`)
+
         return null
       }
 
@@ -724,11 +721,11 @@ class ActionPlanner {
    * @returns {Object|null} Meilleure action ou null
    */
   static getBestActionAtPosition(entity, position, gameState) {
-    console.log(`🎯 DEBUG: getBestActionAtPosition pour ${entity.name} à position`, position)
+
     
     // Utiliser le système de clés uniforme
     const positionKey = getEntityPositionKey(entity)
-    console.log(`🎯 DEBUG: Clé unifiée:`, positionKey)
+
 
     // Simuler entity à cette position pour calculer actions
     const tempEntity = { ...entity }
@@ -738,7 +735,7 @@ class ActionPlanner {
 
     // Utiliser getBestAction qui existe
     const result = this.getBestAction(tempEntity, tempGameState)
-    console.log(`🎯 DEBUG: Action trouvée:`, result ? 'OUI' : 'NON')
+
     return result
   }
 

@@ -92,6 +92,7 @@ export const CharacterSheet = ({
     console.log(`🛡️ DEBUG: Recalcul CA - character:`, character?.name, `activeEffects:`, activeEffectsCount);
     const calculatedAC = CombatEffects.calculateTotalAC(character);
     console.log(`🛡️ DEBUG: CA calculée - Total: ${calculatedAC}`);
+    console.log(character)
     return calculatedAC;
   }, [character, activeEffectsCount]);
 

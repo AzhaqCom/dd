@@ -19,7 +19,7 @@ export class CombatService {
    * Orchestre la décision de l'IA et l'exécution de l'action.
    */
   static executeTurn(entity, gameState) {
-    console.log(`🎬 === Début du tour pour ${entity.name} (${entity.type}) === 🎬`);
+
     const results = {
       messages: [],
       damage: [],
@@ -38,11 +38,11 @@ export class CombatService {
           text: `${entity.name} ne sait pas quoi faire et passe son tour.`, 
           type: 'info',
         });
-        console.log(`🎬 === Fin du tour pour ${entity.name} (aucune action) ===`);
+ 
         return results;
       }
       
-      console.log(`🤖 Action choisie par l'IA pour ${entity.name}:`, bestAction);
+   
 
       // 2. Exécution de l'action choisie
       const actionResult = CombatService.executeAction(entity, bestAction, gameState);
@@ -65,7 +65,7 @@ export class CombatService {
    * Prend une action (décidée par l'IA ou le joueur) et la délègue au bon sous-système.
    */
   static executeAction(entity, action, gameState) {
-    console.log(`⚡ Exécution de l'action "${action.type}" pour ${entity.name}`);
+ 
     switch (action.type) {
       case 'attack':
       case 'melee':
@@ -132,7 +132,6 @@ export class CombatService {
       };
     }
 
-    console.log(`🔮 ${caster.name} lance le sort "${spell.name}" sur ${targets.map(t => t.name).join(', ')}`);
 
     // Appel au service de sorts unifié
     const spellService = new SpellServiceUnified();
@@ -162,7 +161,7 @@ export class CombatService {
         success: result.success,
     };
 
-    console.log("Résultat du sort mappé:", mappedResult);
+  
     return mappedResult;
   }
   
@@ -725,8 +724,7 @@ export class CombatService {
    * NOUVELLE MÉTHODE : Exécute le tour d'un compagnon avec la nouvelle IA
    */
   static executeCompanionAction(companionId, companion, gameState) {
-    console.log(`⚔️ EXECUTE COMPANION ACTION: ${companion.name} (${companionId})`)
-    console.log(`⚔️ Companion:`, { name: companion.name, role: companion.role, type: companion.type, currentHP: companion.currentHP, maxHP: companion.maxHP })
+
     
     const results = {
       messages: [],
@@ -738,9 +736,9 @@ export class CombatService {
 
     try {
       // 1. Obtenir la meilleure action via l'IA unifiée
-      console.log(`⚔️ Appel ActionPlanner.getBestAction...`)
+ 
       const bestAction = ActionPlanner.getBestAction(companion, gameState)
-      console.log(`⚔️ Action choisie:`, bestAction)
+
       
       if (!bestAction) {
         results.messages.push({
@@ -850,7 +848,7 @@ export class CombatService {
     const spellName = spell.name || spell.id // Obtenir le nom du sort
     const targets = Array.isArray(action.target) ? action.target : [action.target].filter(Boolean)
     
-    console.log(`🔮 ExecuteCompanionSpell - Sort:`, spell, `Nom: ${spellName}`)
+
     
     // Utiliser directement SpellServiceUnified
     const spellService = new SpellServiceUnified({
@@ -1023,6 +1021,6 @@ export class CombatService {
   static consumeSpellSlot(companion, spellName) {
     // TODO: Implémenter la consommation de slots
     // Pour l'instant, on log juste
-    console.log(`${companion.name} a utilisé un slot pour ${spellName}`)
+ 
   }
 }

@@ -9,4 +9,4 @@ export const spellSlotsByLevel = {
 };
 
 // Utilise le template de magicien par défaut
-export const character = characterTemplates.wizard;
+export const character = characterTemplates.warrior;

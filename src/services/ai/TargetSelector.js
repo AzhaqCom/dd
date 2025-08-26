@@ -18,17 +18,17 @@ class TargetSelector {
     } else {
       // Enemy targets player and companions
       const targets = []
-      console.log(`🎯 DEBUG findTargets: playerCharacter =`, gameState.playerCharacter ? 'EXISTS' : 'NULL')
-      console.log(`🎯 DEBUG findTargets: activeCompanions =`, gameState.activeCompanions?.length || 0)
+
+
       if (gameState.playerCharacter) {
         targets.push(gameState.playerCharacter)
-        console.log(`✅ DEBUG: Joueur ajouté comme cible:`, gameState.playerCharacter.name)
+
       }
       if (gameState.activeCompanions) {
         targets.push(...gameState.activeCompanions)
         gameState.activeCompanions.forEach(c => console.log(`✅ DEBUG: Compagnon ajouté:`, c.name))
       }
-      console.log(`🎯 DEBUG findTargets: ${targets.length} cibles trouvées`)
+
       return targets
     }
   }
@@ -126,16 +126,16 @@ class TargetSelector {
    * @returns {Array} Cibles en mêlée
    */
   static findTargetsInMeleeRange(entity, gameState) {
-    console.log(`🎯 DEBUG: findTargetsInMeleeRange appelée pour ${entity.name}`)
+
     const allTargets = this.findTargets(entity, gameState)
-    console.log(`🎯 DEBUG: findTargets a retourné ${allTargets.length} cibles`)
+
     
     const meleeTargets = allTargets.filter(target => {
       const distance = CombatUtils.getDistanceToTarget({target}, entity, gameState)
       return distance <= 1
     })
     
-    console.log(`🎯 DEBUG: ${meleeTargets.length} cibles en mélée pour ${entity.name}`)
+
     return meleeTargets
   }
 

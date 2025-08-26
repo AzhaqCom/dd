@@ -30,20 +30,20 @@ export const useAutoSave = (options = {}) => {
    */
   const performAutoSave = (reason = 'Auto-save') => {
     if (!enabled || !SaveService.isStorageAvailable()) {
-      console.log('❌ Auto-save désactivé ou localStorage indisponible');
+    
       return;
     }
 
     // Vérifier qu'on a un personnage et une scène valide
     if (!characterState.playerCharacter || !gameState.currentScene) {
-      console.log('❌ Pas de personnage ou scène pour sauvegarder');
+    
       return;
     }
 
     // Éviter les sauvegardes trop fréquentes
     const now = Date.now();
     if (lastSaveRef.current && (now - lastSaveRef.current) < 3000) {
-      console.log('⏱️ Sauvegarde trop récente, ignorée');
+    
       return; // Minimum 3 secondes entre les sauvegardes
     }
 
@@ -55,7 +55,7 @@ export const useAutoSave = (options = {}) => {
     // Programmer la sauvegarde avec délai
     saveTimeoutRef.current = setTimeout(() => {
       try {
-        console.log('💾 Tentative de sauvegarde:', reason);
+    
         const result = SaveService.saveGame(gameState, characterState, reason);
         
         if (result.success) {
@@ -65,7 +65,7 @@ export const useAutoSave = (options = {}) => {
             addCombatMessage('💾 Partie sauvegardée automatiquement', 'info');
           }
           
-          console.log('✅ Auto-save réussie:', result.message);
+       
         } else {
           console.warn('❌ Échec auto-save:', result.message);
         }
@@ -79,7 +79,7 @@ export const useAutoSave = (options = {}) => {
   useEffect(() => {
     if (saveOnSceneChange && gameState.currentScene) {
       // Debug pour voir si ça se déclenche
-      console.log('🔄 Auto-save déclenché - Scène:', gameState.currentScene);
+     
       performAutoSave(`Scène: ${gameState.currentScene}`);
     }
   }, [gameState.currentScene, saveOnSceneChange]);

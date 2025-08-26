@@ -53,7 +53,7 @@ class MovementPlanner {
       }
     }
     
-    console.log(`🗺️ DEBUG: ${candidates.length} positions libres trouvées pour ${entity.name}`)
+
     return candidates.sort((a, b) => b.score - a.score)[0] || null
   }
 
@@ -73,7 +73,7 @@ class MovementPlanner {
     // Trouver toutes les cibles potentielles
     const targets = TargetSelector.findTargets(entity, gameState)
     if (!targets.length) {
-      console.log(`🎯 DEBUG: Aucune cible trouvée pour ${entity.name}`)
+
       return null
     }
     
@@ -127,11 +127,11 @@ class MovementPlanner {
     })
     
     if (!attackPositions.length) {
-      console.log(`⚔️ DEBUG: Aucune position d'attaque accessible pour ${entity.name}`)
+
       return null
     }
     
-    console.log(`⚔️ DEBUG: ${attackPositions.length} positions d'attaque trouvées pour ${entity.name}`)
+
     
     // Retourner la position avec le meilleur score (plus proche)
     return attackPositions.sort((a, b) => b.score - a.score)[0]
@@ -156,14 +156,14 @@ class MovementPlanner {
     )
     
     if (!meleeAttacks.length) {
-      console.log(`⚔️ DEBUG: ${entity.name} n'a pas d'attaque de mêlée`)
+
       return null
     }
     
     // Trouver toutes les cibles potentielles
     const targets = TargetSelector.findTargets(entity, gameState)
     if (!targets.length) {
-      console.log(`🎯 DEBUG: Aucune cible trouvée pour ${entity.name}`)
+
       return null
     }
     
@@ -222,17 +222,17 @@ class MovementPlanner {
             reason: `melee_${target.name}_${bestMeleeAttack.name}`
           })
           
-          console.log(`⚔️ DEBUG: Position mêlée (${pos.x},${pos.y}) pour ${target.name} avec ${bestMeleeAttack.name} - Score: ${score}`)
+
         }
       })
     })
     
     if (!attackPositions.length) {
-      console.log(`⚔️ DEBUG: Aucune position de mêlée accessible pour ${entity.name}`)
+
       return null
     }
     
-    console.log(`⚔️ DEBUG: ${attackPositions.length} positions de mêlée trouvées pour ${entity.name}`)
+
     
     // Retourner la position avec le meilleur score
     return attackPositions.sort((a, b) => b.score - a.score)[0]
@@ -257,14 +257,14 @@ class MovementPlanner {
     )
     
     if (!rangedAttacks.length) {
-      console.log(`🏹 DEBUG: ${entity.name} n'a pas d'attaque à distance`)
+
       return null
     }
     
     // Trouver toutes les cibles potentielles
     const targets = TargetSelector.findTargets(entity, gameState)
     if (!targets.length) {
-      console.log(`🎯 DEBUG: Aucune cible trouvée pour ${entity.name}`)
+
       return null
     }
     
@@ -274,12 +274,12 @@ class MovementPlanner {
     }, null)
     
     if (!bestRangedAttack) {
-      console.log(`🏹 DEBUG: Pas d'attaque à distance valide pour ${entity.name}`)
+
       return null
     }
     
     const attackRange = bestRangedAttack.range || 6
-    console.log(`🏹 DEBUG: Analyse attaque ${bestRangedAttack.name} (portée: ${attackRange}, poids: ${bestRangedAttack.aiWeight})`)
+
     
     // Pour chaque cible, calculer la distance actuelle et voir si on a besoin de bouger
     targets.forEach(target => {
@@ -291,7 +291,7 @@ class MovementPlanner {
         Math.abs(currentPos.y - targetPos.y)
       )
       
-      console.log(`🏹 DEBUG: Distance actuelle à ${target.name}: ${currentDistance} (portée requise: ${attackRange})`)
+
       
       // Si déjà à portée, pas besoin de bouger
       if (currentDistance <= attackRange) {
@@ -303,14 +303,14 @@ class MovementPlanner {
           score: bestRangedAttack.aiWeight + 50, // Bonus pour ne pas bouger
           reason: `range_${target.name}_sur_place`
         })
-        console.log(`🏹 DEBUG: Déjà à portée de ${target.name} - Pas de mouvement nécessaire`)
+
         return
       }
       
       // Sinon, trouver la position minimale pour être à portée
       const minDistanceNeeded = currentDistance - attackRange
       if (minDistanceNeeded > movement) {
-        console.log(`🏹 DEBUG: ${target.name} trop loin même avec mouvement (besoin: ${minDistanceNeeded}, dispo: ${movement})`)
+
         return // Cible inaccessible même avec mouvement
       }
       
@@ -348,18 +348,18 @@ class MovementPlanner {
               reason: `range_${target.name}_${bestRangedAttack.name}`
             })
             
-            console.log(`🏹 DEBUG: Position distance (${x},${y}) pour ${target.name} - mouvement: ${moveDistance}, distance cible: ${distanceToTarget}, score: ${score}`)
+
           }
         }
       }
     })
     
     if (!rangedPositions.length) {
-      console.log(`🏹 DEBUG: Aucune position à distance accessible pour ${entity.name}`)
+
       return null
     }
     
-    console.log(`🏹 DEBUG: ${rangedPositions.length} positions à distance trouvées pour ${entity.name}`)
+
     
     // Retourner la position avec le meilleur score
     return rangedPositions.sort((a, b) => b.score - a.score)[0]

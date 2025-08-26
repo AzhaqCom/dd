@@ -20,12 +20,12 @@ class CombatUtils {
     const targetPos = this.getCurrentPosition(action.target, gameState)
     
     if (!entityPos || !targetPos) {
-      console.log(`⚠️ DEBUG: Position manquante - Entity:`, entityPos, `Target:`, targetPos)
+
       return 999
     }
     
     const distance = calculateDistance(entityPos, targetPos)
-    console.log(`📏 DEBUG: Distance ${entity.name} → ${action.target.name}: ${distance} (de ${entityPos.x},${entityPos.y} vers ${targetPos.x},${targetPos.y})`)
+
     return distance
   }
 

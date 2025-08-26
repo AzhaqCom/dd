@@ -55,14 +55,14 @@ export const useCombatStore = create(
        * - Architecture: Propre et maintenable
        */
       executeUnifiedEntityTurn: (entity, gameState, onNextTurn) => {
-        console.log(`🎯 CombatStore: Tour unifié pour ${entity?.name} (${entity?.type})`);
+
         
         const onMessage = (message, type) => {
           get().addCombatMessageToGameStore(message, type);
         };
 
         const onDamage = (targetId, damage) => {
-          console.log(`🩸 onDamage: ${targetId} prend ${damage} dégâts`);
+
           
           // Le joueur peut être identifié par 'player' ou son nom
           const playerCharacter = gameState.playerCharacter;
@@ -70,7 +70,7 @@ export const useCombatStore = create(
           
           if (isPlayer) {
             if (damage > 0) {
-              console.log(`🩸 Application des ${damage} dégâts au joueur`);
+
               get().dealDamageToPlayer(damage);
               // Message géré par CombatAI.applyResults avec format unifié
             } else {
@@ -79,7 +79,7 @@ export const useCombatStore = create(
               const maxHP = playerCharacter.maxHP;
               const actualHealing = Math.min(healing, maxHP - currentHP);
               
-              console.log(`💚 Tentative de soins: ${healing}, HP actuels: ${currentHP}/${maxHP}, soins réels: ${actualHealing}`);
+
               
               if (actualHealing > 0) {
                 get().dealDamageToPlayer(-actualHealing); // Soins = dégâts négatifs
@@ -93,7 +93,7 @@ export const useCombatStore = create(
             
             if (companion) {
               if (damage > 0) {
-                console.log(`🩸 Application des ${damage} dégâts au compagnon ${targetId}`);
+
                 get().dealDamageToCompanionById(companion.id, damage);
                 get().addCombatMessageToGameStore(`${targetId} subit ${damage} dégâts !`, 'damage');
               } else {
@@ -102,7 +102,7 @@ export const useCombatStore = create(
                 const maxHP = companion.maxHP;
                 const actualHealing = Math.min(healing, maxHP - currentHP);
                 
-                console.log(`💚 Soins compagnon: ${healing}, HP actuels: ${currentHP}/${maxHP}, soins réels: ${actualHealing}`);
+
                 
                 if (actualHealing > 0) {
                   get().healCompanionById(companion.id, actualHealing);
@@ -114,7 +114,7 @@ export const useCombatStore = create(
             } else {
               // C'est un ennemi
               if (damage > 0) {
-                console.log(`🩸 Application des ${damage} dégâts à l'ennemi ${targetId}`);
+
                 get().dealDamageToEnemy(targetId, damage);
                 get().addCombatMessageToGameStore(`${targetId} subit ${damage} dégâts !`, 'damage');
               } else {
@@ -135,12 +135,12 @@ export const useCombatStore = create(
        * Centralise la modification de l'état de combat.
        */
       applyActionResults: (result) => {
-        console.log('🔄 Applying action results:', result);
+
 
         // Appliquer les dégâts
         if (result.damage && result.damage.length > 0) {
           result.damage.forEach(dmg => {
-            console.log(`💥 Applying damage: ${dmg.damage} to ${dmg.targetId}`);
+
             if (dmg.targetId === 'player') {
               get().dealDamageToPlayer(dmg.damage);
             } else {
@@ -153,7 +153,7 @@ export const useCombatStore = create(
         // Appliquer les soins
         if (result.healing && result.healing.length > 0) {
           result.healing.forEach(heal => {
-            console.log(`💚 Applying healing: ${heal.amount} to ${heal.targetId}`);
+
             if (heal.targetId === 'player') {
               // Pour le joueur, les soins sont des dégâts négatifs
               get().dealDamageToPlayer(-heal.amount);
@@ -176,7 +176,7 @@ export const useCombatStore = create(
         // Appliquer les effets (buffs, debuffs)
         if (result.effects && result.effects.length > 0) {
           result.effects.forEach(effect => {
-            console.log(`✨ Applying effect: ${effect.type} to ${effect.targetId}`);
+
             
             // Trouver la cible de l'effet
             const target = get().findEntityById(effect.targetId);
@@ -239,9 +239,9 @@ export const useCombatStore = create(
       initializeCombat: (encounterData, playerCharacter, activeCompanions = []) => set((state) => {
         const enemyInstances = EnemyFactory.createEnemiesFromEncounter(encounterData)
         const sortedOrder = CombatService.rollInitiative(playerCharacter, activeCompanions, enemyInstances)
-        console.log('🎲 Initiative calculée:')
+
         sortedOrder.forEach((combatant, index) => {
-          console.log(`${index + 1}. ${combatant.name || combatant.type} (${combatant.type}) : ${combatant.initiative}`)
+
         })
         const positions = get().calculateInitialPositions(
           enemyInstances,
@@ -406,7 +406,7 @@ export const useCombatStore = create(
           }
         }
         if (effectMessages.length > 0) {
-          console.log('Effets de début de tour:', effectMessages)
+
         }
 
         return {
@@ -566,18 +566,18 @@ export const useCombatStore = create(
       },
 
       executeOpportunityAttacks: (opportunityAttacks) => {
-        console.log(`🗡️ Exécution de ${opportunityAttacks.length} attaque(s) d'opportunité`)
+
 
         opportunityAttacks.forEach((oa, index) => {
-          console.log(`⚔️ AO ${index + 1}: ${oa.attacker.name} attaque ${oa.target.name || oa.targetId}`)
+
           
           // Récupérer le playerCharacter pour les noms corrects
           const playerTurn = get().turnOrder.find(t => t.type === 'player')
           const playerCharacter = playerTurn ? { name: playerTurn.name } : null
           
           const attackResult = CombatEngine.processOpportunityAttack(oa.attacker, oa.target, oa.attack, playerCharacter)
-          console.log(oa.target)
-          console.log(attackResult.message)
+
+
           const messageType = attackResult.hit ? 'opportunity-hit' : 'opportunity-miss'
           get().addCombatMessageToGameStore(attackResult.message, messageType)
           if (attackResult.hit && attackResult.damage > 0) {
@@ -806,7 +806,7 @@ export const useCombatStore = create(
        * Applique un buff à une cible
        */
       applyBuffToTarget: (target, effect) => {
-        console.log(`✨ Application buff sur ${target.name}:`, effect);
+
         
         // Importer CombatEffects
         import('../services/combatEffects.js').then(({ CombatEffects }) => {
@@ -838,7 +838,7 @@ export const useCombatStore = create(
             get().addCombatMessageToGameStore(`${target.name} est protégé par un sanctuaire`, 'buff');
           }
           
-          console.log(`✅ Buff appliqué sur ${target.name}`);
+
           
           // Mettre à jour l'affichage
           get().incrementCombatKey();
@@ -852,7 +852,7 @@ export const useCombatStore = create(
        * Applique un debuff à une cible
        */
       applyDebuffToTarget: (target, effect) => {
-        console.log(`💀 Application debuff sur ${target.name}:`, effect);
+
         
         import('../services/combatEffects.js').then(({ CombatEffects }) => {
           const debuffConfig = effect.debuffType;
@@ -867,7 +867,7 @@ export const useCombatStore = create(
             CombatEffects.applyEffect(target, 'paralyzed', duration, effect.source);
           }
           
-          console.log(`✅ Debuff appliqué sur ${target.name}`);
+
           get().incrementCombatKey();
         });
       },

@@ -23,7 +23,7 @@ export const useAutoLoad = (options = {}) => {
 
     // Si un personnage existe déjà et qu'on doit l'ignorer, ne pas charger
     if (skipIfCharacterExists && characterState.playerCharacter) {
-      console.log('🎮 Personnage déjà présent, pas de chargement auto');
+
       return;
     }
 
@@ -31,7 +31,7 @@ export const useAutoLoad = (options = {}) => {
       const saves = SaveService.getAllSaves();
       
       if (saves.length === 0) {
-        console.log('📁 Aucune sauvegarde trouvée pour le chargement auto');
+      
         return;
       }
 
@@ -39,11 +39,11 @@ export const useAutoLoad = (options = {}) => {
       const latestSave = saves.find(save => save.name.includes('Auto-save') || save.name.includes('Scène:')) || saves[0];
       
       if (!latestSave) {
-        console.log('📁 Aucune auto-save trouvée');
+     
         return;
       }
 
-      console.log('🔄 Chargement automatique de:', latestSave.name);
+   
 
       // Restaurer l'état du jeu
       if (latestSave.game) {

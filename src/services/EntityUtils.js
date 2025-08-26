@@ -105,8 +105,6 @@ export function findEntityById(entities, entityId) {
  * @param {string} context - Contexte pour le debug
  */
 export function debugEntityKeys(entities, context = '') {
-  console.log(`🔑 DEBUG ${context} - Clés d'entités:`)
-  entities.forEach(entity => {
-    console.log(`  - ${entity.name}: key="${getEntityPositionKey(entity)}", type="${entity.type}"`)
-  })
+
+ 
 }

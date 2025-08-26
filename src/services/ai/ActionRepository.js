@@ -114,7 +114,7 @@ class ActionRepository {
       ])
     ]
     
-    console.log(`🔍 ${entity.name} évalue ${availableSpells.length} sorts pour buffs:`, availableSpells)
+
     
     const buffSpells = availableSpells
       .map(spellName => {
@@ -127,7 +127,7 @@ class ActionRepository {
       })
       .filter(spell => spell && this.isBuffSpell(spell))
     
-    console.log(`✅ ${entity.name} sorts de buff détectés:`, buffSpells.map(s => s.name))
+
     return buffSpells
   }
 

@@ -19,7 +19,7 @@ export class CombatAI {
    * @param {Function} onNextTurn - Callback pour passer au suivant
    */
   static executeEntityTurn(entity, gameState, onMessage, onDamage, onNextTurn) {
-    console.log(`🎯 CombatAI UNIFIÉ: Tour de ${entity.name} (${entity.type}) - IA: ActionPlanner + Sorts: SpellServiceUnified`);
+ 
 
     try {
       // 1. Vérifier que l'entité est vivante
@@ -30,21 +30,12 @@ export class CombatAI {
       }
 
       // 2. IA TACTIQUE AVANCÉE : Planifier tour complet avec mouvement
-      console.log(`🧠 DEBUG: Début planification tactique pour ${entity.name}`);
-      console.log(`🧠 DEBUG: Entity data:`, {
-        name: entity.name,
-        role: entity.role,
-        movement: entity.movement,
-        currentHP: entity.currentHP,
-        maxHP: entity.maxHP,
-        aiPriority: entity.aiPriority
-      });
-      console.log(`🧠 DEBUG: GameState positions:`, gameState.combatPositions);
+ 
       
       let turnPlan;
       try {
         turnPlan = ActionPlanner.planCompleteTurn(entity, gameState);
-        console.log(`🧠 DEBUG: Plan créé:`, turnPlan);
+  
       } catch (planError) {
         console.error(`❌ DEBUG: Erreur dans planCompleteTurn:`, planError);
         throw planError;
@@ -52,7 +43,7 @@ export class CombatAI {
       
       if (!turnPlan || turnPlan.phases.length === 0) {
         // Fallback vers ancien système si pas de plan
-        console.log(`⚠️ Pas de plan tactique, fallback vers action simple`);
+      
         const action = ActionPlanner.getBestAction(entity, gameState);
         
         if (!action) {
@@ -68,7 +59,6 @@ export class CombatAI {
         return;
       }
 
-      console.log(`🎯 Plan tactique: ${turnPlan.describe()}`);
 
       // 3. EXÉCUTION SÉQUENTIELLE DES PHASES DU PLAN
       this.executeTurnPlan(entity, turnPlan, gameState, {
@@ -89,7 +79,7 @@ export class CombatAI {
    * Prend une action décidée par ActionPlanner et l'exécute
    */
   static executeAction(entity, action, gameState) {
-    console.log(`⚡ CombatAI: Exécution de l'action "${action.type}" pour ${entity.name}`);
+
     
     switch (action.type) {
       case 'attack':
@@ -129,7 +119,6 @@ export class CombatAI {
       };
     }
 
-    console.log(`⚔️ ${entity.name} attaque ${target.name} avec ${attack.name}`);
 
     // Utiliser CombatEngine.resolveAttack qui fonctionne bien
     const attackResult = CombatEngine.resolveAttack(entity, target, attack);
@@ -161,7 +150,7 @@ export class CombatAI {
       };
     }
 
-    console.log(`🔮 ${entity.name} lance le sort "${spell.name}" sur ${targets.map(t => t.name).join(', ')}`);
+
 
     try {
       // UTILISER LE SYSTÈME DE SORTS UNIFIÉ QUI EXISTE ET QUI MARCHE
@@ -174,8 +163,7 @@ export class CombatAI {
         combatState: gameState
       });
 
-      console.log(`🔍 SpellServiceUnified raw result:`, spellResult);
-      console.log(`🔍 healingResults:`, spellResult.healingResults);
+
 
       // Mapper le résultat au format attendu
       const result = {
@@ -190,7 +178,7 @@ export class CombatAI {
         }))
       };
 
-      console.log(`🔮 Résultat du sort:`, result);
+   
       return result;
 
     } catch (error) {
@@ -248,7 +236,7 @@ export class CombatAI {
     // Dégâts
     if (result.damage) {
       result.damage.forEach(dmg => {
-        console.log(`🩸 CombatAI applique ${dmg.amount} dégâts à ${dmg.targetId}`);
+     
         onDamage(dmg.targetId, dmg.amount);
       });
     }
@@ -256,7 +244,7 @@ export class CombatAI {
     // Soins (dégâts négatifs)
     if (result.healing) {
       result.healing.forEach(heal => {
-        console.log(`💚 CombatAI applique ${heal.amount} soins à ${heal.targetId}`);
+  
         onDamage(heal.targetId, -heal.amount);
       });
     }
@@ -292,12 +280,12 @@ export class CombatAI {
    * @param {Object} callbacks - Callbacks {onMessage, onDamage, onNextTurn}
    */
   static async executeTurnPlan(entity, turnPlan, gameState, callbacks) {
-    console.log(`🎮 Exécution du plan tactique de ${entity.name}: ${turnPlan.describe()}`);
+  
     
     try {
       for (let i = 0; i < turnPlan.phases.length; i++) {
         const phase = turnPlan.phases[i];
-        console.log(`📋 Phase ${i + 1}/${turnPlan.phases.length}: ${phase.type}`);
+ 
         
         switch (phase.type) {
           case 'move':
@@ -325,7 +313,7 @@ export class CombatAI {
       }
       
       // Tour terminé
-      console.log(`✅ Plan tactique de ${entity.name} terminé`);
+
       setTimeout(() => callbacks.onNextTurn(), 800);
       
     } catch (error) {
@@ -345,7 +333,7 @@ export class CombatAI {
     const distance = Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
     const maxMovement = phaseMaxMovement || entity.movement || 6;
     
-    console.log(`🚶 DEBUG: ${entity.name} mouvement - Distance: ${distance}, Max autorisé: ${maxMovement} (phase: ${phaseMaxMovement}, entité: ${entity.movement})`);
+
     
     if (distance > maxMovement) {
       console.warn(`⚠️ Mouvement trop long pour ${entity.name}: ${distance} > ${maxMovement}`);
@@ -369,15 +357,15 @@ export class CombatAI {
       
       if (matchingKey) {
         entityKey = matchingKey;
-        console.log(`🔄 DEBUG: Clé corrigée pour ${entity.name}: "${entity.name}" → "${entityKey}"`);
+    
       }
     }
     
     gameState.combatPositions[entityKey] = { x: to.x, y: to.y };
-    console.log(`📍 DEBUG: Position mise à jour: ${entityKey} = {${to.x}, ${to.y}}`);
+ 
     
     // TODO: Vérifier attaques d'opportunité
-    console.log(`🚶 ${entity.name} bouge de ${from.x},${from.y} vers ${to.x},${to.y} (${distance} cases)`);
+
     
     await this.delay(400); // Animation du mouvement
   }
@@ -407,7 +395,7 @@ export class CombatAI {
    */
   static async executeDashPhase(entity, phase, gameState, callbacks) {
     callbacks.onMessage(`${entity.name} utilise l'action Dash `, 'dash');
-    console.log(`🏃 ${entity.name} utilise Dash - mouvement doublé`);
+ 
     
     await this.delay(300);
   }

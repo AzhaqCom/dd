@@ -12,7 +12,7 @@ import { spells } from '../data/spells.js';
  * Compatible avec joueur, compagnons, ennemis et PNJ
  */
 export class SpellServiceUnified {
-  
+
   constructor(gameStores = {}) {
     this.characterStore = gameStores.characterStore;
     this.combatStore = gameStores.combatStore;
@@ -31,7 +31,7 @@ export class SpellServiceUnified {
     // 1. Préparer le lanceur et le sort
     const spellCaster = new SpellCaster(caster, options.context || 'combat');
     const spellData = this.getSpellData(spell);
-    
+
     if (!spellData) {
       return {
         success: false,
@@ -51,33 +51,33 @@ export class SpellServiceUnified {
 
     // 3. Valider et filtrer les cibles
     const validTargets = this.validateAndFilterTargets(spellData, spellCaster, targets, options);
-    console.log(`🔍 DEBUG: validTargets après filtrage:`, validTargets.length, validTargets.map(t => t.name));
-    
-     if (validTargets.length === 0 && !spellData.validTargets?.includes("self")) {
-        console.log(`❌ DEBUG: Aucune cible valide pour ${spellData.name}`);
-        return {
-            success: false,
-            messages: [`Aucune cible valide pour ${spellData.name}`],
-            effects: []
-        };
+
+
+    if (validTargets.length === 0 && !spellData.validTargets?.includes("self")) {
+
+      return {
+        success: false,
+        messages: [`Aucune cible valide pour ${spellData.name}`],
+        effects: []
+      };
     }
 
-    console.log(`🎯 DEBUG: Lancement du sort ${spellData.name} sur`, validTargets.length, 'cibles');
-    
+
+
     // 4. Lancer le sort
     const castResult = spellCaster.castSpell(spellData, validTargets, options);
-    console.log(`🎯 DEBUG: Résultat castSpell:`, castResult.success, castResult);
-    
+
+
     if (!castResult.success) {
       return castResult;
     }
 
     // 5. Traiter les résultats selon le contexte
-    console.log(`🔄 DEBUG: Traitement résultats sort, contexte: ${options.context}`);
-    console.log(`🔄 DEBUG: castResult.effects:`, castResult.effects);
+
+
     this.processSpellResults(castResult, options.context);
 
-    console.log(`✅ DEBUG: Sort terminé avec succès`);
+
     return castResult;
   }
 
@@ -90,23 +90,23 @@ export class SpellServiceUnified {
     if (typeof spell === 'object' && spell.name) {
       return spell; // Déjà un objet sort
     }
-    
+
     if (typeof spell === 'string') {
       // Recherche par nom exact
       if (spells[spell]) {
         return { id: spell, ...spells[spell] };
       }
-      
+
       // Recherche par nom dans les valeurs
-      const spellEntry = Object.entries(spells).find(([key, spellData]) => 
+      const spellEntry = Object.entries(spells).find(([key, spellData]) =>
         spellData.name === spell || spellData.name?.toLowerCase() === spell.toLowerCase()
       );
-      
+
       if (spellEntry) {
         return { id: spellEntry[0], ...spellEntry[1] };
       }
     }
-    
+
     return null;
   }
 
@@ -126,12 +126,12 @@ export class SpellServiceUnified {
 
     // Valider la portée et le type de cible
     const validTargets = SpellEngine.validateSpellTargets(
-      spell, 
-      caster.entity, 
-      targets, 
+      spell,
+      caster.entity,
+      targets,
       context
     );
-    console.log(`Cibles valides pour ${spell.name}:`, validTargets.map(t => t.name));
+
     // Résoudre la zone d'effet si applicable
     if (spell.areaOfEffect || spell.isAreaEffect) {
       const origin = options.origin || caster.entity;
@@ -151,15 +151,15 @@ export class SpellServiceUnified {
       case 'combat':
         this.processCombatSpellResults(castResult);
         break;
-      
+
       case 'exploration':
         this.processExplorationSpellResults(castResult);
         break;
-      
+
       case 'social':
         this.processSocialSpellResults(castResult);
         break;
-        
+
       default:
         // Traitement générique
         break;
@@ -201,32 +201,33 @@ export class SpellServiceUnified {
    * Traite les résultats de sorts en exploration
    * @param {Object} castResult - Résultat du sort
    */
+
   processExplorationSpellResults(castResult) {
-    console.log(`🌍 DEBUG: Traitement effets exploration, ${castResult.effects.length} effets`);
-    
-    // Traiter les buffs en exploration (même logique qu'en combat)
+    // Traiter les buffs
     for (const effect of castResult.effects) {
-      console.log(`🌍 DEBUG: Traitement effet exploration:`, effect);
-      
+      // Cette partie est cruciale. On ne passe plus l'effet au hasard.
+      // On passe l'effet à une méthode spécifique qui gère les modifications de stats.
+      if (this.characterStore) {
+        this.characterStore.applyBuffToPlayer(effect);
+      }
+    }
+
+    // Traiter les autres effets
+    for (const effect of castResult.effects) {
       switch (effect.type) {
-        case 'buff':
-          // Appliquer les buffs sur le personnage (asynchrone mais non-bloquant)
-          if (this.characterStore) {
-            console.log(`🌍 DEBUG: Application buff exploration sur ${effect.targetName}`);
-            this.characterStore.applyBuffToPlayer?.(effect);
-          }
-          break;
-          
         case 'light':
           this.gameStore?.setEnvironmentFlag?.('lighting', 30);
           break;
-        
+
         case 'detect_magic':
           this.gameStore?.setEnvironmentFlag?.('showMagicAuras', true);
           break;
-        
+
         case 'comprehend_languages':
           this.gameStore?.setEnvironmentFlag?.('translateText', true);
+          break;
+        default:
+          // Gérer les autres effets non-statistiques ici
           break;
       }
     }
@@ -250,9 +251,9 @@ export class SpellServiceUnified {
   canCastSpell(caster, spell, atLevel = null) {
     const spellCaster = new SpellCaster(caster);
     const spellData = this.getSpellData(spell);
-    
+
     if (!spellData) return false;
-    
+
     return spellCaster.canCastSpell(spellData, atLevel);
   }
 
@@ -283,7 +284,7 @@ export class SpellServiceUnified {
    */
   getSpellcastingStats(caster) {
     const spellCaster = new SpellCaster(caster);
-    
+
     if (!spellCaster.canCast()) {
       return null;
     }
@@ -367,7 +368,7 @@ export class SpellServiceUnified {
     if (!character?.spellcasting?.preparedSpells) {
       return [];
     }
-    
+
     return character.spellcasting.preparedSpells.map(spellName => {
       const spellData = this.getSpellData(spellName);
       return spellData ? { id: spellData.id, ...spellData } : null;
@@ -383,7 +384,7 @@ export class SpellServiceUnified {
     if (!character?.spellcasting?.knownSpells) {
       return [];
     }
-    
+
     return character.spellcasting.knownSpells.map(spellName => {
       const spellData = this.getSpellData(spellName);
       return spellData ? { id: spellData.id, ...spellData } : null;
@@ -399,7 +400,7 @@ export class SpellServiceUnified {
     const allKnown = this.getGrimoireSpells(character);
     const prepared = this.getPreparedSpells(character);
     const preparedIds = prepared.map(s => s.id);
-    
+
     return allKnown.filter(spell => !preparedIds.includes(spell.id));
   }
 
@@ -412,7 +413,7 @@ export class SpellServiceUnified {
     if (!character?.spellcasting?.cantrips) {
       return [];
     }
-    
+
     return character.spellcasting.cantrips.map(cantripName => {
       const spellData = this.getSpellData(cantripName);
       return spellData ? { id: spellData.id, ...spellData } : null;
@@ -450,7 +451,7 @@ export class SpellServiceUnified {
     // Formule D&D standard : niveau + modificateur de caractéristique
     const stats = this.getSpellcastingStats(character);
     const baseAmount = character.level + (stats?.modifier || 0);
-    
+
     return Math.max(1, baseAmount); // Minimum 1 sort préparé
   }
 
