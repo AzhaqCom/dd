@@ -1,5 +1,5 @@
 {
-  "homepage": "https://AzhaqCom.github.io/rpg-textuel-react/",
+  "homepage": "https://AzhaqCom.github.io/dd/",
   "name": "mini-dnd",
   "private": true,
   "version": "0.0.0",
@@ -10,7 +10,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "cross-env VITE_APP_BASE_PATH=/rpg-textuel-react/ gh-pages -d dist",
+    "deploy": "cross-env VITE_APP_BASE_PATH=/dd/ gh-pages -d dist",
     "purge-css": "purgecss --css \"src/**/*.css\" --content \"src/**/*.{js,jsx}\" --output src/cleaned-css/",
     "analyze-css": "purgecss --css \"src/**/*.css\" --content \"src/**/*.{js,jsx}\" --rejected"
   },

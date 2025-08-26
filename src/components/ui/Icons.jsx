@@ -1,17 +1,17 @@
 import React from 'react';
-import { 
-  FaHeart, 
-  FaDiceD20, 
-  FaCrosshairs, 
-  FaSkull, 
-  FaHatWizard, 
-  FaFlagCheckered 
+import {
+  FaHeart,
+  FaDiceD20,
+  FaCrosshairs,
+  FaSkull,
+  FaHatWizard,
+  FaFlagCheckered
 } from 'react-icons/fa';
-import { 
-  GiUpgrade, 
-  GiLevelTwoAdvanced, 
-  GiBurningBlobs, 
-  GiSpellBook, 
+import {
+  GiUpgrade,
+  GiLevelTwoAdvanced,
+  GiBurningBlobs,
+  GiSpellBook,
   GiDuration,
   GiKnapsack,
   GiBladeDrag,
@@ -21,7 +21,8 @@ import {
   GiWalkingBoot,
   GiPositionMarker,
   GiRecycle,
-  GiFireDash
+  GiFireDash, GiSmallFire,
+  GiBouncingSword
 } from "react-icons/gi";
 import { MdOutlineAutoAwesome } from "react-icons/md";
 
@@ -52,12 +53,16 @@ export const MoveIcon = createIcon(GiWalkingBoot, 'move-icon');
 export const PositionIcon = createIcon(GiPositionMarker, 'position-icon');
 export const RefreshIcon = createIcon(GiRecycle, 'refresh-icon');
 export const FireDashIcon = createIcon(GiFireDash, 'dash-icon');
+export const SmallFireIcon = createIcon(GiSmallFire, 'small-fire-icon');
+export const CombatSwordIcon = createIcon(GiBouncingSword, 'combat-sword-icon');
 
 // Dynamic icon selector
 export const getIconForType = (type) => {
   const iconMap = {
     'player-damage': MagicIcon,
     'enemy-damage': SwordIcon,
+    'opportunity-hit': SwordIcon,
+    'opportunity-miss': MissIcon,
     'victory': VictoryIcon,
     'heal': HeartIcon,
     'miss': MissIcon,
@@ -73,7 +78,7 @@ export const getIconForType = (type) => {
     'brain': BrainIcon,
     'combat': SwordIcon,
     'bow': BowIcon,
-    'dash':FireDashIcon,
+    'dash': FireDashIcon,
     'position': PositionIcon,
     'refresh': RefreshIcon,
     'target': MissIcon,
@@ -88,6 +93,8 @@ export const getIconForType = (type) => {
     'buff': MagicIcon,
     'info': DiceIcon,
     'combat-start': CombatIcon,
+    'spell-hit': SmallFireIcon,
+    'critical-hit': CombatSwordIcon
   };
 
   const IconComponent = iconMap[type];

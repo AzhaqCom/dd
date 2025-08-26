@@ -20,11 +20,13 @@
   box-shadow: var(--shadow-large);
 
 }
+
 .combat-grid {
   width: 100%;
   height: 100%;
 
 }
+
 .card {
   user-select: none;
 }
@@ -70,11 +72,13 @@
 
 .combat-log__header {
   border-bottom: 1px solid var(--color-border-primary);
-  
+
 }
-.combat-log__clear-button{
+
+.combat-log__clear-button {
   margin-left: 4px;
 }
+
 .combat-log__title-section,
 .combat-log__header {
   display: flex;
@@ -91,6 +95,70 @@
   scroll-behavior: smooth;
 }
 
+.combat-log__entry-content {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+}
+
+span.combat-log__entry-icon {
+  line-height: 16px;
+}
+.combat-log__entry{
+  text-shadow: #000000 1px 1px 0px;
+}
+.combat-log__entry.combat-log__entry--initiative,
+.combat-log__entry.combat-log__entry--info,
+.combat-log__entry.combat-log__entry--action,
+.combat-log__entry.combat-log__entry--refresh {
+  color: #81a2be;
+}
+
+.combat-log__entry.combat-log__entry--experience,
+.combat-log__entry.combat-log__entry--levelup,
+.combat-log__entry.combat-log__entry--victory,
+.combat-log__entry.combat-log__entry--success {
+  color: #b3e096;
+}
+
+.combat-log__entry.combat-log__entry--player-damage,
+.combat-log__entry.combat-log__entry--miss,
+.combat-log__entry.combat-log__entry--warning,
+.combat-log__entry.combat-log__entry--opportunity-miss{
+  color: #e89f81;
+}
+
+.combat-log__entry.combat-log__entry--enemy-damage,
+.combat-log__entry.combat-log__entry--error,
+.combat-log__entry.combat-log__entry--defeat,
+.combat-log__entry.combat-log__entry--opportunity-hit {
+  color: #e06666;
+}
+.combat-log__entry.combat-log__entry--spell,
+.combat-log__entry.combat-log__entry--upgrade,
+.combat-log__entry.combat-log__entry--buff{
+  color:#a7c7e7;
+}
+.combat-log__entry.combat-log__entry--heal,
+.combat-log__entry.combat-log__entry--duration,
+.combat-log__entry.combat-log__entry--dash{
+  color:#e5c26b;
+}
+.combat-log__entry.combat-log__entry--debug,
+.combat-log__entry.combat-log__entry--combat-start{
+  color: #e8e8e8;
+}
+.combat-log__entry.combat-log__entry--movement,
+.combat-log__entry.combat-log__entry--bag{
+  color: #b0b0b0;
+}
+.combat-log__entry.combat-log__entry--spell-hit{
+  color: #e6742a;
+}
+.combat-log__entry.combat-log__entry--critical-hit{
+   color: #da4444;
+}
 .combat-selected-targets__list {
   list-style: none;
   padding: 0;

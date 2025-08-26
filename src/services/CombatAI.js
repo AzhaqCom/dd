@@ -9,7 +9,7 @@ import { SpellServiceUnified } from './SpellServiceUnified';
 
 
 export class CombatAI {
-  
+
   /**
    * POINT D'ENTRÉE PRINCIPAL - Exécute le tour d'une entité
    * @param {Object} entity - L'entité qui joue (ennemi ou compagnon)
@@ -19,7 +19,7 @@ export class CombatAI {
    * @param {Function} onNextTurn - Callback pour passer au suivant
    */
   static executeEntityTurn(entity, gameState, onMessage, onDamage, onNextTurn) {
- 
+
 
     try {
       // 1. Vérifier que l'entité est vivante
@@ -30,22 +30,22 @@ export class CombatAI {
       }
 
       // 2. IA TACTIQUE AVANCÉE : Planifier tour complet avec mouvement
- 
-      
+
+
       let turnPlan;
       try {
         turnPlan = ActionPlanner.planCompleteTurn(entity, gameState);
-  
+
       } catch (planError) {
         console.error(`❌ DEBUG: Erreur dans planCompleteTurn:`, planError);
         throw planError;
       }
-      
+
       if (!turnPlan || turnPlan.phases.length === 0) {
         // Fallback vers ancien système si pas de plan
-      
+
         const action = ActionPlanner.getBestAction(entity, gameState);
-        
+
         if (!action) {
           onMessage(`${entity.name} ne trouve rien à faire et passe son tour.`, 'info');
           setTimeout(() => onNextTurn(), 500);
@@ -63,10 +63,10 @@ export class CombatAI {
       // 3. EXÉCUTION SÉQUENTIELLE DES PHASES DU PLAN
       this.executeTurnPlan(entity, turnPlan, gameState, {
         onMessage,
-        onDamage, 
+        onDamage,
         onNextTurn
       });
-      
+
     } catch (error) {
       console.error(`❌ Erreur dans le tour de ${entity.name}:`, error);
       onMessage(`Erreur dans le tour de ${entity.name}`, 'error');
@@ -80,20 +80,20 @@ export class CombatAI {
    */
   static executeAction(entity, action, gameState) {
 
-    
+
     switch (action.type) {
       case 'attack':
       case 'melee':
       case 'ranged':
         return this.executeAttack(entity, action, gameState);
-        
+
       case 'spell':
         return this.executeSpell(entity, action, gameState);
-        
+
       case 'protect':
       case 'taunt':
         return this.executeSupportAction(entity, action, gameState);
-        
+
       default:
         console.warn(`Action de type "${action.type}" non reconnue.`);
         return {
@@ -110,7 +110,7 @@ export class CombatAI {
   static executeAttack(entity, action, gameState) {
     const attack = action.attack || action; // ActionPlanner peut structurer différemment
     const target = action.target;
-    
+
     if (!target) {
       return {
         messages: [`${entity.name} n'a pas de cible valide.`],
@@ -122,9 +122,19 @@ export class CombatAI {
 
     // Utiliser CombatEngine.resolveAttack qui fonctionne bien
     const attackResult = CombatEngine.resolveAttack(entity, target, attack);
-    
+    let messageType;
+    if (attackResult.critical) {
+      // Si c'est un coup critique, le type est 'critical-hit'
+      messageType = 'critical-hit';
+    } else if (attackResult.success) {
+      // Si c'est un succès (sans être critique), le type est 'enemy-damage'
+      messageType = 'enemy-damage';
+    } else {
+      // Si c'est un échec, le type est 'miss'
+      messageType = 'miss';
+    }
     const result = {
-      messages: [attackResult.message],
+      messages: [{ text: attackResult.message, type: messageType }],
       damage: attackResult.success ? [{
         targetId: target.id || target.name,
         amount: attackResult.damage
@@ -157,17 +167,23 @@ export class CombatAI {
       const spellService = new SpellServiceUnified({
         combatStore: { combatPositions: gameState.combatPositions }
       });
-      
+
       const spellResult = spellService.castSpell(entity, spell, targets, {
         context: 'combat',
         combatState: gameState
       });
 
 
-
+      const messages = spellResult.messages.map(msg => ({
+        text: msg.text || msg,
+        // Déterminer le type du message en fonction des résultats
+        type: msg.type || (spellResult.damageResults?.length > 0 ? 'spell-hit' :
+          spellResult.healingResults?.length > 0 ? 'heal' :
+            'spell')
+      }));
       // Mapper le résultat au format attendu
       const result = {
-        messages: spellResult.messages || [],
+        messages: messages,
         damage: (spellResult.damageResults || spellResult.damage || []).map(d => ({
           targetId: d.targetId,
           amount: d.damage || d.amount
@@ -178,13 +194,13 @@ export class CombatAI {
         }))
       };
 
-   
+
       return result;
 
     } catch (error) {
       console.error(`❌ Erreur lors du lancement du sort ${spell.name}:`, error);
       return {
-        messages: [`Échec du lancement de ${spell.name}`],
+        messages: [{ text: `Échec du lancement de ${spell?.name}`, type: 'error' }],
         damage: [],
         healing: []
       };
@@ -208,12 +224,12 @@ export class CombatAI {
           // TODO: Implémenter l'effet de protection si nécessaire
         }
         break;
-        
+
       case 'taunt':
         result.messages.push(`💢 ${entity.name} attire l'attention des ennemis`);
         // TODO: Implémenter l'effet de taunt si nécessaire
         break;
-        
+
       default:
         result.messages.push(`${entity.name} tente une action de support inconnue`);
     }
@@ -229,14 +245,14 @@ export class CombatAI {
     if (result.messages) {
       result.messages.forEach(msg => {
         const message = typeof msg === 'string' ? msg : msg.text || msg;
-        onMessage(message, 'combat');
+        onMessage(message, msg.type || 'info');
       });
     }
 
     // Dégâts
     if (result.damage) {
       result.damage.forEach(dmg => {
-     
+
         onDamage(dmg.targetId, dmg.amount);
       });
     }
@@ -244,14 +260,14 @@ export class CombatAI {
     // Soins (dégâts négatifs)
     if (result.healing) {
       result.healing.forEach(heal => {
-  
+
         onDamage(heal.targetId, -heal.amount);
       });
     }
   }
 
   // === MÉTHODES UTILITAIRES (si besoin) ===
-  
+
   static findEntityPosition(entity, gameState) {
     const key = entity.name || entity.id;
     return gameState.combatPositions[key];
@@ -280,13 +296,13 @@ export class CombatAI {
    * @param {Object} callbacks - Callbacks {onMessage, onDamage, onNextTurn}
    */
   static async executeTurnPlan(entity, turnPlan, gameState, callbacks) {
-  
-    
+
+
     try {
       for (let i = 0; i < turnPlan.phases.length; i++) {
         const phase = turnPlan.phases[i];
- 
-        
+
+
         switch (phase.type) {
           case 'move':
             await this.executeMovementPhase(entity, phase, gameState, callbacks);
@@ -305,17 +321,17 @@ export class CombatAI {
             console.warn(`⚠️ Type de phase inconnu: ${phase.type}`);
             break;
         }
-        
+
         // Délai entre phases pour animation/lisibilité
         if (i < turnPlan.phases.length - 1) {
           await this.delay(600);
         }
       }
-      
+
       // Tour terminé
 
       setTimeout(() => callbacks.onNextTurn(), 800);
-      
+
     } catch (error) {
       console.error(`❌ Erreur lors de l'exécution du plan de ${entity.name}:`, error);
       callbacks.onMessage(`Erreur dans l'exécution tactique de ${entity.name}`, 'error');
@@ -328,25 +344,25 @@ export class CombatAI {
    */
   static async executeMovementPhase(entity, phase, gameState, callbacks) {
     const { from, to, reason, maxMovement: phaseMaxMovement } = phase;
-    
+
     // Vérification validité du mouvement
     const distance = Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
     const maxMovement = phaseMaxMovement || entity.movement || 6;
-    
 
-    
+
+
     if (distance > maxMovement) {
       console.warn(`⚠️ Mouvement trop long pour ${entity.name}: ${distance} > ${maxMovement}`);
       callbacks.onMessage(`${entity.name} ne peut pas se déplacer si loin`, 'warning');
       return;
     }
-    
+
     // Animation du déplacement
     callbacks.onMessage(`${entity.name} se déplace vers ${to.x},${to.y} `, 'movement');
-    
+
     // Mise à jour de la position - Recherche intelligente de clé
     let entityKey = entity.id || entity.name;
-    
+
     // Vérifier si la clé actuelle existe, sinon chercher la bonne clé
     if (!gameState.combatPositions[entityKey]) {
       const possibleKeys = Object.keys(gameState.combatPositions);
@@ -354,19 +370,19 @@ export class CombatAI {
         const pos = gameState.combatPositions[key];
         return pos && pos.x === from.x && pos.y === from.y; // Même position de départ
       });
-      
+
       if (matchingKey) {
         entityKey = matchingKey;
-    
+
       }
     }
-    
+
     gameState.combatPositions[entityKey] = { x: to.x, y: to.y };
- 
-    
+
+
     // TODO: Vérifier attaques d'opportunité
 
-    
+
     await this.delay(400); // Animation du mouvement
   }
 
@@ -382,11 +398,11 @@ export class CombatAI {
       spell: phase.spell,
       ...phase
     };
-    
+
     // Utiliser le système d'exécution existant
     const result = this.executeAction(entity, action, gameState);
     this.applyResults(result, callbacks.onMessage, callbacks.onDamage);
-    
+
     await this.delay(200);
   }
 
@@ -395,8 +411,8 @@ export class CombatAI {
    */
   static async executeDashPhase(entity, phase, gameState, callbacks) {
     callbacks.onMessage(`${entity.name} utilise l'action Dash `, 'dash');
- 
-    
+
+
     await this.delay(300);
   }
 

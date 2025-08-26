@@ -267,7 +267,7 @@ export class CombatEngine {
     if (hit) {
       const damageResult = this.calculateDamage(attack)
       result.damage = damageResult.damage
-      result.message = `${attacker.name} profite d'une ouverture et frappe ${targetName} ! (${attackRoll} vs CA ${targetAC}) → ${damageResult.message}`
+      result.message = `${attacker.name} profite d'une ouverture et inflige ${damageResult.message} à ${targetName} ! `
     } else {
       result.message = `${attacker.name} tente une attaque d'opportunité sur ${targetName} mais rate sa cible (${attackRoll} vs CA ${targetAC})`
     }
@@ -883,9 +883,9 @@ export class CombatEngine {
       
       if (criticalHit) {
         damage *= 2; // Double dégâts en critique
-        message = `CRITIQUE ! ${attacker.name} utilise ${attackData.name} sur ${target.name} (${totalAttackRoll} vs CA ${targetAC}) → ${damage} dégâts !`;
+        message = `CRITIQUE ! ${attacker.name} inflige ${damage} dégâts à ${target.name} avec ${attackData.name} `;
       } else {
-        message = `${attacker.name} utilise ${attackData.name} sur ${target.name} (${totalAttackRoll} vs CA ${targetAC}) → ${damage} dégâts`;
+        message = `${attacker.name} inflige ${damage} dégâts à ${target.name} avec ${attackData.name} `;
       }
     } else {
       message = `${attacker.name} manque ${target.name} avec ${attackData.name} (${totalAttackRoll} vs CA ${targetAC})`;

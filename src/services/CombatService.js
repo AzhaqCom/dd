@@ -566,7 +566,7 @@ export class CombatService {
           }
           
           results.messages.push({
-            text: `💥 ${spell.name} touche automatiquement ${target.name} et inflige ${damage} dégâts`, 
+            text: `${spell.name} inflige ${damage} dégâts à ${target.name}`, 
             type: 'spell-hit'
           })
           
