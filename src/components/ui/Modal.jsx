@@ -123,39 +123,3 @@ export const useModal = () => {
 /**
  * Modales pré-configurées courantes
  */
-export const ConfirmModal = ({ onConfirm, message = "Êtes-vous sûr ?", confirmText = "Confirmer", cancelText = "Annuler" }) => (
-  <Modal type="confirm" title="Confirmation" size="small">
-    {({ onClose }) => (
-      <div className="confirm-modal">
-        <p className="confirm-modal__message">{message}</p>
-        <div className="confirm-modal__actions">
-          <Button variant="secondary" onClick={onClose}>
-            {cancelText}
-          </Button>
-          <Button 
-            variant="danger" 
-            onClick={() => {
-              onConfirm?.()
-              onClose()
-            }}
-          >
-            {confirmText}
-          </Button>
-        </div>
-      </div>
-    )}
-  </Modal>
-)
-
-export const InfoModal = ({ title = "Information", message }) => (
-  <Modal type="info" title={title} size="small">
-    {({ onClose }) => (
-      <div className="info-modal">
-        <p className="info-modal__message">{message}</p>
-        <div className="info-modal__actions">
-          <Button onClick={onClose}>OK</Button>
-        </div>
-      </div>
-    )}
-  </Modal>
-)

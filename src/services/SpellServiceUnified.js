@@ -341,27 +341,6 @@ export class SpellServiceUnified {
    * À supprimer une fois la migration terminée
    */
 
-  /**
-   * @deprecated Utiliser castSpell à la place
-   */
-  static castSpell(character, spell, targets = [], options = {}) {
-    console.warn('SpellService.castSpell est déprécié, utiliser SpellServiceUnified');
-    const service = new SpellServiceUnified();
-    return service.castSpell(character, spell, targets, options);
-  }
-
-  /**
-   * @deprecated Utiliser canCastSpell à la place
-   */
-  static validateSpellcast(character, spell) {
-    console.warn('SpellService.validateSpellcast est déprécié');
-    const service = new SpellServiceUnified();
-    const canCast = service.canCastSpell(character, spell);
-    return {
-      success: canCast,
-      message: canCast ? '' : 'Ne peut pas lancer ce sort'
-    };
-  }
 
   // ===== MÉTHODES MANQUANTES POUR COMPATIBILITÉ UI =====
 

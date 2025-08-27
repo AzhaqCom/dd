@@ -624,54 +624,5 @@ export class CombatEffects {
   // 🚫 MÉTHODES DÉPRÉCIÉES (À supprimer après migration)
   // =============================================
 
-  /**
-   * @deprecated Utiliser applyEffectPure à la place
-   * Cette méthode modifie l'objet en place, ce qui viole l'immutabilité
-   */
-  static applyEffect(target, effectType, duration = 1, source = null, intensity = 1) {
-    console.warn('applyEffect est déprécié. Utiliser applyEffectPure pour éviter les mutations.');
-    return this._originalApplyEffect(target, effectType, duration, source, intensity);
-  }
 
-  /**
-   * Méthode originale sauvegardée pour compatibilité temporaire
-   * @private
-   */
-  static _originalApplyEffect(target, effectType, duration = 1, source = null, intensity = 1) {
-    if (!CombatEffects.EFFECT_TYPES[effectType]) {
-      console.warn(`Effet inconnu: ${effectType}`)
-      return null
-    }
-
-    const effect = {
-      id: CombatEffects.generateEffectId(),
-      type: effectType,
-      source: source,
-      duration: duration,
-      intensity: intensity,
-      turnsRemaining: duration,
-      startTurn: Date.now(),
-      ...CombatEffects.EFFECT_TYPES[effectType]
-    }
-
-    // Initialiser les effets si nécessaire
-    if (!target.activeEffects) {
-      target.activeEffects = []
-    }
-
-    // Vérifier si l'effet existe déjà (stack ou remplace)
-    const existingIndex = target.activeEffects.findIndex(e => e.type === effectType)
-    
-    if (existingIndex !== -1) {
-      // Remplacer par la plus longue durée
-      if (duration > target.activeEffects[existingIndex].turnsRemaining) {
-        target.activeEffects[existingIndex] = effect
-      }
-    } else {
-      // Nouvel effet
-      target.activeEffects.push(effect)
-    }
-
-    return effect
-  }
 }

@@ -204,36 +204,6 @@ export const useCombatStore = create(
       
       // === MÉTHODES HÉRITÉES (MAINTENUES POUR COMPATIBILITÉ SI BESOIN) ===
 
-      /**
-       * @deprecated Utiliser executeUnifiedEntityTurn à la place
-       */
-      executeEnemyTurn: (enemyName, playerCharacter, activeCompanions = []) => {
-        console.warn('⚠️ executeEnemyTurn is deprecated, use executeUnifiedEntityTurn');
-        const { combatEnemies, combatPositions } = get();
-        const enemy = combatEnemies.find(e => e.name === enemyName);
-        if (!enemy || enemy.currentHP <= 0) {
-          return;
-        }
-
-        const gameState = { playerCharacter, activeCompanions, combatEnemies, combatPositions };
-        // Redirection vers le nouveau système
-        get().executeUnifiedEntityTurn(enemy, gameState, () => get().nextTurn());
-      },
-
-      /**
-       * @deprecated Utiliser executeUnifiedEntityTurn à la place
-       */
-      executeCompanionTurnById: (companionId, companion, activeCompanions, playerCharacter) => {
-        console.warn('⚠️ executeCompanionTurnById is deprecated, use executeUnifiedEntityTurn');
-        if (!companion || companion.currentHP <= 0) {
-          return;
-        }
-
-        const { combatPositions, combatEnemies } = get();
-        const gameState = { playerCharacter, activeCompanions, combatEnemies, combatPositions };
-        // Redirection vers le nouveau système
-        get().executeUnifiedEntityTurn(companion, gameState, () => get().nextTurn());
-      },
 
       // Le reste du store reste identique...
       initializeCombat: (encounterData, playerCharacter, activeCompanions = []) => set((state) => {
@@ -660,9 +630,6 @@ export const useCombatStore = create(
         } else {
           console.warn('Player damage callback not set')
         }
-      },
-      dealDamageToCompanion: (damage) => {
-        console.warn('dealDamageToCompanion is deprecated, use dealDamageToCompanionById')
       },
 
       dealDamageToCompanionById: (companionId, damage) => {

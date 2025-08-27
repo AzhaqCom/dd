@@ -3,7 +3,7 @@
  */
 
 // Composants principaux
-export { CharacterSheet, CompactCharacterSheet, InteractiveCharacterSheet } from './CharacterSheet'
+export { CharacterSheet, CompactCharacterSheet } from './CharacterSheet'
 export { CharacterSelection } from './CharacterSelection'
 export { CharacterSelectionCard, CompactCharacterSelectionCard } from './CharacterSelectionCard'
 
@@ -13,7 +13,7 @@ export { AbilityScores, CompactAbilityScores, SavingThrows } from './AbilityScor
 export { SkillsList, ProficientSkillsList, useSkillBonus } from './SkillsList'
 
 // Barres de progression
-export { XPBar, CompactXPBar, CircularXPIndicator } from './XPBar'
+export { XPBar, CompactXPBar } from './XPBar'
 
 // Capacités spéciales
 export { SpecialAbilitiesPanel, CompactSpecialAbilitiesPanel, InteractiveSpecialAbilitiesPanel } from './SpecialAbilitiesPanel'

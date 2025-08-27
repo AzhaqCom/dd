@@ -67,30 +67,6 @@ export const Button = ({
 /**
  * Bouton de confirmation avec variante danger
  */
-export const ConfirmButton = ({ children, onConfirm, confirmText = "Confirmer ?", ...props }) => {
-  const [showConfirm, setShowConfirm] = React.useState(false)
-
-  const handleClick = () => {
-    if (showConfirm) {
-      onConfirm?.()
-      setShowConfirm(false)
-    } else {
-      setShowConfirm(true)
-      // Auto-hide after 3 seconds
-      setTimeout(() => setShowConfirm(false), 3000)
-    }
-  }
-
-  return (
-    <Button
-      {...props}
-      variant={showConfirm ? 'danger' : props.variant || 'secondary'}
-      onClick={handleClick}
-    >
-      {showConfirm ? confirmText : children}
-    </Button>
-  )
-}
 
 /**
  * Groupe de boutons avec espacement cohérent

@@ -2,9 +2,6 @@
  * Export centralisé des composants Spells refactorisés
  */
 
-// Composant principal
-export { SpellPanel } from './SpellPanel'
-
 // Composants de gestion des sorts
 export { SpellList, SimpleSpellList } from './SpellList'
 export { SpellItem } from './SpellItem'

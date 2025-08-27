@@ -257,55 +257,5 @@ export const CompactCharacterSheet = ({ characterType = 'player' }) => (
 /**
  * Fiche de personnage avec contrôles
  */
-export const InteractiveCharacterSheet = ({
-  characterType = 'player',
-  onLevelUp,
-  onRest,
-  onEditCharacter
-}) => {
-  const character = useCharacterStore(state =>
-    characterType === 'player'
-      ? state.playerCharacter
-      : state.playerCompanion
-  )
-
-  const canLevelUp = useCharacterStore(state => state.levelUpPending)
-
-  if (!character) return <CharacterSheet characterType={characterType} />
-
-  return (
-    <div className="interactive-character-sheet">
-      <CharacterSheet characterType={characterType} showControls={true} />
-
-      {/* Contrôles additionnels */}
-      <div className="character-sheet__controls">
-        {canLevelUp && (
-          <button
-            className="btn btn--success"
-            onClick={() => onLevelUp?.(character)}
-          >
-            🎯 Monter de niveau !
-          </button>
-        )}
-
-        <button
-          className="btn btn--secondary"
-          onClick={() => onRest?.(character)}
-        >
-          😴 Se reposer
-        </button>
-
-        {onEditCharacter && (
-          <button
-            className="btn btn--ghost"
-            onClick={() => onEditCharacter(character)}
-          >
-            ✏️ Modifier
-          </button>
-        )}
-      </div>
-    </div>
-  )
-}
 
 export default CharacterSheet

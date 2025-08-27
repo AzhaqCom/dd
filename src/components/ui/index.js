@@ -4,13 +4,11 @@
 
 // Composants de base
 export { Card, CardHeader, CardBody, CardFooter, CharacterCard } from './Card'
-export { Button, ConfirmButton, ButtonGroup } from './Button'
-export { ActionButton, DetailedActionButton, ActionButtonGroup } from './ActionButton'
-export { Modal, useModal, ConfirmModal, InfoModal } from './Modal'
+export { Button, ButtonGroup } from './Button'
+export { ActionButton } from './ActionButton'
+export { Modal, useModal } from './Modal'
 export { 
-  NotificationContainer, 
-  InlineNotification, 
-  useNotifications 
+  NotificationContainer
 } from './Notification'
 
 // Composants d'affichage

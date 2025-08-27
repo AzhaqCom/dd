@@ -364,24 +364,6 @@ export const useCharacterStore = create(
         // 🚫 MÉTHODE DÉPRÉCIÉE (À supprimer après migration)
         // =============================================
 
-        /**
-         * @deprecated Utiliser applyEffectToPlayer à la place
-         * Cette méthode utilise l'ancienne approche avec mutations
-         */
-        applyBuffToPlayer: (effect) => {
-          console.warn('applyBuffToPlayer est déprécié. Utiliser applyEffectToPlayer avec la nouvelle structure.');
-          
-          // Conversion vers le nouveau format pour compatibilité temporaire
-          const effectData = {
-            type: effect.type || 'blessed', // Fallback pour les anciens "buff"
-            duration: effect.duration || 3600,
-            source: effect.source || 'unknown',
-            properties: effect.properties || {}
-          };
-          
-          // Déléguer à la nouvelle méthode
-          get().applyEffectToPlayer(effectData);
-        },
 
         consumeSpellSlot: (spellLevel, targetCharacter = 'player') => set((state) => {
           const character = state.playerCharacter;

@@ -92,45 +92,5 @@ export const CompactXPBar = ({ currentXP, nextLevelXP, progress }) => (
   />
 )
 
-/**
- * Indicateur circulaire de progression XP
- */
-export const CircularXPIndicator = ({ 
-  progress, 
-  level, 
-  size = 40,
-  strokeWidth = 4 
-}) => {
-  const radius = (size - strokeWidth) / 2
-  const circumference = radius * 2 * Math.PI
-  const offset = circumference - (progress / 100) * circumference
-
-  return (
-    <div className="circular-xp-indicator">
-      <svg width={size} height={size}>
-        <circle
-          className="circular-xp-indicator__background"
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-        />
-        <circle
-          className="circular-xp-indicator__progress"
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-        />
-      </svg>
-      
-      <div className="circular-xp-indicator__level">
-        {level}
-      </div>
-    </div>
-  )
-}
 
 export default XPBar
