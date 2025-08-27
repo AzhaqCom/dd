@@ -96,7 +96,7 @@ export class DataService {
         }
         
         addItemCallback(itemToAdd)
-        messageCallback(`📦 Objet obtenu : ${itemData.name || itemData.nom || itemId}`)
+        messageCallback(`Objet obtenu : ${itemData.name || itemData.nom || itemId}`,'bag')
       } else {
         console.error(`❌ Item non trouvé dans items.js ou weapons.js : ${itemId}`)
       }

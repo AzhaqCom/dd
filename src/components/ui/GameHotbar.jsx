@@ -90,7 +90,7 @@ const GameHotbar = ({
       quickStat: `${availableSlots}/${totalSlots}`,
       hotkey: 'S',
       notification: notifications.spells,
-      action: () => onPanelOpen('spells')
+      action: () => onPanelOpen('spells','large')
     }] : []),
     {
       id: 'companions',

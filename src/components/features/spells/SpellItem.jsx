@@ -16,6 +16,7 @@ export const SpellItem = ({
   onCast,
   onPrepare,
   onUnprepare,
+  onLearn,
   className = ''
 }) => {
   const [showCastingOptions, setShowCastingOptions] = useState(false)
@@ -200,7 +201,7 @@ export const SpellItem = ({
       <div className="spell-item__list-content">
 
         <div className="spell-item__list-header">
-          {getSpellIcon()} <h4 className="spell-item__name">{spell.name}</h4>
+           <h4 className="spell-item__name">{getSpellIcon()} {spell.name}</h4>
           <span className="spell-item__level">
             {spell.level === 0 ? 'Cantrip' : `Niveau ${spell.level}`}
           </span>
@@ -283,6 +284,18 @@ export const SpellItem = ({
             </Button>
           )}
 
+          {actions.canLearn && (
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={(e) => {
+                e.stopPropagation()
+                onLearn?.(spell)
+              }}
+            >
+              📚 Apprendre
+            </Button>
+          )}
           {actions.canPrepare && (
             <Button
               size="small"

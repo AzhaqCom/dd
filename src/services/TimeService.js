@@ -245,7 +245,7 @@ export class TimeService {
   }
   
   /**
-   * Vérifie si un repos peut être effectué selon les contraintes temporelles
+   * Vérifie si un repos peut être effectué selon les contraintes temporelles D&D 5e
    * @param {Object} timeState - État temporel actuel
    * @param {string} restType - Type de repos ('short' ou 'long')
    * @param {Object} scene - Scène actuelle
@@ -254,6 +254,7 @@ export class TimeService {
   static validateRestAvailability(timeState, restType, scene) {
     const { currentTime, history } = timeState;
     const sceneMetadata = scene.metadata || {};
+    const { hour } = currentTime;
     
     const result = {
       allowed: true,
@@ -262,34 +263,63 @@ export class TimeService {
       timeRequired: restType === 'long' ? 480 : 60
     };
     
-    // Vérifier la sécurité du lieu
-    const safety = sceneMetadata.safety || 0;
-    const minSafety = restType === 'long' ? 3 : 1;
-    
-    if (safety < minSafety) {
-      result.allowed = false;
-      result.reasons.push(`Lieu trop dangereux pour un repos ${restType === 'long' ? 'long' : 'court'} (sécurité: ${safety}/${minSafety})`);
+    if (restType === 'long') {
+      // === REPOS LONG : Règles D&D 5e ===
+      
+      // 1. Vérifier l'heure : Nuit (19h-6h) OU lieu très sûr (safety >= 4)
+      const isNightTime = hour >= 19 || hour <= 6;
+      const isSafePlace = (sceneMetadata.safety || 0) >= 4;
+      
+      if (!isNightTime && !isSafePlace) {
+        result.allowed = false;
+        result.reasons.push('Les repos longs ne sont possibles que la nuit (19h-6h) ou dans des lieux très sûrs');
+      }
+      
+      // 2. Vérifier qu'on n'a pas déjà fait un repos long aujourd'hui
+      if (history.lastLongRest) {
+        const daysSinceLastLongRest = Math.floor(
+          this.getTimeDifference(history.lastLongRest.time, currentTime) / (24 * 60)
+        );
+        
+        if (daysSinceLastLongRest < 1) {
+          result.allowed = false;
+          result.reasons.push('Un seul repos long par jour est autorisé');
+        }
+      }
+      
+      // 3. Sécurité minimale pour dormir
+      const safety = sceneMetadata.safety || 0;
+      if (safety < 2) {
+        result.allowed = false;
+        result.reasons.push(`Lieu trop dangereux pour dormir (sécurité: ${safety}/5)`);
+      }
+      
+    } else {
+      // === REPOS COURT : Règles D&D 5e ===
+      
+      // 1. Pas 2 repos courts consécutifs sans action entre
+      if (history.lastShortRest && !history.hadActionSinceLastRest) {
+        result.allowed = false;
+        result.reasons.push('Vous devez agir avant de pouvoir faire un autre repos court');
+      }
+      
+      // 2. Sécurité minimale pour se reposer
+      const safety = sceneMetadata.safety || 0;
+      if (safety < 1) {
+        result.allowed = false;
+        result.reasons.push(`Lieu trop dangereux pour se reposer (sécurité: ${safety}/5)`);
+      }
     }
     
-    // Vérifier les restrictions spécifiques
+    // Vérifier les restrictions spécifiques de la scène
     const restrictions = sceneMetadata.restAvailability?.restrictions || [];
     if (restrictions.includes('no_long_rest') && restType === 'long') {
       result.allowed = false;
       result.reasons.push('Repos long interdit dans ce lieu');
     }
-    
-    // Vérifier le repos récent
-    if (history.lastRest) {
-      const timeSinceRest = this.getTimeDifference(history.lastRest.time, currentTime);
-      
-      if (restType === 'long' && timeSinceRest.hours < 16) {
-        result.warnings.push(`Dernier repos long il y a ${timeSinceRest.hours}h (recommandé: 16h+)`);
-      }
-      
-      if (restType === 'short' && timeSinceRest.hours < 1) {
-        result.allowed = false;
-        result.reasons.push(`Repos court effectué il y a ${timeSinceRest.minutes} minutes`);
-      }
+    if (restrictions.includes('no_short_rest') && restType === 'short') {
+      result.allowed = false;
+      result.reasons.push('Repos court interdit dans ce lieu');
     }
     
     // Calculer l'heure de fin du repos

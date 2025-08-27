@@ -523,10 +523,10 @@ export class CombatService {
       })
     } else {
       // Gestion normale pour sorts à cible unique ou multiple sans AoE
-      results.messages.push({
-        text: ` ${caster.name} lance ${spell.name}`, 
-        type: 'spell'
-      })
+      // results.messages.push({
+      //   text: ` ${caster.name} lance ${spell.name}`, 
+      //   type: 'spell'
+      // })
       
       // Traiter chaque cible individuellement
       targets.forEach(target => {
@@ -547,14 +547,14 @@ export class CombatService {
             }
             
             results.messages.push({
-              text: `${spell.name} touche ${target.name} et inflige ${damage} dégâts`, 
-              type: criticalHit ? 'critical' : 'hit'
+              text: ` ${caster.name} inflige ${damage} dégâts à ${target.name} avec ${spell.name} `, 
+              type: criticalHit ? 'critical-hit' : 'spell-hit'
             })
             
             results.damage.push({ targetId: target.id || target.name, damage })
           } else {
             results.messages.push({
-              text: ` ${spell.name} manque ${target.name} (${totalAttack} vs CA ${target.ac})`, 
+              text: ` ${caster.name} manque ${target.name} avec ${spell.name} (${totalAttack} vs CA ${target.ac})`, 
               type: 'miss'
             })
           }

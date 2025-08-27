@@ -21,8 +21,10 @@ import {
   GiWalkingBoot,
   GiPositionMarker,
   GiRecycle,
-  GiFireDash, GiSmallFire,
-  GiBouncingSword
+  GiFireDash, 
+  GiSmallFire,
+  GiBouncingSword,
+  GiShield 
 } from "react-icons/gi";
 import { MdOutlineAutoAwesome } from "react-icons/md";
 
@@ -55,6 +57,7 @@ export const RefreshIcon = createIcon(GiRecycle, 'refresh-icon');
 export const FireDashIcon = createIcon(GiFireDash, 'dash-icon');
 export const SmallFireIcon = createIcon(GiSmallFire, 'small-fire-icon');
 export const CombatSwordIcon = createIcon(GiBouncingSword, 'combat-sword-icon');
+export const ShieldIcon = createIcon(GiShield, 'shield-icon');
 
 // Dynamic icon selector
 export const getIconForType = (type) => {
@@ -94,7 +97,8 @@ export const getIconForType = (type) => {
     'info': DiceIcon,
     'combat-start': CombatIcon,
     'spell-hit': SmallFireIcon,
-    'critical-hit': CombatSwordIcon
+    'critical-hit': CombatSwordIcon,
+    'equip': ShieldIcon
   };
 
   const IconComponent = iconMap[type];

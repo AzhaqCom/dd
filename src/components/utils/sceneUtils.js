@@ -1,6 +1,7 @@
 import { companions } from '../../data/companions';
 import { useCharacterStore, useGameStore } from '../../stores';
 import { StoryService } from '../../services/StoryService';
+import { SceneManager } from '../../services/SceneManager';
 import { SCENE_TYPES, ACTION_TYPES } from '../../types/story';
 
 /**
@@ -222,6 +223,39 @@ export const processChoice = async (choice, gameState, handlers) => {
         const actionResult = processSceneAction(choice.action, handlers);
         if (actionResult) {
             return actionResult;
+        }
+    }
+    
+    // === GESTION TEMPORELLE ===
+    // Traiter la transition temporelle si une scène suivante est définie
+    if (choice.next) {
+        const gameStore = useGameStore.getState();
+        const currentScene = SceneManager.getScene(gameStore.currentScene);
+        
+        // Si une scène générée est fournie dans le choix, l'utiliser
+        let nextScene;
+        if (choice.generatedScene) {
+            console.log('📦 Utilisation de scène générée:', choice.generatedScene.id);
+            nextScene = SceneManager.getOrGenerateScene(choice.next, gameState, choice.generatedScene);
+        } else {
+            nextScene = SceneManager.getScene(choice.next);
+        }
+        
+        if (currentScene && nextScene) {
+            // Appliquer la progression temporelle
+            const transitionResult = SceneManager.processSceneTransition(
+                currentScene, 
+                nextScene, 
+                choice, 
+                { gameState }
+            );
+            
+            // Afficher les messages temporels s'il y en a
+            if (transitionResult.messages && transitionResult.messages.length > 0) {
+                transitionResult.messages.forEach(message => {
+                    handlers.addCombatMessage(message.text, message.type);
+                });
+            }
         }
     }
     

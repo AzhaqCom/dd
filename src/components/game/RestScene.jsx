@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StoryService } from '../../services/StoryService';
 import { useCharacterStore } from '../../stores/characterStore';
 import { useGameStore } from '../../stores/gameStore';
+import { useTimeStore } from '../../stores/timeStore';
+import { TimeService } from '../../services/TimeService';
 import { SCENE_TYPES } from '../../types/story';
 import './RestScene.css';
 
@@ -26,6 +28,34 @@ const RestScene = ({
   } = useCharacterStore();
   
   const { addCombatMessage } = useGameStore();
+  
+  // ✅ NOUVEAU: Intégration du système temporel
+  const timeStore = useTimeStore();
+  const currentTime = useTimeStore(state => state.currentTime);
+  
+  // Validation des repos disponibles avec le système temporel
+  const restAvailability = useMemo(() => {
+    const shortValidation = TimeService.validateRestAvailability(
+      { currentTime, history: timeStore.history }, 
+      'short', 
+      scene
+    );
+    const longValidation = TimeService.validateRestAvailability(
+      { currentTime, history: timeStore.history }, 
+      'long', 
+      scene
+    );
+    
+    return {
+      short: shortValidation,
+      long: longValidation
+    };
+  }, [currentTime, timeStore.history, scene]);
+  
+  // Formatage du temps actuel pour l'affichage
+  const formattedTime = useMemo(() => {
+    return TimeService.formatTime(currentTime);
+  }, [currentTime]);
 
   // Obtenir les données de la scène
   const sceneText = StoryService.getSceneText(scene, gameState);
@@ -63,20 +93,54 @@ const RestScene = ({
     setRestType(restType);
     setRestInProgress(true);
 
+    // ✅ NOUVEAU: Validation avec système temporel
+    const validation = restAvailability[restType];
+    if (!validation.allowed) {
+      addCombatMessage(
+        `Impossible d'effectuer ce repos: ${validation.reasons.join(', ')}`,
+        'error'
+      );
+      setRestInProgress(false);
+      return;
+    }
+
+    // ✅ NOUVEAU: Message avec heure de fin calculée
+    const endTime = validation.endTime;
     addCombatMessage(
-      `${playerCharacter.name} commence un ${restType === 'short' ? 'repos court' : 'repos long'}`,
+      `${playerCharacter.name} commence un ${restType === 'short' ? 'repos court' : 'repos long'} (fin: ${endTime?.time} - ${endTime?.period})`,
       'rest-start'
     );
 
     // Simuler un délai pour l'immersion
     setTimeout(() => {
+      // ✅ NOUVEAU: Avancer le temps avec le système temporel
+      const timeAdvanced = timeStore.performRest(restType);
+      
       if (restType === 'short') {
         shortRestPlayer();
-        addCombatMessage('Repos court terminé !', 'rest-complete');
+        addCombatMessage(
+          `Repos court terminé ! (${formattedTime.time} - ${formattedTime.period})`, 
+          'rest-complete'
+        );
       } else {
         longRestPlayer();
-        addCombatMessage('Repos long terminé ! Tous vos points de vie et emplacements de sorts ont été restaurés.', 'rest-complete');
+        addCombatMessage(
+          `Repos long terminé ! Tous vos points de vie et emplacements de sorts ont été restaurés. (${formattedTime.time} - ${formattedTime.period})`, 
+          'rest-complete'
+        );
       }
+
+      // ✅ NOUVEAU: Ajouter événements temporels si changement de jour/phase
+      const timeEvents = TimeService.generateTimeEvents(
+        { ...currentTime, day: currentTime.day, hour: currentTime.hour - (restType === 'long' ? 8 : 1) },
+        timeStore.currentTime
+      );
+      
+      timeEvents.forEach(event => {
+        if (event.message) {
+          addCombatMessage(event.message, 'time-event');
+        }
+      });
 
       setRestInProgress(false);
       setRestType(null);
@@ -116,6 +180,11 @@ const RestScene = ({
           {scene.metadata?.location && (
             <p className="location-text">à {scene.metadata.location}</p>
           )}
+          {/* ✅ NOUVEAU: Informations temporelles */}
+          <div className="time-info">
+            <span className="current-time">🕐 {formattedTime.time} - {formattedTime.period}</span>
+            <span className="current-day">{formattedTime.day}</span>
+          </div>
         </div>
       </div>
 
@@ -151,6 +220,26 @@ const RestScene = ({
               <span>Repos recommandé</span>
             </div>
           )}
+          
+          {/* ✅ NOUVEAU: Informations de validation temporelle */}
+          <div className="temporal-status">
+            <div className="safety-level">
+              <span className="safety-label">Sécurité du lieu:</span>
+              <span className={`safety-value safety-${scene.metadata?.safety || 0}`}>
+                {getSafetyIcon(scene.metadata?.safety || 0)} {scene.metadata?.safety || 0}/5
+              </span>
+            </div>
+            
+            {restAvailability.long.warnings?.length > 0 && (
+              <div className="temporal-warnings">
+                {restAvailability.long.warnings.map((warning, i) => (
+                  <div key={i} className="warning">
+                    ⚠️ {warning}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Gestion spéciale pour repos court avec dés de vie */}
@@ -175,20 +264,58 @@ const RestScene = ({
             <p>Repos en cours...</p>
           </div>
         ) : (
-          availableChoices.map((choice, index) => (
-            <button
-              key={index}
-              className={`choice-button ${choice.restType ? `rest-${choice.restType}` : ''}`}
-              onClick={() => handleChoiceClick(choice)}
-              disabled={restInProgress}
-            >
-              {choice.text}
-            </button>
-          ))
+          availableChoices.map((choice, index) => {
+            // ✅ NOUVEAU: Validation temporelle pour chaque choix de repos
+            const validation = choice.restType ? restAvailability[choice.restType] : null;
+            const isRestDisabled = validation && !validation.allowed;
+            
+            return (
+              <div key={index} className="choice-container">
+                <button
+                  className={`choice-button ${choice.restType ? `rest-${choice.restType}` : ''} ${isRestDisabled ? 'disabled' : ''}`}
+                  onClick={() => handleChoiceClick(choice)}
+                  disabled={restInProgress || isRestDisabled}
+                  title={isRestDisabled ? validation.reasons.join(', ') : validation?.endTime ? `Fin: ${validation.endTime.time} - ${validation.endTime.period}` : ''}
+                >
+                  {choice.text}
+                  {/* ✅ NOUVEAU: Affichage des durées et heures de fin */}
+                  {validation && validation.allowed && (
+                    <div className="choice-time-info">
+                      <span className="duration">
+                        ({validation.timeRequired === 60 ? '1h' : `${Math.floor(validation.timeRequired / 60)}h`})
+                      </span>
+                      <span className="end-time">
+                        → {validation.endTime?.time} {validation.endTime?.period}
+                      </span>
+                    </div>
+                  )}
+                </button>
+                
+                {/* ✅ NOUVEAU: Messages d'erreur pour repos impossibles */}
+                {isRestDisabled && (
+                  <div className="choice-error">
+                    {validation.reasons.map((reason, i) => (
+                      <div key={i} className="error-message">
+                        ❌ {reason}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
   );
+  
+  /**
+   * Obtient l'icône de sécurité selon le niveau
+   */
+  function getSafetyIcon(safety) {
+    const icons = ['💀', '⚠️', '😐', '😊', '🛡️', '🏰'];
+    return icons[Math.min(safety, 5)] || '❓';
+  }
 };
 
 export default RestScene;

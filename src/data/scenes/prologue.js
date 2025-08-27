@@ -26,9 +26,25 @@ export const prologueScenes = {
       {
         text: 'Explorer le village',
         next: 'prologue_arrivee_village',
-        consequences: { items: ["arccheat"] }
+        consequences: { items: ["arccheat"], timeCost: 30 }
+      },
+      {
+        text: '🎲 [DEV] Tester génération procédurale',
+        next: 'test_procedural_entry',
+        condition: 'true' // Toujours visible en développement
       }
-    ]
+    ],
+    metadata: {
+      chapter: 'prologue',
+      location: 'Route',
+      environment: 'Périphérie',
+      safety: 2,
+      restAvailability: {
+        short: false,
+        long: false,
+        restrictions: ['exposition', 'pas_d_abri']
+      }
+    }
   },
 
   "prologue_arrivee_village": {
@@ -83,19 +99,33 @@ export const prologueScenes = {
       speaker: 'tavernier',
     },
     metadata: {
+      chapter: 'prologue',
       location: 'La Lanterne Vacillante - Ravenscroft',
+      environment: 'tavern',
+      safety: 4,                    // Taverne = lieu sûr
+      restAvailability: {
+        short: true,                // Repos court possible
+        long: true,                 // Repos long possible
+        restrictions: []            // Aucune restriction
+      }
     },
 
     choices: [
       {
         text: 'Je suis l\'héritier légitime de ce domaine.',
         next: 'prologue_taverne_villageois',
-        consequences: { factionReputation: { ravenscroft: -5 } }
+        consequences: {
+          factionReputation: { ravenscroft: -5 },
+          timeCost: 20 // Discussion tendue = 20 minutes
+        }
       },
       {
         text: 'Je préfère écouter ce que vous avez à dire.',
         next: 'prologue_taverne_villageois',
-        consequences: { factionReputation: { ravenscroft: 5 } }
+        consequences: {
+          factionReputation: { ravenscroft: 5 },
+          timeCost: 15 // Écoute simple = 15 minutes
+        }
       },
       {
         text: 'Que pouvez-vous m\'offrir comme services ?',
@@ -347,6 +377,17 @@ export const prologueScenes = {
       text: `Soudain, la brume noirâtre se condense et prend forme. Trois silhouettes sombres aux yeux rougeoyants émergent, leurs griffes acérées tendues vers vous !`,
       ambush: false
     },
+    metadata: {
+      chapter: 'prologue',
+      location: 'Fermes de Ravenscroft',
+      environment: 'outdoor',
+      safety: 0,                    // Combat = aucune sécurité
+      restAvailability: {
+        short: false,               // Impossible pendant le combat
+        long: false,                // Impossible pendant le combat
+        restrictions: ['combat_active']
+      }
+    },
     enemies: [
       { type: 'ombre', count: 1 },
       { type: 'gobelin', count: 1 }
@@ -387,12 +428,18 @@ export const prologueScenes = {
         text: 'Descendre dans les tunnels',
         next: 'prologue_tunnels_exploration',
         condition: 'items.lanterne_forge > 0',
-        conditionText: 'Nécessite une source de lumière'
+        conditionText: 'Nécessite une source de lumière',
+        consequences: {
+          timeCost: 45 // Descente prudente = 45 minutes
+        }
       },
       {
         text: 'Examiner les runes de l\'entrée',
         next: 'prologue_tunnels_exploration',
-        consequences: { flags: { runes_gardiens: true } }
+        consequences: {
+          flags: { runes_gardiens: true },
+          timeCost: 30 // Examen des runes = 30 minutes
+        }
       },
       {
         text: 'Revenir au village chercher de l\'équipement',
@@ -408,6 +455,20 @@ export const prologueScenes = {
       title: 'Tunnels Souterrains',
       text: `Les tunnels s'étendent dans plusieurs directions. Votre lumière révèle des passages taillés avec précision, témoins d'un savoir-faire ancien. Des embranchements mènent vers différentes sections du réseau souterrain.`,
       background: tunnel
+    },
+    metadata: {
+      chapter: 'prologue',
+      location: 'Tunnels sous Ravenscroft',
+      environment: 'dungeon',
+      safety: 1,                    // Très dangereux
+      restAvailability: {
+        short: true,                // Repos court risqué mais possible
+        long: false,                // Repos long impossible
+        restrictions: [
+          'noise_risk',             // Risque d'attirer des ennemis
+          'interrupted_rest'        // Peut être interrompu
+        ]
+      }
     },
     hotspots: [
       {
@@ -581,7 +642,73 @@ export const prologueScenes = {
       }
     ]
   },
+  "exploration_foret": {
+    id: 'exploration_foret',
+    type: SCENE_TYPES.EXPLORATION,
 
+    content: {
+      title: 'La Forêt Mystérieuse',
+      text: 'Les bois s\'étendent devant vous, denses et mystérieux. Des bruits étranges résonnent dans les profondeurs, et des traces suspectes marquent le sol.'
+    },
+
+    exploration: {
+      biome: 'forest',
+
+      encounters: [
+        {
+          content: {
+            title: 'Traces Suspectes',
+            text: 'Vous découvrez des empreintes étranges qui semblent mener vers un bosquet sombre.'
+          },
+          choices: [
+            {
+              text: 'Suivre les traces',
+              next: 'combat_creatures'
+            },
+            {
+              text: 'Ignorer et continuer',
+              next: 'exploration_foret'
+            }
+          ]
+        }
+      ],
+
+      npcs: [
+        {
+          name: 'Rodeur Solitaire',
+          role: 'guide'
+        }
+      ],
+
+      rewards: [
+        'herbes_medicinales',
+        'champignons_magiques'
+      ]
+    },
+
+    choices: [
+      {
+        text: '➡️ Continuer vers le village',
+        next: 'village_ravenscroft',
+        consequences: {
+          flags: { foret_exploree: true },
+          experience: 50
+        }
+      }
+    ],
+
+    metadata: {
+      chapter: 'prologue',
+      location: 'Forêt de Ravenscroft',
+      environment: 'forest',
+      safety: 2,
+      restAvailability: {
+        short: true,
+        long: false,
+        restrictions: ['wilderness', 'creatures_nearby']
+      }
+    }
+  },
   // ========================================
   // PHASE 5 : EXPLORATION AVANCÉE DE LA RÉGION
   // ========================================

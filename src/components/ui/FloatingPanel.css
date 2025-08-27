@@ -194,7 +194,7 @@
 
 .panel-content {
   flex: 1;
-  padding: 16px;
+  /* padding: 16px; */
   overflow-y: auto;
   overflow-x: hidden;
   
@@ -455,8 +455,8 @@
 }
 
 .panel-content button {
-  background: rgba(139, 69, 19, 0.8);
-  border: 1px solid rgba(139, 69, 19, 0.6);
+  background: rgba(36, 79, 104, 0.8);
+  border: 1px solid rgba(146, 135, 189, 0.6);
   color: #f0e6d3;
   padding: 6px 12px;
   border-radius: 6px;
@@ -466,7 +466,7 @@
 }
 
 .panel-content button:hover {
-  background: rgba(139, 69, 19, 1);
-  border-color: rgba(139, 69, 19, 0.8);
+  background:rgb(36, 79, 104);
+  border-color:rgba(255, 255, 255, 0.76);
   transform: translateY(-1px);
 }

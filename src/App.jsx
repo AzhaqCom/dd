@@ -5,18 +5,19 @@ import { ErrorBoundary } from 'react-error-boundary';
 import {
     CharacterSheet,
     CharacterSelection,
-    SpecialAbilitiesPanel,
     CompanionParty
 } from './components/features/character';
 
 import { CombatLog } from './components/ui/CombatLog';
 import {InventoryPanel} from './components/features/inventory';
-import {SpellPanel} from './components/features/spells';
+
 
 // New UI Components
 import StatusCorner from './components/ui/StatusCorner';
 import GameHotbar from './components/ui/GameHotbar';
 import FloatingPanel, { FloatingPanelManager } from './components/ui/FloatingPanel';
+import RestPanelDirect from './components/ui/RestPanelDirect';
+import SpellPanelDirect from './components/ui/SpellPanelDirect';
 
 
 // New scene components
@@ -25,6 +26,7 @@ import InteractiveScene from './components/game/InteractiveScene';
 import MerchantScene from './components/game/MerchantScene';
 import RestScene from './components/game/RestScene';
 import CombatScene from './components/game/CombatScene';
+import HubScene from './components/game/HubScene';
 
 // Custom hooks for logic extraction
 import { useAppHandlers } from './components/hooks/useAppHandlers';
@@ -39,6 +41,7 @@ import {
     useCombatStore,
     useUIStore,
 } from './stores';
+import { useTimeStore } from './stores/timeStore';
 
 // Utils
 import {
@@ -221,29 +224,23 @@ function App() {
             case 'inventory':
                 return <InventoryPanel />;
             case 'spells':
-                return playerCharacter?.spellcasting ? (
-                    <SpellPanel 
-                        character={playerCharacter} 
+                return (
+                    <SpellPanelDirect 
+                        onClose={() => closeFloatingPanel('spells')}
                         onCastSpell={handleCastSpellOutOfCombat}
-                        isOutOfCombat={true}
                     />
-                ) : <p>Ce personnage ne peut pas utiliser la magie.</p>;
+                );
             case 'companions':
                 return <CompanionParty companions={getActiveCompanions()} variant="detailed" showRoles={true} />;
             case 'journal':
                 return <CombatLog title="Journal d'Aventure" compact={false} />;
             case 'rest':
+                // Interface simple et directe pour les repos
                 return (
-                    <div className="rest-panel-content">
-                        <h4>Options de Repos</h4>
-                        <p>Choisissez votre type de repos :</p>
-                        <button onClick={() => console.log('Repos court')}>
-                            💤 Repos Court (1h) - Récupère stamina
-                        </button>
-                        <button onClick={() => console.log('Repos long')}>
-                            🛌 Repos Long (8h) - Récupère tout
-                        </button>
-                    </div>
+                    <RestPanelDirect 
+                        onRestChoice={handleDirectRestChoice}
+                        onClose={() => closeFloatingPanel('rest')}
+                    />
                 );
             default:
                 return <div>Contenu du panel {type}</div>;
@@ -251,9 +248,33 @@ function App() {
     };
 
     const handleRestAction = () => {
-        // Pour l'instant, ouvrir le panel de repos
-        // Plus tard, on pourra implémenter la logique de repos direct
-        openFloatingPanel('rest', 'small');
+        // Ouvrir le panel de repos direct
+        openFloatingPanel('rest', 'medium');
+    };
+
+    const handleDirectRestChoice = async (restType) => {
+        const { shortRestPlayer, longRestPlayer } = useCharacterStore.getState();
+        const timeStore = useTimeStore.getState();
+        
+        try {
+            // Effectuer le repos selon le type
+            if (restType === 'short') {
+                shortRestPlayer();
+                addCombatMessage('💤 Repos court effectué ! Points de vie partiellement récupérés.', 'rest');
+            } else {
+                longRestPlayer();
+                addCombatMessage('🛌 Repos long effectué ! Récupération complète !', 'rest');
+            }
+            
+            // Avancer le temps
+            timeStore.performRest(restType);
+            
+            return true;
+        } catch (error) {
+            console.error('Erreur lors du repos:', error);
+            addCombatMessage('❌ Erreur lors du repos', 'error');
+            return false;
+        }
     };
 
 
@@ -422,7 +443,20 @@ function App() {
                         {!combatActive && <CombatLog title="Journal" compact={true} />}
                     </div>
                 );
-
+            case SCENE_TYPES.HUB:
+                return (
+                    <div className='scene-hub'>
+                        <HubScene
+                            scene={scene}
+                            onChoice={handleNewChoice}
+                            onAction={(action) => {
+                                console.log('🎬 Action de hub:', action);
+                                // Gérer les actions spécifiques au hub
+                            }}
+                        />
+                        <CombatLog title="Journal" compact={true} />
+                    </div>
+                );
             case 'error':
                 // === GESTION DES ERREURS ===
                 return (

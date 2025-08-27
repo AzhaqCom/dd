@@ -1,0 +1,144 @@
+/* SpellPanelDirect.css - Interface moderne pour la gestion des sorts */
+
+.spell-panel-direct {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid #3a4a5c;
+  color: #e0e6ed;
+  padding: 1rem;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.spell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #3a4a5c;
+}
+
+.spell-header h3 {
+  margin: 0;
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.close-button {
+  background: transparent;
+  border: 1px solid #666;
+  color: #ccc;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: #666;
+  color: white;
+}
+
+.no-spellcasting {
+  text-align: center;
+  padding: 2rem;
+  color: #a0a0a0;
+}
+
+/* Emplacements de sorts */
+.spell-slots-section {
+  margin-bottom: 1rem;
+}
+
+/* Navigation par onglets */
+.spell-tabs {
+  display: flex;
+  margin-bottom: 1rem;
+  
+  gap: 5px;
+}
+
+.spell-tab {
+
+  flex: 1;
+}
+
+.spell-tab:hover {
+  color: #e0e6ed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.spell-tab.active {
+  color: #ffd700;
+  border-bottom-color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+}
+
+/* Section filtres */
+.spell-filters-section {
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+/* Section liste */
+.spell-list-section {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0; /* Important pour que le scroll fonctionne */
+}
+
+/* Amélioration du scrollbar */
+.spell-list-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.spell-list-section::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.spell-list-section::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.spell-list-section::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+.spell-filters__school-grid, .spell-filters__level-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .spell-panel-direct {
+    max-width: 100%;
+    padding: 1rem;
+    max-height: 90vh;
+  }
+  
+  .spell-tabs {
+    flex-direction: column;
+  }
+  
+  .spell-tab {
+    text-align: center;
+    border-bottom: 1px solid #3a4a5c;
+    border-right: none;
+  }
+  
+  .spell-tab.active {
+    border-bottom-color: #ffd700;
+    border-right-color: transparent;
+  }
+}

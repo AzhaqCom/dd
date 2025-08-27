@@ -1,0 +1,182 @@
+/* RestPanelDirect.css - Interface simple et moderne pour les repos */
+
+.rest-panel-direct {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid #3a4a5c;
+  color: #e0e6ed;
+  padding: 1.5rem;
+
+}
+
+.rest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #3a4a5c;
+}
+
+.rest-header h3 {
+  margin: 0;
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.close-button {
+  background: transparent;
+  border: 1px solid #666;
+  color: #ccc;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: #666;
+  color: white;
+}
+
+.rest-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.current-time {
+  font-size: 0.9rem;
+  color: #60a5fa;
+  margin-bottom: 0.5rem;
+}
+
+.character-status {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #a0a0a0;
+}
+
+.rest-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rest-option {
+  display: flex;
+  flex-direction: column;
+}
+
+.rest-button {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+  border: 1px solid #3a4a5c;
+  color: #e0e6ed;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.rest-button:hover:not(.disabled) {
+  background: linear-gradient(135deg, #5a6578 0%, #3d4758 100%);
+  border-color: #4a5568;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.rest-button.short:not(.disabled) {
+  background: linear-gradient(135deg, #4299e1 0%, #2b77cb 100%);
+  border-color: #4299e1;
+}
+
+.rest-button.short:hover:not(.disabled) {
+  background: linear-gradient(135deg, #52a9f1 0%, #3b87db 100%);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+}
+
+.rest-button.long:not(.disabled) {
+  background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+  border-color: #805ad5;
+}
+
+.rest-button.long:hover:not(.disabled) {
+  background: linear-gradient(135deg, #906ae5 0%, #7b56d1 100%);
+  box-shadow: 0 4px 12px rgba(128, 90, 213, 0.4);
+}
+
+.rest-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #4b5563 !important;
+  border-color: #6b7280 !important;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.button-icon {
+  font-size: 1.5rem;
+}
+
+.button-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.button-text strong {
+  font-size: 1rem;
+  color: #e0e6ed;
+}
+
+.button-text small {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+}
+
+.rest-error {
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.error-message {
+  font-size: 0.75rem;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border-left: 3px solid #ef4444;
+  margin-bottom: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .rest-panel-direct {
+    min-width: 320px;
+    padding: 1rem;
+  }
+  
+  .character-status {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .button-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}

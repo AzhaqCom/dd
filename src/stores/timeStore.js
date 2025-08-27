@@ -61,7 +61,10 @@ export const useTimeStore = create(
       // =============================================
       
       history: {
-        lastRest: null,           // Dernière fois qu'un repos a été effectué
+        lastRest: null,           // Dernière fois qu'un repos a été effectué (legacy)
+        lastLongRest: null,       // Dernier repos long effectué
+        lastShortRest: null,      // Dernier repos court effectué
+        hadActionSinceLastRest: true, // Si une action a été effectuée depuis le dernier repos court
         totalDaysPlayed: 0,       // Nombre total de jours écoulés
         actionsToday: 0,          // Nombre d'actions effectuées aujourd'hui
         majorEvents: []           // Événements temporels importants
@@ -109,7 +112,7 @@ export const useTimeStore = create(
       },
       
       /**
-       * Effectue un repos et avance le temps correspondant
+       * Effectue un repos et avance le temps correspondant (logique D&D 5e)
        * @param {string} restType - Type de repos ('short' ou 'long')
        */
       performRest: (restType) => {
@@ -120,22 +123,39 @@ export const useTimeStore = create(
         
         const newTime = state.advanceTime(restDuration, `repos_${restType}`);
         
+        // Mettre à jour l'historique selon le type de repos
+        const historyUpdate = { ...state.history };
+        
+        if (restType === 'long') {
+          historyUpdate.lastLongRest = {
+            time: newTime,
+            timestamp: Date.now()
+          };
+          historyUpdate.hadActionSinceLastRest = true; // Reset après repos long
+        } else {
+          historyUpdate.lastShortRest = {
+            time: newTime,
+            timestamp: Date.now()
+          };
+          historyUpdate.hadActionSinceLastRest = false; // Marque qu'aucune action depuis repos court
+        }
+        
+        // Garder lastRest pour compatibilité
+        historyUpdate.lastRest = {
+          type: restType,
+          time: newTime,
+          timestamp: Date.now()
+        };
+        
         set({
-          history: {
-            ...state.history,
-            lastRest: {
-              type: restType,
-              time: newTime,
-              timestamp: Date.now()
-            }
-          }
+          history: historyUpdate
         });
         
         return newTime;
       },
       
       /**
-       * Avance le temps selon le type d'action effectuée
+       * Avance le temps selon le type d'action effectuée (logique D&D 5e)
        * @param {string} actionType - Type d'action ('combat', 'exploration', etc.)
        * @param {number} customDuration - Durée personnalisée (optionnelle)
        */
@@ -143,7 +163,19 @@ export const useTimeStore = create(
         const state = get();
         const duration = customDuration || state.config.actionCosts[actionType] || state.config.actionCosts.scene_transition;
         
-        return state.advanceTime(duration, `action_${actionType}`);
+        const newTime = state.advanceTime(duration, `action_${actionType}`);
+        
+        // Marquer qu'une action a été effectuée (débloque les repos courts)
+        if (actionType !== 'rest_short' && actionType !== 'rest_long') {
+          set({
+            history: {
+              ...state.history,
+              hadActionSinceLastRest: true
+            }
+          });
+        }
+        
+        return newTime;
       },
       
       // =============================================
@@ -248,6 +280,9 @@ export const useTimeStore = create(
           },
           history: {
             lastRest: null,
+            lastLongRest: null,
+            lastShortRest: null,
+            hadActionSinceLastRest: true,
             totalDaysPlayed: 0,
             actionsToday: 0,
             majorEvents: []

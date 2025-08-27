@@ -289,9 +289,22 @@ const handleRestChoice = (choice) => {
   - ✅ Tests de validation et robustesse
 
 ### Phase 2 : Intégration Actions (1 semaine)  
-- [ ] Modifier `SceneManager` pour progression temporelle automatique
-- [ ] Étendre `RestScene` avec gestion temporelle
-- [ ] Ajouter coûts temporels dans les définitions de scènes
+- [✅] Modifier `SceneManager` pour progression temporelle automatique  
+  - ✅ Méthode processSceneTransition pour transitions automatiques
+  - ✅ Calcul intelligent du coût temporel par type de transition
+  - ✅ Modificateurs contextuels (nuit, sécurité, fatigue)
+  - ✅ Génération d'événements et messages temporels
+  - ✅ Vérification des restrictions temporelles des scènes
+  - ✅ Intégration complète avec TimeService et timeStore
+- [✅] Étendre `RestScene` avec gestion temporelle
+  - ✅ Intégration complète avec timeStore et TimeService
+  - ✅ Validation temporelle des repos (sécurité, restrictions, historique)
+  - ✅ Affichage des informations temporelles (heure actuelle, fin prévue)
+  - ✅ Messages contextuels avec événements temporels
+  - ✅ Interface enrichie avec niveaux de sécurité et avertissements
+  - ✅ Gestion des erreurs et restrictions temporelles
+  - ✅ Styles CSS complets pour les nouvelles fonctionnalités
+- [🚧] Ajouter coûts temporels dans les définitions de scènes
 - [ ] Tests d'intégration avec scènes existantes
 
 ### Phase 3 : Événements Temporels (1 semaine)

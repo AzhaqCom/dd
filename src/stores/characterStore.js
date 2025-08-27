@@ -451,6 +451,31 @@ export const useCharacterStore = create(
           return { success: true, message: `${spellName} retiré des sorts préparés` };
         },
 
+        /**
+         * Met à jour les propriétés de spellcasting du personnage
+         * @param {Object} spellcastingUpdates - Propriétés à mettre à jour
+         */
+        updateSpellcasting: (spellcastingUpdates) => {
+          const state = get();
+          const character = state.playerCharacter;
+
+          if (!character || !character.spellcasting) {
+            console.warn('Aucun personnage avec capacités magiques trouvé');
+            return { success: false, message: 'Personnage sans magie' };
+          }
+
+          const updatedCharacter = {
+            ...character,
+            spellcasting: {
+              ...character.spellcasting,
+              ...spellcastingUpdates
+            }
+          };
+
+          set(syncCharacter({ playerCharacter: updatedCharacter }));
+          return { success: true, message: 'Spellcasting mis à jour' };
+        },
+
         // === GESTION DE L'ÉQUIPEMENT ===
 
         equipItem: (itemId, targetCharacter = 'player') => set((state) => {

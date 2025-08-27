@@ -139,7 +139,7 @@ export const InventoryPanel = ({
     try {
       const itemId = item.id || item.name || item.nom
       equipItem(itemId, 'player')
-      addCombatMessage(`${item.nom || item.name} équipé !`, 'success')
+      addCombatMessage(`${item.nom || item.name} équipé !`, 'equip')
     } catch (error) {
       console.error('Erreur lors de l\'équipement:', error)
       addCombatMessage(`Erreur lors de l'équipement: ${error.message}`, 'error')

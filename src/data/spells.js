@@ -7,7 +7,7 @@ export const spells = {
         castingTime: "1 action",
         range: "36 mètres",
         description: "Vous créez trois fléchettes faites d'énergie magique brillante. Chacune touche une créature de votre choix, située à portée et dans votre champ de vision. Une fléchette inflige 1d4+1 dégâts de force à la cible. Toutes les fléchettes frappent leur cible en même temps, sachant que vous pouvez toutes les diriger contre une seule et même créature ou les répartir entre plusieurs.",
-        damage: { dice: "1d4", bonus: 1, type: "force" },
+        damage: { dice: "10d40", bonus: 16,type: "force" },
         projectiles: 3,
         requiresAttackRoll: false,
         targetType: "enemy",

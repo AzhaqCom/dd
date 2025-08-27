@@ -67,7 +67,9 @@ const CombatScene = ({
       const victoryChoice = {
         text: scene.onVictory.text || "Continuer l'aventure",
         next: scene.onVictory.next,
-        consequences: scene.onVictory.consequences
+        consequences: scene.onVictory.consequences,
+        // ✅ Passer la scène générée si elle existe
+        generatedScene: scene.onVictory.generatedScene
       };
       
       if (onChoice) {

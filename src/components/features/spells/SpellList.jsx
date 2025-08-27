@@ -15,6 +15,8 @@ export const SpellList = ({
   onCastSpell,
   onPrepareSpell,
   onUnprepareSpell,
+  onLearnSpell,
+  preparedSpells = [],
   className = ''
 }) => {
   const listClass = [
@@ -53,7 +55,9 @@ export const SpellList = ({
   }
 
   // Déterminer les actions disponibles selon l'onglet actif
-  const getActionsForTab = () => {
+  const getActionsForTab = (spell) => {
+    const isAlreadyPrepared = preparedSpells.includes(spell.name);
+    
     switch (activeTab) {
       case 'prepared':
         return {
@@ -61,7 +65,20 @@ export const SpellList = ({
           canUnprepare: true,
           canPrepare: false
         }
+      case 'known':
+        return {
+          canCast: false,
+          canUnprepare: false,
+          canPrepare: !isAlreadyPrepared && spell.level>0, // Seulement si pas déjà préparé
+          canLearn: false
+        }
       case 'grimoire':
+        return {
+          canCast: false,
+          canUnprepare: false,
+          canPrepare: false,
+          canLearn: true
+        }
       case 'unprepared':
         return {
           canCast: false,
@@ -83,8 +100,6 @@ export const SpellList = ({
     }
   }
 
-  const actions = getActionsForTab()
-
   return (
     <div className={listClass}>
       {viewMode === 'compact' ? (
@@ -97,12 +112,13 @@ export const SpellList = ({
               character={character}
               spellSlots={spellSlots}
               viewMode="compact"
-              actions={actions}
+              actions={getActionsForTab(spell)}
               isOutOfCombat={isOutOfCombat}
               onClick={() => onSpellClick?.(spell)}
               onCast={onCastSpell}
               onPrepare={onPrepareSpell}
               onUnprepare={onUnprepareSpell}
+              onLearn={onLearnSpell}
             />
           ))}
         </div>
@@ -126,12 +142,13 @@ export const SpellList = ({
                     character={character}
                     spellSlots={spellSlots}
                     viewMode={viewMode}
-                    actions={actions}
+                    actions={getActionsForTab(spell)}
                     isOutOfCombat={isOutOfCombat}
                     onClick={() => onSpellClick?.(spell)}
                     onCast={onCastSpell}
                     onPrepare={onPrepareSpell}
                     onUnprepare={onUnprepareSpell}
+                    onLearn={onLearnSpell}
                   />
                 ))}
               </div>

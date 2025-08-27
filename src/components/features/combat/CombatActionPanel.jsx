@@ -145,7 +145,7 @@ export const CombatActionPanel = ({
         key={action.id}
         variant={selectedAction?.id === action.id ? 'primary' : 'secondary'}
         onClick={() => onSelectAction(action)}
-        disabled={selectedAction && selectedAction.id !== action.id}
+        disabled={ action.disabled || (selectedAction && selectedAction.id !== action.id)}
       >
         <div className="action-button__content">
           <span className="action-button__icon">{action.icon}</span>
@@ -221,7 +221,7 @@ export const CombatActionPanel = ({
           ) : (
             <div className="action-disabled">
               {playerTurnState.actionsUsed.movement 
-                ? `Mouvement utilisé (${6 - playerTurnState.remainingMovement} cases)`
+                ? `Mouvement utilisé `
                 : "Mouvement non disponible"
               }
             </div>

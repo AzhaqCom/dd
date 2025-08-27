@@ -11,7 +11,18 @@ export const SCENE_TYPES = {
   COMBAT: 'combat',
   REST_LONG: 'rest_long',
   REST_SHORT: 'rest_short',
-  REST_CHOICE: 'rest_choice'       // Choix entre repos court/long (D&D)
+  REST_CHOICE: 'rest_choice',      // Choix entre repos court/long (D&D)
+  HUB: 'hub',                      // Nouveau : hub d'exploration interactif
+  EXPLORATION: 'exploration',      // Nouveau : voyage avec événements séquentiels
+  PROCEDURAL_ENCOUNTER: 'procedural_encounter'  // Nouveau : rencontre générée
+};
+
+// Types spécifiques à la génération procédurale
+export const PROCEDURAL_TYPES = {
+  RANDOM_ENCOUNTER: 'random_encounter',
+  CONTEXTUAL_EVENT: 'contextual_event',
+  FILLER_CONTENT: 'filler_content',
+  SIDE_QUEST: 'side_quest'
 };
 
 // Types d'actions possibles
@@ -60,7 +71,7 @@ export const UnifiedSceneSchema = {
       // Ex: "false", "character.level >= 3", "gameFlags.hasKey === true"
       consequences: {              // Effets du choix (optionnel)
         // === PROGRESSION PERSONNAGE ===
-        experience: 'number',      // XP à ajouter
+        experience: 'number',      // XP à ajouter optionnel
         items: 'array',            // Items à ajouter à l'inventaire
         companions: 'array',       // Compagnons à recruter
 
@@ -137,24 +148,7 @@ export const UnifiedSceneSchema = {
   }
 };
 
-// === SCHEMAS LEGACY (à supprimer après migration complète) ===
-// Ces schemas restent pour compatibilité avec les composants existants
-// mais utilisent maintenant UnifiedSceneSchema comme base
 
-/**
- * @deprecated Utiliser UnifiedSceneSchema à la place
- */
-export const InteractiveSceneSchema = UnifiedSceneSchema;
-
-/**
- * @deprecated Utiliser UnifiedSceneSchema à la place  
- */
-export const DialogueSceneSchema = UnifiedSceneSchema;
-
-/**
- * @deprecated Utiliser UnifiedSceneSchema à la place
- */
-export const MerchantSceneSchema = UnifiedSceneSchema;
 
 /**
  * Structure des variables de jeu
@@ -244,9 +238,8 @@ export default {
   SCENE_TYPES,
   ACTION_TYPES,
   UnifiedSceneSchema,
-  InteractiveSceneSchema,
-  DialogueSceneSchema,
-  MerchantSceneSchema,
+  
+ 
   GameFlagsSchema,
   ConditionTypes,
   SceneValidators
